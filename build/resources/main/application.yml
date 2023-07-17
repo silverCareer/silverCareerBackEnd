@@ -1,0 +1,17 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: silvercareer
+
+  datasource:
+    platform: mysql
+    url:  jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB
+    username: silvermaster
+    password: 12341234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  type-aliases-package: com.example.demo.src.user.model
+  mapper-locations: mapper/**/*.xml
