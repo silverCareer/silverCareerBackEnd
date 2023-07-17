@@ -7,6 +7,7 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -35,26 +36,32 @@ dependencies {
     annotationProcessor ('org.projectlombok:lombok:1.18.16')
 
     // DB
-    runtimeOnly ('mysql:mysql-connector-java') //mysql8
+//    runtimeOnly ('mysql:mysql-connector-java') //mysql8
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
-    implementation ('org.springframework.boot:spring-boot-starter-jdbc')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
+//    implementation ('org.springframework.boot:spring-boot-starter-jdbc')
+//    compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
 
-    // DB - MyBatis
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-    implementation 'mysql:mysql-connector-java'
-
+    // DB - 임시로 h2 database 사용
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+//    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+//    implementation 'mysql:mysql-connector-java'
 
     // Web
-    implementation ('org.springframework.boot:spring-boot-starter-web')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Security, Authentication
-    implementation('org.springframework.boot:spring-boot-starter-security')
-    compile(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
-    compile('io.jsonwebtoken:jjwt:0.9.0')
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+//    compile(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
+//    compile('io.jsonwebtoken:jjwt:0.9.0')
 
     implementation('org.springframework.boot:spring-boot-starter')
-    compile('org.springframework.boot:spring-boot-starter-web')
+    testImplementation 'org.springframework.security:spring-security-test'
+//    compile('org.springframework.boot:spring-boot-starter-web')
 
 
 
