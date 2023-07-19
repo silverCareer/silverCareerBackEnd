@@ -1,7 +1,7 @@
 package com.example.demo.src.auth;
 
-import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponse;
+import com.example.demo.global.exception.BaseException;
+import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.src.auth.model.*;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;

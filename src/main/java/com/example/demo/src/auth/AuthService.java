@@ -1,6 +1,6 @@
 package com.example.demo.src.auth;
 
-import com.example.demo.config.BaseException;
+import com.example.demo.global.exception.BaseException;
 import com.example.demo.src.auth.model.PostLoginReq;
 import com.example.demo.src.auth.model.PostLoginRes;
 import com.example.demo.utils.JwtService;
@@ -8,7 +8,7 @@ import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.global.exception.BaseResponseStatus.*;
 
 @RequiredArgsConstructor
 @Service

@@ -4,14 +4,35 @@ server:
 spring:
   application:
     name: silvercareer
+  h2:
+    console:
+      enabled: true
+      path: /h2
 
   datasource:
-    platform: mysql
-    url:  jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB
-    username: silvermaster
-    password: 12341234
-    driver-class-name: com.mysql.cj.jdbc.Driver
+      driver-class-name: org.h2.Driver
+      url: jdbc:h2:mem:test
+      username: sa
+      password:
 
-mybatis:
-  type-aliases-package: com.example.demo.src.user.model
-  mapper-locations: mapper/**/*.xml
+
+      jpa:
+        show-sql: true
+        generate-ddl: false
+        hibernate:
+          ddl-auto: create-drop
+
+        properties:
+          hibernate:
+            format_sql: true
+#    platform: mysql
+#    url:  jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB
+#    username: silvermaster
+#    password: 12341234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+      jwt:
+        header: Authorization
+        secret: c2lsdmVyQ2FyZWVyLXRlY2gtc3ByaW5nLWJvb3Qtand0LXNlY3JldC1zcHJpbmctc2VjdXJpdHktdGVjaC1zcHJpbmctYm9vdC1qd3QtdHV0b3JpYWwtc2VjcmV0
+#        refresh-token-secret: d29ybGQgbXkgbmFtZSBpcyBzc29uZyBoYWhhaGFoYWhhaGFoYSBydXJ1cnVydXJ1cnVydXJ1ZHNmc2Rmc2Rmc2Rmc2FkCg==
+        access-token-validity-in-seconds: 600 # 10 min
+#        refresh-token-validity-in-seconds: 86400 # 24 hour # ??? ?? ?? ? 1?
