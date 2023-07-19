@@ -1,13 +1,13 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.config.BaseException;
+import com.example.demo.global.exception.BaseException;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.global.exception.BaseResponseStatus.DATABASE_ERROR;
 
 //Provider : Read의 비즈니스 로직 처리
 @RequiredArgsConstructor

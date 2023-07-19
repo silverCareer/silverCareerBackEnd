@@ -1,12 +1,13 @@
-package com.example.demo.config;
+package com.example.demo.global.exception;
 
+import com.example.demo.global.exception.BaseResponseStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.example.demo.config.BaseResponseStatus.SUCCESS;
+import static com.example.demo.global.exception.BaseResponseStatus.SUCCESS;
 
 @Getter
 @AllArgsConstructor

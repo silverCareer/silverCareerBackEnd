@@ -1,14 +1,12 @@
 package com.example.demo.src.auth;
 
-import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponse;
-import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.global.exception.BaseException;
 import com.example.demo.src.auth.model.PostLoginReq;
 import com.example.demo.src.auth.model.PostLoginRes;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.global.exception.BaseResponseStatus.*;
 
 @RequiredArgsConstructor
 @Service

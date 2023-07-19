@@ -1,5 +1,6 @@
-package com.example.demo.config;
+package com.example.demo.global.exception;
 
+import com.example.demo.global.exception.BaseResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
