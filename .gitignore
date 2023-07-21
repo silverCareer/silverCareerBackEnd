@@ -1,3 +1,13 @@
+# Gradle files
+.gradle/
+build/
+
+# IntelliJ IDEA files
+.idea/
+
+# Secret file
+secrets.yml
+
 # Compiled class file
 *.class
 
