@@ -1,11 +1,12 @@
 package com.example.demo.src.auth.domain;
 
 
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+
 import java.util.Set;
 
 @Entity
