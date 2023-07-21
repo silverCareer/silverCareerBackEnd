@@ -26,9 +26,9 @@ spring:
           hibernate:
             format_sql: true
 #    platform: mysql
-#    url:  jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB
-#    username: silvermaster
-#    password: 12341234
+#    url:  ${DB.DB_URL}
+#    username: ${DB.DB_USER}
+#    password: ${DB.PWD}
 #    driver-class-name: com.mysql.cj.jdbc.Driver
       jwt:
         header: Authorization
@@ -36,3 +36,8 @@ spring:
 #        refresh-token-secret: d29ybGQgbXkgbmFtZSBpcyBzc29uZyBoYWhhaGFoYWhhaGFoYSBydXJ1cnVydXJ1cnVydXJ1ZHNmc2Rmc2Rmc2Rmc2FkCg==
         access-token-validity-in-seconds: 600 # 10 min
 #        refresh-token-validity-in-seconds: 86400 # 24 hour # ??? ?? ?? ? 1?
+
+  google_OAuth:
+    clientId: ${google.CLIENT_ID}
+    clientSecret: ${google.CLIENT_SECRET}
+
