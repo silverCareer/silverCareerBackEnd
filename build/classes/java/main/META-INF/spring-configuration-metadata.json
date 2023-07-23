@@ -10,27 +10,32 @@
     {
       "name": "access-token-validity-in-seconds",
       "type": "java.lang.Long",
-      "sourceType": "com.example.demo.global.config.JwtProperties"
+      "sourceType": "com.example.demo.global.config.JwtProperties",
+      "defaultValue": 600
     },
     {
       "name": "header",
       "type": "java.lang.String",
-      "sourceType": "com.example.demo.global.config.JwtProperties"
+      "sourceType": "com.example.demo.global.config.JwtProperties",
+      "defaultValue": "Authorization"
     },
     {
       "name": "refresh-token-secret",
       "type": "java.lang.String",
-      "sourceType": "com.example.demo.global.config.JwtProperties"
+      "sourceType": "com.example.demo.global.config.JwtProperties",
+      "defaultValue": "d29ybGQgbXkgbmFtZSBpcyBzc29uZyBoYWhhaGFoYWhhaGFoYSBydXJ1cnVydXJ1cnVydXJ1ZHNmc2Rmc2Rmc2Rmc2FkCg=="
     },
     {
       "name": "refresh-token-validity-in-seconds",
       "type": "java.lang.Long",
-      "sourceType": "com.example.demo.global.config.JwtProperties"
+      "sourceType": "com.example.demo.global.config.JwtProperties",
+      "defaultValue": 86400
     },
     {
       "name": "secret",
       "type": "java.lang.String",
-      "sourceType": "com.example.demo.global.config.JwtProperties"
+      "sourceType": "com.example.demo.global.config.JwtProperties",
+      "defaultValue": "c2lsdmVyQ2FyZWVyLXRlY2gtc3ByaW5nLWJvb3Qtand0LXNlY3JldC1zcHJpbmctc2VjdXJpdHktdGVjaC1zcHJpbmctYm9vdC1qd3QtdHV0b3JpYWwtc2VjcmV0"
     }
   ],
   "hints": []
