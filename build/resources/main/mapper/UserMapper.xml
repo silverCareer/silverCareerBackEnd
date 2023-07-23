@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"-->
+<!--        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">-->
 
-<mapper namespace="com.example.demo.src.user.UserDao">
-    <insert id="createUser" parameterType="com.example.demo.src.user.model.PostUserReq">
-        INSERT INTO members (email, password, name, phonenumber, role, age)
-        VALUES (#{email}, #{password}, #{name}, #{phonenumber}, #{role}, #{age})
-    </insert>
+<!--<mapper namespace="com.example.demo.src.user.UserDao">-->
+<!--    <insert id="createUser" parameterType="com.example.demo.src.user.model.PostUserReq">-->
+<!--        INSERT INTO members (email, password, name, phonenumber, role, age)-->
+<!--        VALUES (#{email}, #{password}, #{name}, #{phonenumber}, #{role}, #{age})-->
+<!--    </insert>-->
 
-    <select id="getLastInsertId" resultType="int">
-        SELECT LAST_INSERT_ID()
-    </select>
+<!--    <select id="getLastInsertId" resultType="int">-->
+<!--        SELECT LAST_INSERT_ID()-->
+<!--    </select>-->
 
-    <select id="checkEmail" resultType="int">
-        SELECT EXISTS(SELECT email FROM members WHERE email = #{email})
-    </select>
-</mapper>
+<!--    <select id="checkEmail" resultType="int">-->
+<!--        SELECT EXISTS(SELECT email FROM members WHERE email = #{email})-->
+<!--    </select>-->
+<!--</mapper>-->
 
