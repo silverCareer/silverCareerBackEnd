@@ -5,13 +5,33 @@ spring:
   application:
     name: silvercareer
 
-  datasource:
-    platform: mysql
-    url:  jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB
-    username: silvermaster
-    password: 12341234
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2
 
-mybatis:
-  type-aliases-package: com.example.demo.src.user.model
-  mapper-locations: mapper/**/*.xml
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+
+    jpa:
+      database-platform: org.hibernate.dialect.H2Dialect
+
+      hibernate:
+        ddl-auto: create-drop
+
+      properties:
+        hibernate:
+          format_sql: true
+          show-sql: true
+          generate-ddl: false
+      defer-datasource-initialization: true
+
+
+#    platform: mysql
+#    url:  jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB
+#    username: silvermaster
+#    password: 12341234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
