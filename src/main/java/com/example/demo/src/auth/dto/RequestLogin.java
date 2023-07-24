@@ -11,7 +11,8 @@ public record RequestLogin(
         String username,
         @NotNull
         @Size(min = 5, max = 100)
-        String password
+        String password,
+        String email
 ) {
 
 
