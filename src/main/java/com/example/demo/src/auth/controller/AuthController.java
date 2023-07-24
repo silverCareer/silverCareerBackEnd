@@ -1,4 +1,4 @@
-package com.example.demo.src.auth;
+package com.example.demo.src.auth.controller;
 
 import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.security.CustomJwtFilter;

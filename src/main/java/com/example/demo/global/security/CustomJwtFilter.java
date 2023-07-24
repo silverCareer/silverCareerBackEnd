@@ -33,7 +33,7 @@ public class CustomJwtFilter extends GenericFilterBean {
     // 현재는 jwtFilter 통과 시 loadUserByUsername을 호출하여 디비를 거치지 않으므로
     // 시큐리티 컨텍스트에는 엔티티 정보를 온전히 가지지 않는다.
     // 즉 loadUserByUsername을 호출하는 인증 API를 제외하고는 유저네임, 권한만 가지고 있으므로
-    // Account 정보가 필요하다면 디비에서 꺼내와야한다.
+    // Auth 정보가 필요하다면 디비에서 꺼내와야한다.
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;

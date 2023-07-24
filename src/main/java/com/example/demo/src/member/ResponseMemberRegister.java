@@ -11,6 +11,9 @@ public record ResponseMemberRegister(
         String username,
         String password,
         String email,
+        Long age,
+        String provider,
+        String phoneNumber,
         Long tokenWeight,
         Set<String> authoritySet
 
@@ -19,8 +22,11 @@ public record ResponseMemberRegister(
         if (auth == null) return null;
         return ResponseMemberRegister.builder()
                 .username(auth.getUsername())
-                .password(auth.getPassword())
+                .password("통신보안ㅎ")
                 .email(auth.getEmail())
+                .phoneNumber(auth.getPhoneNumber())
+                .age(auth.getAge())
+                .provider(auth.getProvider())
                 .tokenWeight(auth.getTokenWeight())
                 .authoritySet(auth.getAuthorities().stream()
                         .map(authority -> authority.getAuthorityName())

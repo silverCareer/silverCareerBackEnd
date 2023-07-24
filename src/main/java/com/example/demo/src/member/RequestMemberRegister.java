@@ -10,6 +10,12 @@ public record RequestMemberRegister(
         @NotNull
         String password,
         @NotNull
-        String email
+        String email,
+        @NotNull
+        String phoneNumber,
+        @NotNull
+        Long age,
+        String provider
+
 ) {
 }

@@ -1,6 +1,5 @@
 package com.example.demo.src.member;
 
-import com.example.demo.global.exception.BaseException;
 import com.example.demo.src.auth.domain.Auth;
 import com.example.demo.src.auth.domain.Authority;
 import com.example.demo.src.auth.repository.AuthRepository;
@@ -24,9 +23,9 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseMemberRegister signup(RequestMemberRegister registerDto) throws IllegalAccessException {
+    public ResponseMemberRegister signUp(RequestMemberRegister registerDto) throws IllegalAccessException {
         if (authRepository.findOneWithAuthoritiesByUsername(registerDto.username()).orElseGet(() -> null) != null) {
-            throw new IllegalAccessException("error");
+            throw new IllegalAccessException("이름이 중복됩니다.");
         }
 
         // 이 유저는 권한이 ROLE_USER
@@ -39,6 +38,9 @@ public class MemberService {
                 .username(registerDto.username())
                 .password(passwordEncoder.encode(registerDto.password()))
                 .email(registerDto.email())
+                .age(registerDto.age())
+                .provider(registerDto.provider())
+                .phoneNumber(registerDto.phoneNumber())
                 .authorities(Collections.singleton(authority))
                 .activated(true)
                 .build();

@@ -47,7 +47,7 @@ public class TestController {
     }
 
     @GetMapping("/user/{username}")
-    @PreAuthorize("hasAnyRole('MEMBER','ADMIN')") // ADMIN 권한만 호출 가능, 임시로 member도 추가
+    @PreAuthorize("hasAnyRole('ADMIN')") // ADMIN 권한만 호출 가능, MEMBER면 401에러
     public ResponseEntity<ResponseMemberRegister> getUserInfo(@PathVariable String username) {
         return ResponseEntity.ok(memberService.getUserWithAuthorities(username));
     }

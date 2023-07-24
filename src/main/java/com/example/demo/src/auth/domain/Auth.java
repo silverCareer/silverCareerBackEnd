@@ -33,7 +33,7 @@ public class Auth {
     @Column(name = "token_weight")
     private Long tokenWeight;
 
-    @Column(name = "phone_num")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "age")
@@ -58,12 +58,12 @@ public class Auth {
         this.email = email;
         this.password = password;
         this.username = username;
-//        this.age = age;
-//        this.provider = provider;
-//        this.phoneNumber = phoneNumber;
+        this.age = age;
+        this.provider = provider;
+        this.phoneNumber = phoneNumber;
         this.authorities = authorities;
         this.activated = activated;
-        this.tokenWeight = 1L; //리프레시 토큰 가중치 설정
+        this.tokenWeight = 1L; // 리프레시 토큰 가중치 설정 -> Admin이 Member에 대한 리프레시 토큰 유효하지 않을때 검증 취소
     }
 
     public void increaseTokenWeight(){
