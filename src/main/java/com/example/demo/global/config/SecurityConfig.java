@@ -2,13 +2,14 @@ package com.example.demo.global.config;
 
 import com.example.demo.global.handler.JwtAccessDeniedHandler;
 import com.example.demo.global.handler.JwtAuthenticationEntryPoint;
-import com.example.demo.global.security.JwtFilter;
-import com.example.demo.global.security.TokenProvider;
+import com.example.demo.global.security.CustomJwtFilter;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,18 +21,16 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final TokenProvider tokenProvider;
+
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     public SecurityConfig(
-            TokenProvider tokenProvider,
             CorsFilter corsFilter,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
             JwtAccessDeniedHandler jwtAccessDeniedHandler
     ) {
-        this.tokenProvider = tokenProvider;
         this.corsFilter = corsFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
@@ -44,44 +43,46 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, JwtFilter jwtFilter) throws Exception {
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/h2/**");
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, CustomJwtFilter customJwtFilter) throws Exception {
         httpSecurity
                 // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
 
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
-
-                // enable h2-console // embedded h2를 위한 설정
-                .and()
-                .headers()
-                .frameOptions()
-                .sameOrigin()
-
-                // 세션을 사용하지 않기 때문에 STATELESS로 설정
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/h2/**").permitAll()
-                .requestMatchers("/favicon.ico").permitAll()
-                .requestMatchers("/error").permitAll()
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
 
                 // api 경로
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/hello").permitAll() // /api/hello
-                .anyRequest().authenticated() // 나머지 경로는 jwt 인증 해야함
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/api/hello", "api/members", "api/authenticate").permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated() // 나머지 경로는 jwt 인증
+                )
 
-                .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                // 세션을 사용하지 않기 때문에 STATELESS로 설정
+                .sessionManagement(sessionManagement -> sessionManagement
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // enable h2-console
+                .headers(headers ->
+                        headers.frameOptions(options ->
+                                options.sameOrigin()
+                        )
+                )
+
+                .addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
+
 
 }

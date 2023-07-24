@@ -26,47 +26,40 @@ repositories {
 dependencies {
     implementation 'org.jetbrains:annotations:19.0.0'
 
-
-    // Spring Boot Starter
-    testImplementation ('org.springframework.boot:spring-boot-starter-test')
-
-    // Lombok
-    implementation ('org.projectlombok:lombok')
-    compileOnly ('org.projectlombok:lombok:1.18.16')
-    annotationProcessor ('org.projectlombok:lombok:1.18.16')
-
-    // DB
-//    runtimeOnly ('mysql:mysql-connector-java') //mysql8
-    //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
-//    implementation ('org.springframework.boot:spring-boot-starter-jdbc')
-//    compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
-
-    // DB - 임시로 h2 database 사용
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
-//    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-//    implementation 'mysql:mysql-connector-java'
-
-    // Web
+    //Spring boot Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Security, Authentication
+    //Spring boot jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    //Spring security & validation
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // Lombok(롬복 설정)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // db(test) - h2 in-memory를 테스트용으로 사용합니다.
+    runtimeOnly 'com.h2database:h2'
+
+    // db(dev) - MySql 사용
+//    runtimeOnly 'mysql:mysql-connector-java' //mysql8
+//    runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
+//    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//    compile 'org.springframework.boot:spring-boot-starter-data-jpa' //mysql 5버전의 경우 삭제.
+
+    //Jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-//    compile(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
-//    compile('io.jsonwebtoken:jjwt:0.9.0')
 
-    implementation('org.springframework.boot:spring-boot-starter')
+    // spring boot, security tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-//    compile('org.springframework.boot:spring-boot-starter-web')
 
-
-
-
+    // bean setting management
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 }
 

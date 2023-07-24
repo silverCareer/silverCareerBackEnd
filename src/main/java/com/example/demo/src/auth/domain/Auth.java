@@ -1,11 +1,12 @@
 package com.example.demo.src.auth.domain;
 
 
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+
 import java.util.Set;
 
 @Entity
@@ -19,16 +20,20 @@ public class Auth {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long authIdx;
 
+    @Column(name = "username", length = 50, unique = true)
+    private String username;
+    @Column(name = "password", length = 100)
+    private String password;
     @Column(name = "email", length = 50, unique = true)
     private String email;
 
-    @Column(name = "password", length = 100)
-    private String password;
+    @Column(name = "activated") //계정 활성 여부?
+    private boolean activated;
 
-    @Column(name = "name", length = 50, unique = true)
-    private String name;
+    @Column(name = "token_weight")
+    private Long tokenWeight;
 
-    @Column(name = "phone_num")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "age")
@@ -37,8 +42,7 @@ public class Auth {
     @Column(name = "provider")
     private String provider;
 
-    @Column(name = "activated") //계정 활성 여부?
-    private boolean activated;
+
 
     @ManyToMany // JoinTable 어노테이션으로 인가 권한 테이블과 계정 인증 테이블과 조인한다.
     // 양 테이블 간의 연관 관계를 설정하는 code
@@ -49,14 +53,20 @@ public class Auth {
     private Set<Authority> authorities;
 
     @Builder
-    public Auth(String email, String password, String name, String phoneNumber, Set<Authority> authorities,
+    public Auth(String email, String password, String username, String phoneNumber, Set<Authority> authorities,
                 Long age, String provider, boolean activated){
         this.email = email;
         this.password = password;
-        this.name = name;
+        this.username = username;
+        this.age = age;
+        this.provider = provider;
         this.phoneNumber = phoneNumber;
         this.authorities = authorities;
         this.activated = activated;
-//        this.tokenWeight = 1L; 리프레시 토큰 가중치 설정
+        this.tokenWeight = 1L; // 리프레시 토큰 가중치 설정 -> Admin이 Member에 대한 리프레시 토큰 유효하지 않을때 검증 취소
+    }
+
+    public void increaseTokenWeight(){
+        this.tokenWeight++;
     }
 }

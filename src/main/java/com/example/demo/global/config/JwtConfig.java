@@ -1,5 +1,6 @@
 package com.example.demo.global.config;
 
+import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,5 +21,9 @@ public class JwtConfig {
     @Bean(name = "tokenProvider")
     public TokenProvider tokenProvider(JwtProperties jwtProperties){
         return new TokenProvider(jwtProperties.getSecret(), jwtProperties.getAccessTokenValidityInSeconds());
+    }
+    @Bean(name = "refreshTokenProvider")
+    public RefreshTokenProvider refreshTokenProvider(JwtProperties jwtProperties){
+        return new RefreshTokenProvider(jwtProperties.getRefreshTokenSecret(), jwtProperties.getRefreshTokenValidityInSeconds());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.demo.src.auth.model;
+package com.example.demo.src.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
