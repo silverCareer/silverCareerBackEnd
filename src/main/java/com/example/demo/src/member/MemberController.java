@@ -2,10 +2,7 @@ package com.example.demo.src.member;
 
 import com.example.demo.global.exception.BaseResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -25,5 +22,11 @@ public class MemberController {
 
 
         return new BaseResponse<>(responseMemberRegister);
+    }
+
+    @PostMapping("/test")
+    public String test(@RequestParam String text) {
+        System.out.println(text);
+        return text;
     }
 }

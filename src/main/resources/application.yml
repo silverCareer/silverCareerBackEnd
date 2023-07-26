@@ -47,6 +47,9 @@ spring:
     clientId: ${google.CLIENT_ID}
     clientSecret: ${google.CLIENT_SECRET}
 
+kakao-open-api:
+  auth:
+    rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b
 
 logging:
   level:
