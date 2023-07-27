@@ -1,7 +1,7 @@
 package com.example.demo.src;
 
-import com.example.demo.src.member.MemberService;
-import com.example.demo.src.member.ResponseMemberRegister;
+import com.example.demo.src.member.service.MemberService;
+import com.example.demo.src.member.dto.ResponseMemberRegister;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
