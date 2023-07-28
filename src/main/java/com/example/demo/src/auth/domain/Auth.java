@@ -1,6 +1,7 @@
 package com.example.demo.src.auth.domain;
 
 
+import com.example.demo.src.account.domain.Account;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
