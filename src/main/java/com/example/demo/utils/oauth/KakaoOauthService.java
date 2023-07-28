@@ -1,6 +1,6 @@
 package com.example.demo.utils.oauth;
 
-import com.example.demo.src.auth.domain.SocialUser;
+import com.example.demo.src.auth.domain.Auth;
 import com.example.demo.src.kakao.dto.KakaoOauth;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -66,7 +66,7 @@ public class KakaoOauthService implements OauthService {
         return oauthInfo;
     }
 
-    public SocialUser getUserInfo(String accessToken) {
+    public Auth getUserInfo(String accessToken) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -90,13 +90,18 @@ public class KakaoOauthService implements OauthService {
         String email = body.getJSONObject("kakao_account").getString("email");
         String birth = body.getJSONObject("kakao_account").getString("birthday");
 
-        SocialUser userInfo = SocialUser.builder()
-                .userId(body.getLong("id"))
+        String ageRange = body.getJSONObject("kakao_account").getString("age_range");
+
+        Auth userInfo = Auth.builder()
+                .authIdx(body.getLong("id"))
+                .username("백연정")
                 .userImage(body.getJSONObject("properties").getString("profile_image"))
-                .userEmail(email)
-                .userAgeRange(body.getJSONObject("kakao_account").getString("age_range"))
-                .userBirth(birth)
+                .email(email)
+                .phoneNumber("01051499261")
+                .age(29L)
                 .password(passwordEncoder.encode(email + birth))
+                .provider("kakao")
+                .activated(true)
                 .build();
 
         return userInfo;

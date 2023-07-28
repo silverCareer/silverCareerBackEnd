@@ -2,14 +2,10 @@ package com.example.demo.src.kakao;
 
 import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.security.CustomJwtFilter;
-import com.example.demo.src.auth.domain.SocialUser;
 import com.example.demo.src.auth.dto.ResponseToken;
-import com.example.demo.src.auth.service.AuthServiceImpl;
-import com.example.demo.src.kakao.dto.SocialUserDto;
+import com.example.demo.src.kakao.dto.ResponseUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,10 +22,10 @@ public class LoginController {
     ) throws IllegalAccessException {
 
         //카카오 로그인 (및 회원가입)
-        SocialUser user = loginService.kakaoLogin(code);
+        ResponseUser user = loginService.kakaoLogin(code);
 
         //JWT 발급
-        ResponseToken token = authService.authenticate(user.getUserEmail(), user.getPassword());
+        ResponseToken token = authService.authenticate(user.userEmail(), user.password());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(CustomJwtFilter.AUTHORIZATION_HEADER, "Bearer " + token.accessToken());

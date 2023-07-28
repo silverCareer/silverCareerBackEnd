@@ -1,8 +1,7 @@
 package com.example.demo.src.kakao;
 
-import com.example.demo.src.auth.domain.Auth;
 import com.example.demo.src.auth.dto.ResponseToken;
-import com.example.demo.src.auth.domain.SocialUser;
+import com.example.demo.src.kakao.dto.ResponseUser;
 import lombok.Builder;
 
 import java.util.Set;
@@ -13,20 +12,19 @@ public record ResponseLoginRegister(
         Long userId,
         String userEmail,
         String userImage,
-        String userAgeRange,
-        String userBirth,
-        String kakaoToken,
+        Long age,
+        String provider,
         String jwtAccessToken,
         String jwtRefreshToken
 ) {
-    public static ResponseLoginRegister of(SocialUser user, ResponseToken token) {
+    public static ResponseLoginRegister of(ResponseUser user, ResponseToken token) {
         if (user == null) return null;
         return ResponseLoginRegister.builder()
-                .userId(user.getUserId())
-                .userEmail(user.getUserEmail())
-                .userImage(user.getUserImage())
-                .userAgeRange(user.getUserAgeRange())
-                .userBirth(user.getUserBirth())
+                .userId(user.userIdx())
+                .userEmail(user.userEmail())
+                .userImage(user.userImage())
+                .age(user.age())
+                .provider(user.provider())
                 .jwtAccessToken(token.accessToken())
                 .jwtRefreshToken(token.refreshToken())
                 .build();

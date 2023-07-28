@@ -1,0 +1,56 @@
+<!--server:-->
+<!--  port: 9000-->
+
+<!--spring:-->
+<!--  application:-->
+<!--    name: silvercareer-->
+
+<!--  h2:-->
+<!--    console:-->
+<!--      enabled: true-->
+<!--      path: /h2-->
+
+<!--  datasource:-->
+<!--    driver-class-name: org.h2.Driver-->
+<!--    url: jdbc:h2:mem:test-->
+<!--    username: sa-->
+<!--    password:-->
+
+<!--#  datasource:-->
+<!--#    driver-class-name: com.mysql.cj.jdbc.Driver-->
+<!--#    url: jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306 (dev RDS)-->
+<!--#    url: jdbc:mysql://localhost:3306/silver?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8 (local DB)-->
+<!--#    username: silvermaster-->
+<!--#    password: 12341234-->
+
+<!--    jpa:-->
+<!--      database-platform: org.hibernate.dialect.H2Dialect-->
+
+<!--      hibernate:-->
+<!--        ddl-auto: create-drop-->
+
+<!--      properties:-->
+<!--        hibernate:-->
+<!--          format_sql: true-->
+<!--          show-sql: true-->
+<!--          generate-ddl: false-->
+<!--      defer-datasource-initialization: true-->
+
+<!--#    platform: mysql-->
+<!--#    url:  ${DB.DB_URL}-->
+<!--#    username: ${DB.DB_USER}-->
+<!--#    password: ${DB.PWD}-->
+<!--#    driver-class-name: com.mysql.cj.jdbc.Driver-->
+
+
+<!--  google_OAuth:-->
+<!--    clientId: ${google.CLIENT_ID}-->
+<!--    clientSecret: ${google.CLIENT_SECRET}-->
+
+<!--kakao-open-api:-->
+<!--  auth:-->
+<!--    rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b-->
+
+<!--logging:-->
+<!--  level:-->
+<!--    org.hibernate.SQL: debug-->

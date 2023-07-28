@@ -23,10 +23,4 @@ public class MemberController {
 
         return new BaseResponse<>(responseMemberRegister);
     }
-
-    @PostMapping("/test")
-    public String test(@RequestParam String text) {
-        System.out.println(text);
-        return text;
-    }
 }
