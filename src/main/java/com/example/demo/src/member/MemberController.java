@@ -1,6 +1,9 @@
 package com.example.demo.src.member;
 
 import com.example.demo.global.exception.BaseResponse;
+import com.example.demo.src.member.dto.RequestMemberRegister;
+import com.example.demo.src.member.dto.ResponseMemberRegister;
+import com.example.demo.src.member.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 

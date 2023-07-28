@@ -1,4 +1,4 @@
-package com.example.demo.src.member;
+package com.example.demo.src.member.dto;
 
 import com.example.demo.src.auth.domain.Auth;
 import lombok.Builder;

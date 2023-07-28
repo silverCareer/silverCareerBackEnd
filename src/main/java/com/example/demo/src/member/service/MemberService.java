@@ -1,8 +1,10 @@
-package com.example.demo.src.member;
+package com.example.demo.src.member.service;
 
 import com.example.demo.src.auth.domain.Auth;
 import com.example.demo.src.auth.domain.Authority;
 import com.example.demo.src.auth.repository.AuthRepository;
+import com.example.demo.src.member.dto.RequestMemberRegister;
+import com.example.demo.src.member.dto.ResponseMemberRegister;
 import com.example.demo.utils.SecurityUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
