@@ -1,6 +1,7 @@
 package com.example.demo.src.auth.domain;
 
 
+import com.example.demo.src.account.domain.Account;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +18,11 @@ public class Auth {
 
     @Id
     @Column(name = "auth_idx")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long authIdx;
 
+    @Column(name = "user_image")
+    private String userImage;
     @Column(name = "username", length = 50, unique = true)
     private String username;
     @Column(name = "password", length = 100)
@@ -42,6 +45,13 @@ public class Auth {
     @Column(name = "provider")
     private String provider;
 
+    //추가
+    @OneToOne(mappedBy = "auth")
+    private Account account;
+
+    public void changeAccount(Account account) {
+        this.account = account;
+    }
 
 
     @ManyToMany // JoinTable 어노테이션으로 인가 권한 테이블과 계정 인증 테이블과 조인한다.
@@ -53,12 +63,14 @@ public class Auth {
     private Set<Authority> authorities;
 
     @Builder
-    public Auth(String email, String password, String username, String phoneNumber, Set<Authority> authorities,
-                Long age, String provider, boolean activated){
+    public Auth(Long authIdx, String email, String password, String username, String phoneNumber, Set<Authority> authorities,
+                Long age, String userImage, String provider, boolean activated){
+        this.authIdx = authIdx;
         this.email = email;
         this.password = password;
         this.username = username;
         this.age = age;
+        this.userImage = userImage;
         this.provider = provider;
         this.phoneNumber = phoneNumber;
         this.authorities = authorities;

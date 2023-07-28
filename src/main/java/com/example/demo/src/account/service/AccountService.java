@@ -26,6 +26,7 @@ public class AccountService {
         Auth auth = authRepository.findById(chargeDto.authIdx()).orElseThrow(()
                 -> new IllegalAccessException("해당 유저가 없습니다."));
         Optional<Account> optionalAccount = accountRepository.findByAuth_AuthIdx(chargeDto.authIdx());
+
         Account account = new Account();
         long balance = chargeDto.balance();
         if(accountProvider.validateBalance(balance)){
