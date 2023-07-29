@@ -49,4 +49,8 @@ public class Account {
             this.balance += amount;
         }
     }
+
+    public void minusBalance(long amount) throws IllegalArgumentException {
+        this.balance -= amount;
+    }
 }
