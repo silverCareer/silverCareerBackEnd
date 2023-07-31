@@ -1,9 +1,8 @@
 package com.example.demo.src.auth.controller;
 
-import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.auth.dto.*;
-import com.example.demo.src.auth.service.AuthService;
+import com.example.demo.src.auth.service.AuthServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,17 +14,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthServiceImpl authServiceImpl;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public AuthController(AuthServiceImpl authServiceImpl) {
+        this.authServiceImpl = authServiceImpl;
     }
 
 
     @PostMapping("/authenticate") // Account 인증 API
     public ResponseEntity<ResponseToken> authorize(@Valid @RequestBody RequestLogin loginDto) {
 
-        ResponseToken token = authService.authenticate(loginDto.username(), loginDto.password());
+        ResponseToken token = authServiceImpl.authenticate(loginDto.username(), loginDto.password());
 
         // response header 에도 넣고 응답 객체에도 넣는다.
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -37,7 +36,7 @@ public class AuthController {
     @PutMapping("/refresh")
     public ResponseEntity<ResponseToken> refreshToken(@Valid @RequestBody RequestRefresh refreshDto) throws IllegalAccessException {
 
-        ResponseToken token = authService.refreshToken(refreshDto.token());
+        ResponseToken token = authServiceImpl.refreshToken(refreshDto.token());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(CustomJwtFilter.AUTHORIZATION_HEADER, "Bearer " + token.accessToken());
