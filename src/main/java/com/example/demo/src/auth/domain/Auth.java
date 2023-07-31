@@ -45,8 +45,8 @@ public class Auth {
     @Column(name = "provider")
     private String provider;
 
-    @Column(name = "cash")
-    private Long cash;
+//    @Column(name = "cash")
+//    private Long cash;
 
     @OneToOne(mappedBy = "auth")
     private Account account;
@@ -66,7 +66,7 @@ public class Auth {
     @Builder
     public Auth(String email, String password, String username, String phoneNumber, Set<Authority> authorities,
                 Long age, String provider, boolean activated, Long cash){
-
+        this.authIdx = 1L;
         this.email = email;
         this.password = password;
         this.username = username;
@@ -77,16 +77,16 @@ public class Auth {
         this.authorities = authorities;
         this.activated = activated;
         this.tokenWeight = 1L; // 리프레시 토큰 가중치 설정 -> Admin이 Member에 대한 리프레시 토큰 유효하지 않을때 검증 취소
-        this.cash = cash;
+//        this.cash = cash;
     }
 
     public void addCash(long amount) throws IllegalArgumentException {
 
-        if (this.cash == null) {
-            this.cash = 0L;
-        } else {
-            this.cash += amount;
-        }
+//        if (this.cash == null) {
+//            this.cash = 0L;
+//        } else {
+//            this.cash += amount;
+//        }
     }
 
     public void increaseTokenWeight(){
