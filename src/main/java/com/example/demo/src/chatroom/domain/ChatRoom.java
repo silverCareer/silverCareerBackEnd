@@ -1,4 +1,4 @@
-package com.example.demo.src.auth.domain;
+package com.example.demo.src.chatroom.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

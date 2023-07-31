@@ -48,7 +48,12 @@ public class Auth {
     @Column(name = "cash")
     private Long cash;
 
+    @OneToOne(mappedBy = "auth")
+    private Account account;
 
+    public void changeAccount(Account account) {
+        this.account = account;
+    }
 
     @ManyToMany // JoinTable 어노테이션으로 인가 권한 테이블과 계정 인증 테이블과 조인한다.
     // 양 테이블 간의 연관 관계를 설정하는 code

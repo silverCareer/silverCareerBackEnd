@@ -3,7 +3,8 @@ package com.example.demo.src.kakao;
 import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.auth.dto.ResponseToken;
-import com.example.demo.src.kakao.dto.ResponseUser;
+import com.example.demo.src.auth.dto.ResponseUser;
+import com.example.demo.src.kakao.dto.KakaoUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class LoginController {
     ) throws IllegalAccessException {
 
         //카카오 로그인 (및 회원가입)
-        ResponseUser user = loginService.kakaoLogin(code);
+        KakaoUser user = loginService.kakaoLogin(code);
 
         //JWT 발급
         ResponseToken token = authService.authenticate(user.userEmail(), user.password());

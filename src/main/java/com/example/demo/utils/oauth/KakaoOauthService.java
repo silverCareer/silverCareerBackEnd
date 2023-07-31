@@ -1,9 +1,8 @@
 package com.example.demo.utils.oauth;
 
-import com.example.demo.src.auth.domain.Auth;
 import com.example.demo.src.kakao.dto.KakaoOauth;
+import com.example.demo.src.kakao.dto.KakaoUser;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +32,7 @@ public class KakaoOauthService implements OauthService {
         params.add("grant_type", "authorization_code");
         params.add("client_id", restApiKey);
         //params.add("redirect_uri", "http://localhost:9000/api/kakao");
-        params.add("redirect_uri", "https://silvercareer.shop/api/kakao");
+        params.add("redirect_uri", "https://www.silvercareer.shop/api/kakao");
         params.add("code", code);
         params.add("scope", "account_email");
         params.add("scope", "profile_image");
@@ -67,7 +66,7 @@ public class KakaoOauthService implements OauthService {
         return oauthInfo;
     }
 
-    public Auth getUserInfo(String accessToken) {
+    public KakaoUser getUserInfo(String accessToken) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -93,13 +92,24 @@ public class KakaoOauthService implements OauthService {
 
         String ageRange = body.getJSONObject("kakao_account").getString("age_range");
 
-        Auth userInfo = Auth.builder()
+        /*Auth userInfo = Auth.builder()
                 .authIdx(body.getLong("id"))
                 .username("백연정")
                 .userImage(body.getJSONObject("properties").getString("profile_image"))
                 .email(email)
                 .phoneNumber("01051499261")
                 .age(29L)
+                .password(passwordEncoder.encode(email + birth))
+                .provider("kakao")
+                .activated(true)
+                .build();
+         */
+
+        /* authorities는 Auth에서 */
+        KakaoUser userInfo = KakaoUser.builder()
+                .userIdx(body.getLong("id"))
+                .userEmail(email)
+                .userImage(body.getJSONObject("properties").getString("profile_image"))
                 .password(passwordEncoder.encode(email + birth))
                 .provider("kakao")
                 .activated(true)

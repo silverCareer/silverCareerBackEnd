@@ -1,8 +1,7 @@
 package com.example.demo.src.kakao;
 
 import com.example.demo.src.auth.domain.Auth;
-import com.example.demo.src.auth.domain.Members;
-import com.example.demo.src.kakao.dto.ResponseUser;
+import com.example.demo.src.auth.dto.ResponseUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,7 @@ public class CreateService {
     public ResponseUser createKakaoUser(Auth user) {
         //이거는 이제 추가정보까지 다 기입하고 난 후에
         if(user == null) {
-            userRepository.save(user);
+            //userRepository.save(user);
         }
 
         //Members member = userRepository.findById(user.getUserId()); //optional로 감싸야하나..
@@ -29,7 +28,7 @@ public class CreateService {
                 .userEmail(user.getEmail())
                 .userImage(user.getUserImage())
                 .phoneNumber(user.getPhoneNumber())
-                .age(user.getAge())
+                .userAge(user.getAge())
                 .provider(user.getProvider())
                 .build();
 
