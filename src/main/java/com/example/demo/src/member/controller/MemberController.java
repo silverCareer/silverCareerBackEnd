@@ -1,6 +1,8 @@
 package com.example.demo.src.member.controller;
 
 import com.example.demo.global.exception.BaseResponse;
+import com.example.demo.src.account.dto.RequestAccountCharge;
+import com.example.demo.src.member.dto.RequestCashCharge;
 import com.example.demo.src.member.dto.ResponseMyInfo;
 import com.example.demo.src.member.provider.MemberProvider;
 import com.example.demo.src.member.service.MemberService;
@@ -39,5 +41,13 @@ public class MemberController {
         System.out.println(memberName);
 //        ResponseMemberRegister responseMemberRegister = memberService.signUp(registerDto);
         return new BaseResponse<>(memberProvider.getMyInfo(memberName));
+    }
+
+    @PostMapping("/cashCharge")
+    public BaseResponse<?> charge(
+            @Valid @RequestBody RequestCashCharge chargeDto
+    ) throws IllegalAccessException {
+        memberService.cashCharge(chargeDto);
+        return new BaseResponse<>(HttpStatus.OK);
     }
 }

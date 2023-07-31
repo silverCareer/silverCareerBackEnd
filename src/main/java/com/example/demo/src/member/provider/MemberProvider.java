@@ -18,4 +18,11 @@ public class MemberProvider {
 
         return responseMyInfo;
     }
+
+    public boolean validateCash(long amount){
+        if(amount <= 0){
+            throw new IllegalArgumentException("0원 이하는 충전이 불가능합니다.");
+        }
+        return true;
+    }
 }
