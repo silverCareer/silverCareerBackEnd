@@ -1,4 +1,4 @@
-package com.example.demo.src.auth.domain;
+package com.example.demo.src.member.domain;
 
 import lombok.Builder;
 import lombok.Getter;

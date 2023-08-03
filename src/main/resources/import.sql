@@ -1,6 +1,7 @@
-INSERT INTO AUTH (AUTH_IDX, USERNAME, PASSWORD, EMAIL, ACTIVATED, TOKEN_WEIGHT, PHONE_NUMBER, AGE, PROVIDER, CASH) VALUES (1, '곽동현', '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'kkddhh1998@ac.kr', 1, 1, '01011112222', 26, 'MENTOR', 0);
+INSERT INTO authority (authority_name) values ('ROLE_MENTOR');
 
-insert into authority (authority_name) values ('ROLE_MEMBER');
-insert into authority (authority_name) values ('ROLE_ADMIN');
+INSERT INTO authority (authority_name) values ('ROLE_MENTEE');
+INSERT INTO members (member_idx, email, password, username, activated, age, balance, career, category, phone_num, token_weight, authority)
+VALUES (1, 'tmp@gmail.com', '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'tmp', 1, 35, 0, '10년 미만', '기술직', '01012341234', 1, 'ROLE_MENTOR');
 
-INSERT INTO AUTH_AUTHORITY (AUTH_IDX, AUTHORITY_NAME) values (1, 'ROLE_MEMBER');
+

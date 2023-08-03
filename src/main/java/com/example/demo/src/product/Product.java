@@ -1,32 +1,35 @@
 package com.example.demo.src.product;
 
-import com.example.demo.src.auth.domain.Authority;
+import com.example.demo.src.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Set;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "products")
 public class Product {
 
     @Id
-    @Column(name = "prod_idx")
+    @Column(name = "product_idx")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long prodIdx;
+    private Long productIdx;
 
-    @Column(name = "p_name")
+    @Column(name = "product_name", length = 100)
     private String productName;
 
-    @Column(name = "descriptions")
+    @Column(name = "category", length = 20)
+    private String category;
+
+    @Column(name = "descriptions", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "category_name")
-    private String categoryName;
+    @Column(name = "price")
+    private Long price;
 
-    @Column(name = "p_image")
+    @Column(name = "product_images", columnDefinition = "JSON", nullable = false)
     private String image;
 
     @Column(name = "sales_count")
@@ -35,25 +38,21 @@ public class Product {
     @Column(name = "likes")
     private Long likes;
 
-    public Product() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_idx", nullable = false)
+    private Member member;
 
-
-    // 생성자, getter, setter 등이 있을 수 있습니다.
-    // ...
-
-    // Getter와 Setter 메서드들을 작성합니다.
-    // ...
     @Builder
-    public Product(Long prodIdx,String productName, String description, String categoryName,
-                   String image, Long saleCount, Long likes) {
-        this.prodIdx = prodIdx;
+    public Product(Long productIdx, String productName, String category, String description, Long price,
+                   String image, Long saleCount, Long likes, Member member) {
+        this.productIdx = productIdx;
         this.productName = productName;
+        this.category = category;
         this.description = description;
-        this.categoryName = categoryName;
+        this.price = price;
         this.image = image;
         this.saleCount = saleCount;
         this.likes = likes;
+        this.member = member;
     }
-
 }
