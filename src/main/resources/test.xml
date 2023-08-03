@@ -48,7 +48,7 @@
 <!--    clientSecret: ${google.CLIENT_SECRET}-->
 
 <!--kakao-open-api:-->
-<!--  auth:-->
+<!--  member:-->
 <!--    rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b-->
 
 <!--logging:-->
