@@ -21,7 +21,7 @@ public class Bid {
     private Long price;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_idx", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
