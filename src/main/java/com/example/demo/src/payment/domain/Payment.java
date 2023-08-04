@@ -34,7 +34,7 @@ public class Payment {
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_idx", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     private Member member;
 
     @Builder

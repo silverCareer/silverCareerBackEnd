@@ -26,7 +26,7 @@ public class Account {
     private Long balance;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_idx")
+    @JoinColumn(name = "email")
     private Member member;
 
     @Builder
