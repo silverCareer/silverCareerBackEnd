@@ -48,7 +48,7 @@ public class Member {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "member")
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="authority", referencedColumnName = "authority_name", nullable = false)
     private Authority authority;
 
@@ -65,7 +65,7 @@ public class Member {
         this.career = career;
         this.category = category;
         this.balance = balance;
-        this.tokenWeight = tokenWeight;
+        this.tokenWeight = 1L;
         this.activated = activated;
         this.account = account;
         this.authority = authority;
