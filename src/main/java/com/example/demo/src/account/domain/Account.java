@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "accounts")
@@ -23,6 +24,7 @@ public class Account {
     private String accountNum;
 
     @Column(name = "balance")
+    @ColumnDefault("0")
     private Long balance;
 
     @OneToOne(fetch = FetchType.LAZY)

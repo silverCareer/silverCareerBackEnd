@@ -40,16 +40,18 @@ public class TokenProvider {
     // Spring Security에서 인증된 사용자 정보를 표현하는 데 사용되는 Authentication
     // 인증이 성공한 사용자에 대한 정보를 제공한다.
     // 스프링 시큐리티에서 인증 및 인가를 처리하는데 사용한다.
-    public String createJwt(Authentication authentication){
+    public String createJwt(Authentication authentication) {
+
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        System.out.println(authentication.getName());
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY,authorities)
+                .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
