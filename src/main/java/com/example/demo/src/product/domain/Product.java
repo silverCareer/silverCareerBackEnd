@@ -1,4 +1,4 @@
-package com.example.demo.src.product;
+package com.example.demo.src.product.domain;
 
 import com.example.demo.src.member.domain.Member;
 import jakarta.persistence.*;
@@ -17,29 +17,29 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productIdx;
 
-    @Column(name = "product_name", length = 100)
+    @Column(name = "product_name", length = 100, nullable = false)
     private String productName;
 
-    @Column(name = "category", length = 20)
+    @Column(name = "category", length = 20, nullable = false)
     private String category;
 
-    @Column(name = "descriptions", columnDefinition = "TEXT")
+    @Column(name = "descriptions", columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private Long price;
 
-    @Column(name = "product_images", columnDefinition = "JSON", nullable = false)
+    @Column(name = "product_images", columnDefinition = "JSON")
     private String image;
 
-    @Column(name = "sales_count")
+    @Column(name = "sales_count", columnDefinition = "BIGINT")
     private Long saleCount;
 
-    @Column(name = "likes")
+    @Column(name = "likes", columnDefinition = "BIGINT")
     private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_idx", nullable = false)
+    @JoinColumn(name = "member_idx")
     private Member member;
 
     @Builder

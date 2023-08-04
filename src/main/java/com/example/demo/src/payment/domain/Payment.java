@@ -1,13 +1,12 @@
 package com.example.demo.src.payment.domain;
 
 import com.example.demo.src.member.domain.Member;
-import com.example.demo.src.product.Product;
+import com.example.demo.src.product.domain.Product;
 import lombok.*;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "payment")

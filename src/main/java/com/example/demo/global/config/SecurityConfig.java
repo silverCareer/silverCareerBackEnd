@@ -62,8 +62,7 @@ public class SecurityConfig {
 
                 // api 경로
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/hello", "api/members", "api/authenticate", "/api/kakao").permitAll()
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers("/api/hello", "api/members", "api/authenticate", "/api/kakao", "/api/product/category/**").permitAll()
                         .anyRequest().authenticated() // 나머지 경로는 jwt 인증
                 )
 

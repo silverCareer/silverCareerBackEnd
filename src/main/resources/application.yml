@@ -11,12 +11,24 @@ spring:
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    show-sql: true
+#    show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIAXJIIK6NDBBJPWNO2
+      secretKey: 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
+    s3:
+      bucket: silvercareer
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
 
 kakao-open-api:
   auth:
