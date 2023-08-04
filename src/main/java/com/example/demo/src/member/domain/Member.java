@@ -12,17 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Member {
     @Id
-    @Column(name = "member_idx")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberIdx;
-
     @Column(name = "email", length = 50, unique = true, nullable = false)
     private String username;
 
     @Column(name = "password", length = 100, nullable = false)
     private String password;
 
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
     @Column(name = "phone_num", nullable = false)

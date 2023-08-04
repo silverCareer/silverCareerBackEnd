@@ -26,7 +26,7 @@ public class Request {
     private Long price;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_idx", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     private Member member;
 
     @Builder
