@@ -38,4 +38,15 @@ public class Account {
         this.member = member;
     }
 
+    public void addBalance(long amount) throws IllegalArgumentException {
+        if (this.balance == null) {
+            this.balance = amount;
+        } else {
+            this.balance += amount;
+        }
+    }
+
+    public void minusBalance(long amount) throws IllegalArgumentException {
+        this.balance -= amount;
+    }
 }
