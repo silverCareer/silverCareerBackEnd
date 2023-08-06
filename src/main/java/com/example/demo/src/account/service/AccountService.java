@@ -7,6 +7,8 @@ import com.example.demo.src.account.repository.AccountRepository;
 import com.example.demo.src.member.domain.Member;
 //import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.member.dto.MemberCreateEvent;
+import com.example.demo.src.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,29 +21,47 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountProvider accountProvider;
+    private final MemberRepository memberRepository;
+
 
     @Transactional
-    public void charge(RequestAccountCharge chargeDto) throws IllegalAccessException {
-        Member member = memberRepository.findById(chargeDto.memberIdx()).orElseThrow(()
-                -> new IllegalAccessException("해당 유저가 없습니다."));
-        Optional<Account> optionalAccount = accountRepository.findByMember_MemberIdx(chargeDto.memberIdx());
+    public void createAccount(MemberCreateEvent memberCreateEvent) throws IllegalAccessException {
 
-        Account account = new Account();
-        long balance = chargeDto.balance();
-        if(accountProvider.validateBalance(balance)){
-            if(optionalAccount.isEmpty()){ // 아직 캐시가 없으면 최초 등록
-                account = Account.builder()
-                        .bankName(chargeDto.bankName())
-                        .accountNum(chargeDto.accountNum())
-                        .balance(balance)
-                        .member(member) // authIdx 값 설정
-                        .build();
-            } else { // 아닐 경우 누적해서
-                account = optionalAccount.get();
-                account.addBalance(balance);
-            }
-        }
+        Member member = memberRepository.findByUsername(memberCreateEvent.getUsername()).orElseThrow(()
+                -> new IllegalAccessException("해당 유저가 없습니다."));
+
+        Account account = Account.builder()
+                .bankName(memberCreateEvent.getBankName())
+                .accountNum(memberCreateEvent.getAccountNum())
+                .balance(memberCreateEvent.getBalance())
+                .member(member)
+                .build();
 
         accountRepository.save(account);
     }
+
+//    @Transactional
+//    public void charge(RequestAccountCharge chargeDto) throws IllegalAccessException {
+//        Member member = memberRepository.findById(chargeDto.memberIdx()).orElseThrow(()
+//                -> new IllegalAccessException("해당 유저가 없습니다."));
+//        Optional<Account> optionalAccount = accountRepository.findByMember_MemberIdx(chargeDto.memberIdx());
+//
+//        Account account = new Account();
+//        long balance = chargeDto.balance();
+//        if (accountProvider.validateBalance(balance)) {
+//            if (optionalAccount.isEmpty()) { // 아직 캐시가 없으면 최초 등록
+//                account = Account.builder()
+//                        .bankName(chargeDto.bankName())
+//                        .accountNum(chargeDto.accountNum())
+//                        .balance(balance)
+//                        .member(member) // authIdx 값 설정
+//                        .build();
+//            } else { // 아닐 경우 누적해서
+//                account = optionalAccount.get();
+//                account.addBalance(balance);
+//            }
+//        }
+//
+//        accountRepository.save(account);
+//    }
 }

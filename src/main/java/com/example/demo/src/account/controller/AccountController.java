@@ -21,11 +21,11 @@ public class AccountController {
     private final AccountService accountService;
 
     // 계좌 잔액 충전
-    @PostMapping("/accountCharge")
-    public BaseResponse<?> charge(
-            @Valid @RequestBody RequestAccountCharge chargeDto
-    ) throws IllegalAccessException{
-        accountService.charge(chargeDto);
-        return new BaseResponse<>(HttpStatus.OK);
-    }
+//    @PostMapping("/accountCharge")
+//    public BaseResponse<?> charge(
+//            @Valid @RequestBody RequestAccountCharge chargeDto
+//    ) throws IllegalAccessException{
+//        accountService.charge(chargeDto);
+//        return new BaseResponse<>(HttpStatus.OK);
+//    }
 }
