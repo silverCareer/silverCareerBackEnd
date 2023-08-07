@@ -1,9 +1,7 @@
 package com.example.demo.src.product.controller;
 
 import com.example.demo.global.exception.BaseResponse;
-import com.example.demo.src.product.dto.CreateProduct;
-import com.example.demo.src.product.dto.DisplayProductReq;
-import com.example.demo.src.product.dto.DisplayProductRes;
+import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.service.ProductService;
 import com.example.demo.utils.SecurityUtil;
 import jakarta.validation.Valid;
@@ -24,13 +22,17 @@ public class ProductController {
     public ResponseEntity<DisplayProductRes> displayProductByCategory(@Valid @PathVariable String category) {
         DisplayProductReq productReq = DisplayProductReq.builder().category(category).build();
         DisplayProductRes productRes = productService.displayProductByCategory(productReq);
-        return new ResponseEntity<>(productRes, HttpStatus.OK);
+        return productRes == null
+                ? new ResponseEntity<>(null, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(productRes, HttpStatus.OK);
     }
 
-//    @GetMapping("/detail/{productId}")
-//    public ResponseEntity<ProductDetailRes> displayProductDetail(@Valid @PathVariable String productId){
-//
-//    }
+    @GetMapping("/detail/{productId}")
+    public ResponseEntity<ProductDetailRes> getProductDetail(@Valid @PathVariable Long productId){
+        ProductDetailReq productDetailReq = ProductDetailReq.builder().productIdx(productId).build();
+        ProductDetailRes productDetailRes = productService.getProductDetail(productDetailReq);
+        return new ResponseEntity(productDetailRes, HttpStatus.OK);
+    }
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")
@@ -40,6 +42,6 @@ public class ProductController {
                     productService.createProduct(username, createProduct);
                     return new BaseResponse<>(HttpStatus.OK);
                 })
-                .orElse(new BaseResponse<>(HttpStatus.METHOD_NOT_ALLOWED));
+                .orElse(new BaseResponse<>(HttpStatus.UNAUTHORIZED));
     }
 }

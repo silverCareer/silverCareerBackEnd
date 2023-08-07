@@ -3,15 +3,14 @@ package com.example.demo.src.product.service;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.product.domain.Product;
-import com.example.demo.src.product.dto.CreateProduct;
-import com.example.demo.src.product.dto.DisplayProductReq;
-import com.example.demo.src.product.dto.DisplayProductRes;
+import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,17 +46,27 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public DisplayProductRes displayProductByCategory(DisplayProductReq displayProductReq) {
         String category = displayProductReq.category();
-        List<Product> products;
-
-        if(category.equals("all")){
-            products = productRepository.findAll();
-        }
-        else{
-            products = productRepository.findByCategory(category);
-        }
-
+        List<Product> products = category == "all"
+                ? productRepository.findAll()
+                : productRepository.findByCategory(category);
         List<DisplayProductRes.ProductDto> productDtoList = products.stream().map(this::mapToProductDto).collect(Collectors.toList());
         return DisplayProductRes.builder().products(productDtoList).build();
+    }
+
+    @Transactional
+    public ProductDetailRes getProductDetail(ProductDetailReq productDetailReq) {
+        Long productId = productDetailReq.productIdx();
+        Product product = productRepository.findProductByProductIdx(productId);
+        ProductDetailRes productDetailRes = ProductDetailRes.builder()
+                .productIdx(product.getProductIdx())
+                .productName(product.getProductName())
+                .category(product.getCategory())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .image(product.getImage())
+                .likes(product.getLikes()).build();
+
+        return productDetailRes;
     }
 
     private DisplayProductRes.ProductDto mapToProductDto(Product product) {

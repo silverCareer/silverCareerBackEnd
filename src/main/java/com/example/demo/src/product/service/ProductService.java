@@ -1,10 +1,9 @@
 package com.example.demo.src.product.service;
 
-import com.example.demo.src.product.dto.CreateProduct;
-import com.example.demo.src.product.dto.DisplayProductReq;
-import com.example.demo.src.product.dto.DisplayProductRes;
+import com.example.demo.src.product.dto.*;
 
 public interface ProductService {
     void createProduct(String username, CreateProduct createProduct);
     DisplayProductRes displayProductByCategory(DisplayProductReq displayProductReq);
+    ProductDetailRes getProductDetail(ProductDetailReq productDetailReq);
 }
