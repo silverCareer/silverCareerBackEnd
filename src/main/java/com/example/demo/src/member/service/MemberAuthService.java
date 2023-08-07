@@ -1,5 +1,6 @@
 package com.example.demo.src.member.service;
 
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.DuplicatedMemberException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
