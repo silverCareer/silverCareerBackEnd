@@ -5,6 +5,6 @@ import com.example.demo.src.product.dto.DisplayProductReq;
 import com.example.demo.src.product.dto.DisplayProductRes;
 
 public interface ProductService {
-    void createProduct(CreateProduct createProduct);
+    void createProduct(String username, CreateProduct createProduct);
     DisplayProductRes displayProductByCategory(DisplayProductReq displayProductReq);
 }

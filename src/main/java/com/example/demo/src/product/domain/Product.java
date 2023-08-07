@@ -1,4 +1,4 @@
-package com.example.demo.src.product;
+package com.example.demo.src.product.domain;
 
 import com.example.demo.src.member.domain.Member;
 import jakarta.persistence.*;

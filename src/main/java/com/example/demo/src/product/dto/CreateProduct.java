@@ -14,7 +14,8 @@ public record CreateProduct(
         @NotNull
         Long price,
         @NotNull
-        Long memberIdx,
+        Long email,
+        @NotNull
         String productImages
     ){
 }

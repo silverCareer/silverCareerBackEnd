@@ -1,13 +1,12 @@
 package com.example.demo.src.product.service;
 
 import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.dto.CreateProduct;
 import com.example.demo.src.product.dto.DisplayProductReq;
 import com.example.demo.src.product.dto.DisplayProductRes;
 import com.example.demo.src.product.repository.ProductRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +18,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public void createProduct(CreateProduct createProduct) {
+    public void createProduct(String username, CreateProduct createProduct) {
         String productName = createProduct.productName();
         String productDescription = createProduct.productDescription();
         String category = createProduct.category();
         Long price = createProduct.price();
         String productImages = createProduct.productImages();
-        Long memberId = createProduct.memberIdx();
 
-        Member member = entityManager.find(Member.class, memberId);
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new EntityNotFoundException("회원이 조회되지 않음" + memberId));
+        Member member = memberRepository.findMemberByUsername(username);
 
         Product product = Product.builder()
                 .productName(productName)
