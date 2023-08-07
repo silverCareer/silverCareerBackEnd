@@ -29,7 +29,7 @@ public class Product {
     @Column(name = "price", nullable = false)
     private Long price;
 
-    @Column(name = "product_images", columnDefinition = "JSON")
+    @Column(name = "product_images", columnDefinition = "TEXT")
     private String image;
 
     @Column(name = "sales_count", columnDefinition = "BIGINT")
