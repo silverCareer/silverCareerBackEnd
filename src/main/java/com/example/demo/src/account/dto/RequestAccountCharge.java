@@ -1,19 +1,16 @@
 package com.example.demo.src.account.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
 @Builder
-public record RequestAccountCharge(
-        @NonNull
-        String bankName,
-        @NonNull
-        String accountNum,
-        @NonNull
-        Long balance,
-        @NonNull
-        Long memberIdx
-) {
+@AllArgsConstructor
+@NoArgsConstructor
+public class RequestAccountCharge {
+    private String bankName;
+    private String accountNum;
+    private Long balance;
 }
