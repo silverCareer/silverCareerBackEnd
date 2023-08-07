@@ -74,4 +74,9 @@ public class Member {
     public void increaseTokenWeight(){
         this.tokenWeight++;
     }
+
+    public void addCash(long amount) throws IllegalArgumentException {
+
+        this.balance += amount;
+    }
 }

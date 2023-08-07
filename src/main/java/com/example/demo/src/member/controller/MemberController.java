@@ -66,4 +66,12 @@ public class MemberController {
 
         return ResponseEntity.ok(memberProvider.getMyInfo(email));
     }
+
+    @PostMapping("/cashCharge")
+    public ResponseEntity<?> charge(
+            @Valid @RequestBody RequestCashCharge chargeDto, @AuthenticationPrincipal(expression = "username") String memberEmail
+    ) throws IllegalAccessException {
+        memberAuthService.cashCharge(chargeDto, memberEmail);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
