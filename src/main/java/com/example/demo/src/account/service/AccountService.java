@@ -6,10 +6,10 @@ import com.example.demo.src.account.provider.AccountProvider;
 import com.example.demo.src.account.repository.AccountRepository;
 import com.example.demo.src.member.domain.Member;
 //import com.example.demo.src.member.repository.MemberRepository;
-import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.dto.MemberCreateEvent;
 import com.example.demo.src.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,28 +40,18 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-//    @Transactional
-//    public void charge(RequestAccountCharge chargeDto) throws IllegalAccessException {
-//        Member member = memberRepository.findById(chargeDto.memberIdx()).orElseThrow(()
-//                -> new IllegalAccessException("해당 유저가 없습니다."));
-//        Optional<Account> optionalAccount = accountRepository.findByMember_MemberIdx(chargeDto.memberIdx());
-//
-//        Account account = new Account();
-//        long balance = chargeDto.balance();
-//        if (accountProvider.validateBalance(balance)) {
-//            if (optionalAccount.isEmpty()) { // 아직 캐시가 없으면 최초 등록
-//                account = Account.builder()
-//                        .bankName(chargeDto.bankName())
-//                        .accountNum(chargeDto.accountNum())
-//                        .balance(balance)
-//                        .member(member) // authIdx 값 설정
-//                        .build();
-//            } else { // 아닐 경우 누적해서
-//                account = optionalAccount.get();
-//                account.addBalance(balance);
-//            }
-//        }
-//
-//        accountRepository.save(account);
-//    }
+    @Transactional
+    public Account charge(@Valid RequestAccountCharge chargeDto, String memberEmail) throws IllegalAccessException {
+        Optional<Account> optionalAccount = accountRepository.findByMember_Username(memberEmail);
+
+        Account account = new Account();
+        long balance = chargeDto.getBalance();
+        if (accountProvider.validateBalance(balance)) {
+            account = optionalAccount.get();
+            account.addBalance(balance);
+        }
+
+        accountRepository.save(account);
+        return account;
+    }
 }
