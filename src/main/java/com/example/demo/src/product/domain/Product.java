@@ -1,4 +1,4 @@
-package com.example.demo.src.product.domain;
+package com.example.demo.src.product;
 
 import com.example.demo.src.member.domain.Member;
 import jakarta.persistence.*;
@@ -35,11 +35,11 @@ public class Product {
     @Column(name = "sales_count", columnDefinition = "BIGINT")
     private Long saleCount;
 
-    @Column(name = "likes", columnDefinition = "BIGINT")
+    @Column(name = "likes")
     private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_idx")
+    @JoinColumn(name = "email", nullable = false)
     private Member member;
 
     @Builder

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "accounts")
@@ -23,10 +24,11 @@ public class Account {
     private String accountNum;
 
     @Column(name = "balance")
+    @ColumnDefault("0")
     private Long balance;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_idx")
+    @JoinColumn(name = "email")
     private Member member;
 
     @Builder
@@ -38,4 +40,15 @@ public class Account {
         this.member = member;
     }
 
+    public void addBalance(long amount) throws IllegalArgumentException {
+        if (this.balance == null) {
+            this.balance = amount;
+        } else {
+            this.balance += amount;
+        }
+    }
+
+    public void minusBalance(long amount) throws IllegalArgumentException {
+        this.balance -= amount;
+    }
 }

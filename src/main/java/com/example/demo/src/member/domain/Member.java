@@ -12,17 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Member {
     @Id
-    @Column(name = "member_idx")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberIdx;
-
     @Column(name = "email", length = 50, unique = true, nullable = false)
     private String username;
 
     @Column(name = "password", length = 100, nullable = false)
     private String password;
 
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
     @Column(name = "phone_num", nullable = false)
@@ -52,7 +48,7 @@ public class Member {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "member")
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="authority", referencedColumnName = "authority_name", nullable = false)
     private Authority authority;
 
@@ -69,7 +65,7 @@ public class Member {
         this.career = career;
         this.category = category;
         this.balance = balance;
-        this.tokenWeight = tokenWeight;
+        this.tokenWeight = 1L;
         this.activated = activated;
         this.account = account;
         this.authority = authority;
