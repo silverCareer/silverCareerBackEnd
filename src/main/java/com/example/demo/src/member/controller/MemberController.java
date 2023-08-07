@@ -1,14 +1,12 @@
 package com.example.demo.src.member.controller;
 
-import com.example.demo.global.exception.CommonResponse;
+import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.member.dto.RequestLogin;
 import com.example.demo.src.member.dto.RequestSingUp;
 import com.example.demo.src.member.dto.ResponseLogin;
 import com.example.demo.src.member.dto.ResponseSignUp;
-import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.member.service.MemberAuthService;
-import com.example.demo.utils.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -25,8 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberAuthService memberAuthService;
+
     @PostMapping("/members")
     public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto) throws IllegalAccessException {
+
         if (registerDto.getAuthority().equals("멘토")) {
             memberAuthService.mentorSignUp(registerDto);
         } else if (registerDto.getAuthority().equals("멘티")) {
@@ -34,6 +34,7 @@ public class MemberController {
         }
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
+                .response("회원가입 성공")
                 .build());
     }
 
@@ -48,13 +49,13 @@ public class MemberController {
                 .success(true)
                 .response(responseDto)
                 .build();
+
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')") //인가 테스트
     public ResponseEntity<ResponseSignUp> getTokenTests(@AuthenticationPrincipal User user) {
-        System.out.println(user.getUsername() + " " + user.getAuthorities());
         return ResponseEntity.ok(memberAuthService.getTokenTests());
     }
 }
