@@ -6,12 +6,14 @@ import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.member.domain.AuthAdapter;
 import com.example.demo.src.member.domain.Authority;
 import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.member.dto.MemberCreateEvent;
 import com.example.demo.src.member.dto.RequestSingUp;
 import com.example.demo.src.member.dto.ResponseLogin;
 import com.example.demo.src.member.dto.ResponseSignUp;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,7 @@ public class MemberAuthService {
     private final MemberRepository memberRepository;
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -86,6 +89,7 @@ public class MemberAuthService {
                 .name(registerDto.getName())
                 .phoneNumber(registerDto.getPhoneNumber())
                 .age(registerDto.getAge())
+                .balance(0L)
                 .authority(authority)
                 .activated(true)
                 .build();
@@ -95,6 +99,7 @@ public class MemberAuthService {
                 .accountNum(registerDto.getAccountNum())
                 .bankName(registerDto.getBankName())
                 .build();
+        createAccountEvent(account, member);
     }
 
 //    @Transactional(readOnly = true)
@@ -113,5 +118,10 @@ public class MemberAuthService {
                         .authority(account.getAuthority())
                         .build())
                 .orElse(null);
+    }
+
+    public void createAccountEvent(Account account, Member member){
+        MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
+        applicationEventPublisher.publishEvent(memberCreateEvent);
     }
 }
