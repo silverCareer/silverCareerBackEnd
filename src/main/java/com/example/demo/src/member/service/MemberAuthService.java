@@ -89,6 +89,7 @@ public class MemberAuthService {
                 .name(registerDto.getName())
                 .phoneNumber(registerDto.getPhoneNumber())
                 .age(registerDto.getAge())
+                .balance(0L)
                 .authority(authority)
                 .activated(true)
                 .build();
@@ -98,7 +99,7 @@ public class MemberAuthService {
                 .accountNum(registerDto.getAccountNum())
                 .bankName(registerDto.getBankName())
                 .build();
-        createAccountEvent(account);
+        createAccountEvent(account, member);
     }
 
 //    @Transactional(readOnly = true)
@@ -119,8 +120,8 @@ public class MemberAuthService {
                 .orElse(null);
     }
 
-    public void createAccountEvent(Account account){
-        MemberCreateEvent memberCreateEvent = new MemberCreateEvent(account.getMember().getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
+    public void createAccountEvent(Account account, Member member){
+        MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
         applicationEventPublisher.publishEvent(memberCreateEvent);
     }
 }

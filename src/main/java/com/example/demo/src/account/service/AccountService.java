@@ -33,7 +33,7 @@ public class AccountService {
         Account account = Account.builder()
                 .bankName(memberCreateEvent.getBankName())
                 .accountNum(memberCreateEvent.getAccountNum())
-                .balance(memberCreateEvent.getBalance())
+                .balance(0L)
                 .member(member)
                 .build();
 
