@@ -1,5 +1,6 @@
 package com.example.demo.src.member.controller;
 
+import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.member.dto.RequestLogin;
@@ -9,6 +10,7 @@ import com.example.demo.src.member.dto.ResponseSignUp;
 import com.example.demo.src.member.Provider.MemberProvider;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.service.MemberAuthService;
+import com.example.demo.utils.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class MemberController {
 
     private final MemberAuthService memberAuthService;
     private final MemberProvider memberProvider;
+    private final SecurityUtil securityUtil;
 
     @PostMapping("/members")
     public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto) throws IllegalAccessException {
@@ -95,5 +101,19 @@ public class MemberController {
 
         memberAuthService.updatePhoneNum(memberPhonePatchDto, memberEmail);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/updateProfileImg")
+    public ResponseEntity updateProfileImg(@RequestParam(value="img")MultipartFile img) throws IOException{
+        return securityUtil.getCurrentUsername()
+                .map(username -> {
+                    try {
+                        memberAuthService.updateProfileImg(username, img);
+                        return new ResponseEntity<>(HttpStatus.OK);
+                    } catch (IOException e) {
+                        return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                    }
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
 }

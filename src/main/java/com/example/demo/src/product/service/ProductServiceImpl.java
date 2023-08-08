@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
-
     @Transactional
     public void createProduct(String username, CreateProduct createProduct) {
         String productName = createProduct.productName();
@@ -46,7 +44,7 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public DisplayProductRes displayProductByCategory(DisplayProductReq displayProductReq) {
         String category = displayProductReq.category();
-        List<Product> products = category == "all"
+        List<Product> products = category.equals("all")
                 ? productRepository.findAll()
                 : productRepository.findByCategory(category);
         List<DisplayProductRes.ProductDto> productDtoList = products.stream().map(this::mapToProductDto).collect(Collectors.toList());
