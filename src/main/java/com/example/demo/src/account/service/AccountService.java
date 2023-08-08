@@ -2,7 +2,6 @@ package com.example.demo.src.account.service;
 
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.account.dto.RequestAccountCharge;
-import com.example.demo.src.account.provider.AccountProvider;
 import com.example.demo.src.account.repository.AccountRepository;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
@@ -20,9 +19,9 @@ import java.util.Optional;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final AccountProvider accountProvider;
     private final MemberRepository memberRepository;
 
+    // 계좌 생성
     @Transactional
     public void createAccount(MemberCreateEvent memberCreateEvent) throws IllegalAccessException {
 
@@ -39,13 +38,14 @@ public class AccountService {
         accountRepository.save(account);
     }
 
+    // 계좌 잔액 충전
     @Transactional
     public Account charge(@Valid RequestAccountCharge chargeDto, String memberEmail) throws IllegalAccessException {
         Optional<Account> optionalAccount = accountRepository.findByMember_Username(memberEmail);
 
         Account account = new Account();
         long balance = chargeDto.getBalance();
-        if (accountProvider.validateBalance(balance)) {
+        if (validateBalance(balance)) {
             account = optionalAccount.get();
             account.addBalance(balance);
         }
@@ -54,12 +54,7 @@ public class AccountService {
         return account;
     }
 
-//    캐시 충전
-//    입력된 금액이 양수인지 확인해야함
-//    이벤트 발생
-//    account로 이동해서 account에 잔액 남아있는지 확인
-//    잔액이 남아있다면 차감해주고
-//    캐시 충전해야함
+    // 계좌 잔액 차감
     @Transactional
     public void accountDeduct(@Valid MemberCashChargeEvent memberCashChargeEvent) throws IllegalAccessException {
         Account account = accountRepository.findByMember_Username(memberCashChargeEvent.getEmail()).orElseThrow(() ->
@@ -68,9 +63,25 @@ public class AccountService {
 
         long amount = memberCashChargeEvent.getBalance();
 
-        if(accountProvider.validateAccountBalance(amount, account.getBalance())){
+        if(validateAccountBalance(amount, account.getBalance())){
             account.minusBalance(amount);
         }
         accountRepository.save(account);
+    }
+
+    // 금액이 0 이상의 정수인지 판단
+    public boolean validateBalance(long amount){
+        if(amount <= 0){
+            throw new IllegalArgumentException("0원 이하는 입금 불가능합니다.");
+        }
+        return true;
+    }
+
+    // 잔액 확인
+    public boolean validateAccountBalance(long amount, long accountBalance){
+        if(accountBalance < amount){
+            throw new IllegalArgumentException("잔액이 충분하지 않습니다.");
+        }
+        return true;
     }
 }

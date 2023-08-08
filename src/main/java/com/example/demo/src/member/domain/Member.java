@@ -77,12 +77,12 @@ public class Member {
         this.tokenWeight++;
     }
 
+    // 캐쉬 충전
     public void addCash(long amount) throws IllegalArgumentException {
-
         this.balance += amount;
     }
 
-    // 탈퇴한 유저 재가입 (기존 정보를 신규 가입 정보로 변경)
+    // 탈퇴한 유저 재가입 (기존 정보를 신규 가입 정보로 변경), 업데이트
     public void activateMember(Member newMember) {
 //        this.setActivated(Member.MemberStatus.ACTIVE);
         this.setName(newMember.getName());

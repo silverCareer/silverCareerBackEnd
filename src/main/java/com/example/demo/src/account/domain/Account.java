@@ -40,6 +40,7 @@ public class Account {
         this.member = member;
     }
 
+    // 계좌 충전
     public void addBalance(long amount) throws IllegalArgumentException {
         if (this.balance == null) {
             this.balance = amount;
@@ -48,6 +49,7 @@ public class Account {
         }
     }
 
+    // 계좌 잔액 차감
     public void minusBalance(long amount) throws IllegalArgumentException {
         this.balance -= amount;
     }
