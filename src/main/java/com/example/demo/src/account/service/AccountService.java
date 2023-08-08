@@ -1,3 +1,4 @@
+
 package com.example.demo.src.account.service;
 
 import com.example.demo.src.account.domain.Account;
@@ -38,7 +39,6 @@ public class AccountService {
 
         accountRepository.save(account);
     }
-
     @Transactional
     public Account charge(@Valid RequestAccountCharge chargeDto, String memberEmail) throws IllegalAccessException {
         Optional<Account> optionalAccount = accountRepository.findByMember_Username(memberEmail);
@@ -74,3 +74,4 @@ public class AccountService {
         accountRepository.save(account);
     }
 }
+
