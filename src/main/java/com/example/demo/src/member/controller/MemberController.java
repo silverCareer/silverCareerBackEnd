@@ -74,4 +74,21 @@ public class MemberController {
         memberAuthService.cashCharge(chargeDto, memberEmail);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    // 멤버 비밀번호 수정
+    @PatchMapping("/modifyPassword")
+    public ResponseEntity updateMemberPassword(@RequestBody MemberPasswordPatchDto memberPasswordPatchDto,
+                                       @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+
+        memberAuthService.updatePassword(memberPasswordPatchDto, memberEmail);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/modifyPhoneNum")
+    public ResponseEntity updateMemberPhoneNum(@RequestBody MemberPhonePatchDto memberPhonePatchDto,
+                                       @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+
+        memberAuthService.updatePhoneNum(memberPhonePatchDto, memberEmail);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

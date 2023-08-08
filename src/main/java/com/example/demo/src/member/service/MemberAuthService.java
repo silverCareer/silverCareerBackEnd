@@ -111,7 +111,7 @@ public class MemberAuthService {
     @Transactional
     public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) throws IllegalAccessException{
         Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
-                -> new IllegalAccessException("해당 유저가 없습니다."));;
+                -> new IllegalAccessException("해당 유저가 없습니다."));
         long amount = requestCashCharge.getBalance();
         if(memberProvider.validateCash(amount)){
             memberAccountDeductEvent(memberEmail, amount);
@@ -133,6 +133,22 @@ public class MemberAuthService {
                         .authority(account.getAuthority())
                         .build())
                 .orElse(null);
+    }
+
+    @Transactional
+    public void updatePassword(MemberPasswordPatchDto memberPasswordPatchDto, String memberEmail) throws IllegalAccessException {
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new IllegalAccessException("해당 유저가 없습니다."));
+        member.setPassword(passwordEncoder.encode(memberPasswordPatchDto.getPassword()));
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updatePhoneNum(MemberPhonePatchDto memberPhonePatchDto, String memberEmail) throws IllegalAccessException {
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new IllegalAccessException("해당 유저가 없습니다."));
+        member.setPhoneNumber(memberPhonePatchDto.getPhoneNum());
+        memberRepository.save(member);
     }
 
     public void createAccountEvent(Account account, Member member){
