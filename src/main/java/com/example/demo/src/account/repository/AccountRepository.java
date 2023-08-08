@@ -10,6 +10,5 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-//    Optional<Account> findByMember_MemberIdx(Long authIdx);
+    Optional<Account> findByMember_Username(String email);
 }
-
