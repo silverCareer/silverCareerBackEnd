@@ -5,10 +5,12 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "members")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Member {
     @Id
@@ -78,5 +80,13 @@ public class Member {
     public void addCash(long amount) throws IllegalArgumentException {
 
         this.balance += amount;
+    }
+
+    // 탈퇴한 유저 재가입 (기존 정보를 신규 가입 정보로 변경)
+    public void activateMember(Member newMember) {
+//        this.setActivated(Member.MemberStatus.ACTIVE);
+        this.setName(newMember.getName());
+        this.setPhoneNumber(newMember.getPhoneNumber());
+        this.setPassword(newMember.getPassword());
     }
 }
