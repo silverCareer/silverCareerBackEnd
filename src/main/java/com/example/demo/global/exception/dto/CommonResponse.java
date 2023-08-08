@@ -1,4 +1,4 @@
-package com.example.demo.global.exception;
+package com.example.demo.global.exception.dto;
 
 import lombok.Builder;
 
