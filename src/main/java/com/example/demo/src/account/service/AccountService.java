@@ -5,7 +5,8 @@ import com.example.demo.src.account.dto.RequestAccountCharge;
 import com.example.demo.src.account.provider.AccountProvider;
 import com.example.demo.src.account.repository.AccountRepository;
 import com.example.demo.src.member.domain.Member;
-//import com.example.demo.src.member.repository.MemberRepository;
+import com.example.demo.src.member.repository.MemberRepository;
+import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.dto.MemberCashChargeEvent;
 import com.example.demo.src.member.dto.MemberCreateEvent;
 import com.example.demo.src.member.repository.MemberRepository;
@@ -23,7 +24,6 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountProvider accountProvider;
     private final MemberRepository memberRepository;
-
 
     @Transactional
     public void createAccount(MemberCreateEvent memberCreateEvent) throws IllegalAccessException {

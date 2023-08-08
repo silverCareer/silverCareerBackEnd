@@ -27,7 +27,7 @@ public class Member {
     @Column(name = "age", nullable = false)
     private Long age;
 
-    @Column(name = "user_image", columnDefinition = "JSON")
+    @Column(name = "user_image", columnDefinition = "TEXT")
     private String userImage;
 
     @Column(name = "career", length = 20)
