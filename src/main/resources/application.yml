@@ -21,6 +21,10 @@ spring:
     jwt:
       secret: ${JWT_KEY}
       refreshTokenSecret: ${REFRESH_KEY}
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
 cloud:
   aws:
     credentials:

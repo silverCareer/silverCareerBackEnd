@@ -4,6 +4,7 @@ import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.DuplicatedMemberException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
+import com.example.demo.src.S3Service;
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.member.Provider.MemberProvider;
 import com.example.demo.src.member.domain.AuthAdapter;
@@ -20,7 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 
@@ -35,6 +38,7 @@ public class MemberAuthService {
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final S3Service s3Service;
 
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -155,6 +159,17 @@ public class MemberAuthService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    public void updateProfileImg(String username, MultipartFile img) throws IOException {
+        Member member = memberRepository.findMemberByUsername(username);
+        String uploadedImgUrl = "";
+        if(!img.isEmpty()){
+            uploadedImgUrl = s3Service.upload(img, "profile", username);
+        }
+        member.setUserImage(uploadedImgUrl);
+        memberRepository.save(member);
+    }
+
     public void createAccountEvent(Account account, Member member){
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
         applicationEventPublisher.publishEvent(memberCreateEvent);
@@ -164,4 +179,5 @@ public class MemberAuthService {
         MemberCashChargeEvent memberCashChargeEvent = new MemberCashChargeEvent(email, balance);
         applicationEventPublisher.publishEvent(memberCashChargeEvent);
     }
+
 }
