@@ -1,5 +1,7 @@
 package com.example.demo.src.member.service;
 
+import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.global.exception.error.DuplicatedMemberException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.src.account.domain.Account;
@@ -52,13 +54,14 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void mentorSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void mentorSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new IllegalAccessException("이미 가입된 사용자입니다!");
+            throw new DuplicatedMemberException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTOR")
                 .build();
+
         Member member = Member.builder()
                 .email(registerDto.getEmail())
                 .password(passwordEncoder.encode(registerDto.getPassword()))
@@ -76,10 +79,11 @@ public class MemberAuthService {
                 .bankName(registerDto.getBankName())
                 .build();
     }
+
     @Transactional
-    public void menteeSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void menteeSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new IllegalAccessException("이미 가입된 사용자입니다!");
+            throw new DuplicatedMemberException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTEE")
