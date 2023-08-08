@@ -42,6 +42,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/h2/**");
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, CustomJwtFilter customJwtFilter) throws Exception {
@@ -58,7 +62,8 @@ public class SecurityConfig {
 
                 // api 경로
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/hello", "api/members", "api/login", "/api/kakao").permitAll()
+                        .requestMatchers("/api/hello", "api/members", "api/authenticate", "api/login", "/api/kakao", "/api/product/category/**", "api/product/detail/**").permitAll()
+
                         .anyRequest().authenticated() // 나머지 경로는 jwt 인증
                 )
 
@@ -67,8 +72,17 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
+                // enable h2-console
+                .headers(headers ->
+                        headers.frameOptions(options ->
+                                options.sameOrigin()
+                        )
+                )
+
                 .addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
+
+
 }

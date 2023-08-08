@@ -5,13 +5,11 @@ import com.example.demo.global.exception.error.DuplicatedMemberException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.src.account.domain.Account;
+import com.example.demo.src.member.Provider.MemberProvider;
 import com.example.demo.src.member.domain.AuthAdapter;
 import com.example.demo.src.member.domain.Authority;
 import com.example.demo.src.member.domain.Member;
-import com.example.demo.src.member.dto.MemberCreateEvent;
-import com.example.demo.src.member.dto.RequestSingUp;
-import com.example.demo.src.member.dto.ResponseLogin;
-import com.example.demo.src.member.dto.ResponseSignUp;
+import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class MemberAuthService {
     private final RefreshTokenProvider refreshTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
+    private final MemberProvider memberProvider;
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -112,6 +113,20 @@ public class MemberAuthService {
 //    }
 
     @Transactional
+    public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) throws IllegalAccessException{
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new IllegalAccessException("해당 유저가 없습니다."));
+        long amount = requestCashCharge.getBalance();
+        if(memberProvider.validateCash(amount)){
+            memberAccountDeductEvent(memberEmail, amount);
+        } else {
+            throw new IllegalAccessException("양수만 입력 가능합니다.");
+        }
+        member.addCash(amount);
+        memberRepository.save(member);
+    }
+
+    @Transactional
     public ResponseSignUp getTokenTests() {
         return securityUtil.getCurrentUsername()
                 .flatMap(memberRepository::findOneWithAuthorityByUsername)
@@ -124,8 +139,29 @@ public class MemberAuthService {
                 .orElse(null);
     }
 
-    public void createAccountEvent(Account account, Member member) {
+    @Transactional
+    public void updatePassword(MemberPasswordPatchDto memberPasswordPatchDto, String memberEmail) throws IllegalAccessException {
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new IllegalAccessException("해당 유저가 없습니다."));
+        member.setPassword(passwordEncoder.encode(memberPasswordPatchDto.getPassword()));
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updatePhoneNum(MemberPhonePatchDto memberPhonePatchDto, String memberEmail) throws IllegalAccessException {
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new IllegalAccessException("해당 유저가 없습니다."));
+        member.setPhoneNumber(memberPhonePatchDto.getPhoneNum());
+        memberRepository.save(member);
+    }
+
+    public void createAccountEvent(Account account, Member member){
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
         applicationEventPublisher.publishEvent(memberCreateEvent);
+    }
+
+    public void memberAccountDeductEvent(String email, Long balance){
+        MemberCashChargeEvent memberCashChargeEvent = new MemberCashChargeEvent(email, balance);
+        applicationEventPublisher.publishEvent(memberCashChargeEvent);
     }
 }

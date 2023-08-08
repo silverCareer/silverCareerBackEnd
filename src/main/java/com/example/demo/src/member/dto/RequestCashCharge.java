@@ -1,4 +1,4 @@
-package com.example.demo.src.account.dto;
+package com.example.demo.src.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestAccountCharge {
-    private String bankName;
-    private String accountNum;
+public class RequestCashCharge {
     private Long balance;
 }
