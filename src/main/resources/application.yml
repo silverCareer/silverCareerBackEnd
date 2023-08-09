@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB?autoReconnect=true
-    username: silvermaster
-    password: 12341234
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -17,7 +17,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+  security:
+    jwt:
+      secret: ${JWT_KEY}
+      refreshTokenSecret: ${REFRESH_KEY}
 kakao-open-api:
   auth:
     rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b
