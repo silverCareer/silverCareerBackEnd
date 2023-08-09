@@ -21,5 +21,4 @@ public class RequestLogin {
     @Size(min = 3, max = 100)
     private String password;
 
-    private String name;
 }

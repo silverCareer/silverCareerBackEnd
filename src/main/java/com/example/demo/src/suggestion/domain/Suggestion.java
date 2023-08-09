@@ -1,4 +1,4 @@
-package com.example.demo.src.request.domain;
+package com.example.demo.src.suggestion.domain;
 
 import com.example.demo.src.member.domain.Member;
 import lombok.*;
@@ -6,15 +6,15 @@ import lombok.*;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "requests")
+@Table(name = "suggestion")
 @Getter
 @NoArgsConstructor
-public class Request {
+public class Suggestion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "request_idx")
-    private Long requestIdx;
+    @Column(name = "suggestion_idx")
+    private Long suggestionIdx;
 
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
@@ -30,7 +30,7 @@ public class Request {
     private Member member;
 
     @Builder
-    public Request(String description, String category, Long price, Member member){
+    public Suggestion(String description, String category, Long price, Member member){
         this.description = description;
         this.category = category;
         this.price = price;
