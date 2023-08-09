@@ -11,7 +11,7 @@ spring:
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    #    show-sql: true
+    show-sql: true
     hibernate:
       ddl-auto: update
     properties:
@@ -32,10 +32,14 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
-
 kakao-open-api:
   auth:
     rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b
+
+sns:
+  service:
+    api-key: ${SNS_SERVICE_API_KEY}
+    api-secret-key: ${SNS_SERVICE_API_SECRET_KEY}
 
 logging:
   level:
