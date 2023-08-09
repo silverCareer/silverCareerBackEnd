@@ -1,5 +1,7 @@
 package com.example.demo.src.member.service;
 
+import com.example.demo.global.exception.BaseException;
+import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.DuplicatedMemberException;
 import com.example.demo.global.security.RefreshTokenProvider;
@@ -14,6 +16,9 @@ import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.java_sdk.api.Message;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.json.simple.JSONObject;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,9 +27,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Service
@@ -39,6 +47,14 @@ public class MemberAuthService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final S3Service s3Service;
+
+
+    @Value("${sns.service.api-key}")
+    private String apiKey;
+
+
+    @Value("${sns.service.api-secret-key}")
+    private String apiSecretKey;
 
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -180,4 +196,39 @@ public class MemberAuthService {
         applicationEventPublisher.publishEvent(memberCashChargeEvent);
     }
 
+
+    public PostAuthCodeRes certifiedPhoneNumber(PostAuthCodeReq postAuthCodeReq) throws BaseException{
+
+
+        String api_key = apiKey;
+        String api_secret = apiSecretKey;
+        Message coolsms = new Message(api_key, api_secret);
+
+
+        Random rand  = new Random();
+        String numStr = "";
+        for(int i=0; i<6; i++) {
+            String ran = Integer.toString(rand.nextInt(10));
+            numStr+=ran;
+        }
+
+        String phoneNumber = postAuthCodeReq.getPhone();
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("to", phoneNumber);
+        params.put("from", "01039319312");
+        params.put("type", "SMS");
+        params.put("text", "SilverCareer_회원가입 : 인증번호는" + "["+numStr+"]" + "입니다.");
+        params.put("app_version", "test app 1.2");
+
+        try {
+            JSONObject obj = (JSONObject) coolsms.send(params);
+            System.out.println(obj.toString());
+
+            return new PostAuthCodeRes(numStr);
+        } catch (CoolsmsException e) {
+            System.out.println(e.getMessage());
+            System.out.println(e.getCode());
+        } throw new BaseException(BaseResponseStatus.FAILED_TO_SEND_SNS_AUTH_CODE);
+    }
 }
