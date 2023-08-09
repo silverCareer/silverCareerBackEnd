@@ -124,20 +124,19 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/updateProfileImg")
-    public ResponseEntity updateProfileImg(@RequestParam(value="img")MultipartFile img) throws IOException{
-        return securityUtil.getCurrentUsername()
-                .map(username -> {
-                    try {
-                        memberAuthService.updateProfileImg(username, img);
-                        return new ResponseEntity<>(HttpStatus.OK);
-                    } catch (IOException e) {
-                        return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-                    }
-                })
-                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
-    }
 
-
+//    @PatchMapping("/updateProfileImg")
+//    public ResponseEntity updateProfileImg(@RequestParam(value="img")MultipartFile img) throws IOException{
+//        return securityUtil.getCurrentUsername()
+//                .map(username -> {
+//                    try {
+//                        memberAuthService.updateProfileImg(username, img);
+//                        return new ResponseEntity<>(HttpStatus.OK);
+//                    } catch (IOException e) {
+//                        return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+//                    }
+//                })
+//                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+//    }
 
 }

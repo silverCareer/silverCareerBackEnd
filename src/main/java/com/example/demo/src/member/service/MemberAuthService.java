@@ -6,7 +6,7 @@ import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.DuplicatedMemberException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
-import com.example.demo.src.S3Service;
+//import com.example.demo.src.S3Service;
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.member.Provider.MemberProvider;
 import com.example.demo.src.member.domain.AuthAdapter;
@@ -46,7 +46,7 @@ public class MemberAuthService {
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final S3Service s3Service;
+//    private final S3Service s3Service;
 
 
     @Value("${sns.service.api-key}")
@@ -175,16 +175,16 @@ public class MemberAuthService {
         memberRepository.save(member);
     }
 
-    @Transactional
-    public void updateProfileImg(String username, MultipartFile img) throws IOException {
-        Member member = memberRepository.findMemberByUsername(username);
-        String uploadedImgUrl = "";
-        if(!img.isEmpty()){
-            uploadedImgUrl = s3Service.upload(img, "profile", username);
-        }
-        member.setUserImage(uploadedImgUrl);
-        memberRepository.save(member);
-    }
+//    @Transactional
+//    public void updateProfileImg(String username, MultipartFile img) throws IOException {
+//        Member member = memberRepository.findMemberByUsername(username);
+//        String uploadedImgUrl = "";
+//        if(!img.isEmpty()){
+//            uploadedImgUrl = s3Service.upload(img, "profile", username);
+//        }
+//        member.setUserImage(uploadedImgUrl);
+//        memberRepository.save(member);
+//    }
 
     public void createAccountEvent(Account account, Member member){
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
