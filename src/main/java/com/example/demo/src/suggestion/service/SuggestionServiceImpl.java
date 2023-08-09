@@ -41,7 +41,8 @@ public class SuggestionServiceImpl implements SuggestionService {
     @Transactional(readOnly = true)
     public List<ResponseSuggestion> getMatchCategorySuggestion(final String username) {
         Member mentor = memberRepository.findMemberByUsername(username);
-        List<Suggestion> suggestions = suggestionRepository.findByCategoryAndMember_Category(mentor.getCategory());
+        List<Suggestion> suggestions = suggestionRepository.findByCategory(mentor.getCategory());
+
         if (suggestions.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
         }
@@ -51,7 +52,7 @@ public class SuggestionServiceImpl implements SuggestionService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseSuggestion getSuggestionDetail(final Long suggestionIdx) {
         Optional<Suggestion> OptionalSuggestion = suggestionRepository.findById(suggestionIdx);
         Suggestion suggestion = OptionalSuggestion.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));

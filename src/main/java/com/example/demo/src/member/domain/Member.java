@@ -58,7 +58,7 @@ public class Member {
     @JoinColumn(name="authority", referencedColumnName = "authority_name", nullable = false)
     private Authority authority;
 
-    @OneToMany(mappedBy = "members", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Suggestion> suggestionList = new ArrayList<>();
 
     @Builder
