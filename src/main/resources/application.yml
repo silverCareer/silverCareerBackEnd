@@ -25,17 +25,17 @@ spring:
     multipart:
       max-file-size: 1MB
       max-request-size: 1MB
-cloud:
-  aws:
-    credentials:
-      accessKey: ${S3_ACCESS_KEY}
-      secretKey: ${S3_SECRET_KEY}
-    s3:
-      bucket: silvercareer
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: false
+#cloud:
+#  aws:
+#    credentials:
+#      accessKey: ${S3_ACCESS_KEY}
+#      secretKey: ${S3_SECRET_KEY}
+#    s3:
+#      bucket: silvercareer
+#    region:
+#      static: ap-northeast-2
+#    stack:
+#      auto: false
 
 kakao-open-api:
   auth:
