@@ -29,7 +29,7 @@ public class MemberController {
     private final MemberProvider memberProvider;
 
     @PostMapping("/members")
-    public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto){
 
         if (registerDto.getAuthority().equals("멘토")) {
             memberAuthService.mentorSignUp(registerDto);
@@ -38,7 +38,6 @@ public class MemberController {
         }
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
-                .response("회원가입 성공")
                 .build());
     }
 
@@ -49,12 +48,10 @@ public class MemberController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(CustomJwtFilter.AUTHORIZATION_HEADER, "Bearer " + responseDto.getAccessToken());
 
-        CommonResponse response = CommonResponse.builder()
+        return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
                 .response(responseDto)
-                .build();
-
-        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
+                .build());
     }
 
     @GetMapping("/user")

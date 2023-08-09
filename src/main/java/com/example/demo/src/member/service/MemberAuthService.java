@@ -1,7 +1,7 @@
 package com.example.demo.src.member.service;
 
 import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.global.exception.error.DuplicatedMemberException;
+import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.src.account.domain.Account;
@@ -20,8 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 
 @Service
@@ -56,7 +54,7 @@ public class MemberAuthService {
     @Transactional
     public void mentorSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new DuplicatedMemberException();
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTOR")
@@ -68,6 +66,7 @@ public class MemberAuthService {
                 .name(registerDto.getName())
                 .phoneNumber(registerDto.getPhoneNumber())
                 .age(registerDto.getAge())
+                .career(registerDto.getCareer())
                 .category(registerDto.getCategory())
                 .activated(true)
                 .authority(authority)
@@ -83,7 +82,7 @@ public class MemberAuthService {
     @Transactional
     public void menteeSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new DuplicatedMemberException();
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTEE")
