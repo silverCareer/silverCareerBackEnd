@@ -26,6 +26,7 @@ public class RequestSingUp {
     private Long age;
 
     private String authority;
+    private String career;
     private String category;
     private String bankName;
     private String accountNum;
