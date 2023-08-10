@@ -7,6 +7,7 @@ import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.service.MemberAuthService;
+import com.example.demo.utils.SecurityUtil;
 import com.example.demo.utils.ValidationRegex;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class MemberController {
     private final SecurityUtil securityUtil;
 
     @PostMapping("/members")
-    public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto){
+    public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto) throws IllegalAccessException {
 
         if (registerDto.getAuthority().equals("멘토")) {
             memberAuthService.mentorSignUp(registerDto);
