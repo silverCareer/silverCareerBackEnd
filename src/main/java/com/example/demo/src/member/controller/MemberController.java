@@ -5,14 +5,9 @@ import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.security.CustomJwtFilter;
-import com.example.demo.src.member.dto.RequestLogin;
-import com.example.demo.src.member.dto.RequestSingUp;
-import com.example.demo.src.member.dto.ResponseLogin;
-import com.example.demo.src.member.dto.ResponseSignUp;
-import com.example.demo.src.member.Provider.MemberProvider;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.service.MemberAuthService;
-import com.example.demo.utils.SecurityUtil;
+import com.example.demo.utils.ValidationRegex;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -28,16 +23,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class MemberController {
 
     private final MemberAuthService memberAuthService;
-    private final MemberProvider memberProvider;
     private final SecurityUtil securityUtil;
-
-
 
     @PostMapping("/members")
     public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto){
@@ -87,15 +82,15 @@ public class MemberController {
         return ResponseEntity.ok(memberAuthService.getTokenTests());
     }
 
+    // 개인 정보 조회
     @GetMapping("/members")
     public ResponseEntity<ResponseMyInfo> getMyInfo(Authentication authentication) throws IllegalAccessException {
         String email = authentication.getName();
-        System.out.println(email);
-//        ResponseMemberRegister responseMemberRegister = memberService.signUp(registerDto);
 
-        return ResponseEntity.ok(memberProvider.getMyInfo(email));
+        return ResponseEntity.ok(memberAuthService.getMyInfo(email));
     }
 
+    // 멤버 캐쉬 충전
     @PostMapping("/cashCharge")
     public ResponseEntity<?> charge(
             @Valid @RequestBody RequestCashCharge chargeDto, @AuthenticationPrincipal(expression = "username") String memberEmail
@@ -108,17 +103,21 @@ public class MemberController {
     @PatchMapping("/modifyPassword")
     public ResponseEntity updateMemberPassword(@RequestBody MemberPasswordPatchDto memberPasswordPatchDto,
                                        @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-
-        memberAuthService.updatePassword(memberPasswordPatchDto, memberEmail);
+        if(!memberPasswordPatchDto.getPassword().isEmpty() && memberPasswordPatchDto.getPassword() != null){
+            memberAuthService.updatePassword(memberPasswordPatchDto, memberEmail);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 멤버 전화번호 수정
     @PatchMapping("/modifyPhoneNum")
     public ResponseEntity updateMemberPhoneNum(@RequestBody MemberPhonePatchDto memberPhonePatchDto,
-                                       @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-
-        memberAuthService.updatePhoneNum(memberPhonePatchDto, memberEmail);
-        return new ResponseEntity<>(HttpStatus.OK);
+                                               @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+        String phoneNum = memberPhonePatchDto.getPhoneNum();
+        if (phoneNum != null && !phoneNum.isEmpty()) {
+            memberAuthService.updatePhoneNum(new MemberPhonePatchDto(phoneNum), memberEmail);
+        }
+        return ResponseEntity.ok().build();
     }
 
 
