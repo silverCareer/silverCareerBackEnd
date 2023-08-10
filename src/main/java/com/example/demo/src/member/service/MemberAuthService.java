@@ -1,7 +1,12 @@
 package com.example.demo.src.member.service;
 
+import com.example.demo.global.exception.BaseException;
+import com.example.demo.global.exception.BaseResponseStatus;
+import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
+import com.example.demo.src.S3Service;
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.member.domain.AuthAdapter;
 import com.example.demo.src.member.domain.Authority;
@@ -10,6 +15,9 @@ import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.java_sdk.api.Message;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.json.simple.JSONObject;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,9 +25,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.Random;
 
 
 @Service
@@ -32,6 +46,15 @@ public class MemberAuthService {
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final S3Service s3Service;
+
+
+    @Value("${sns.service.api-key}")
+    private String apiKey;
+
+
+    @Value("${sns.service.api-secret-key}")
+    private String apiSecretKey;
 
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -51,9 +74,9 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void mentorSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void mentorSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new IllegalAccessException("이미 가입된 사용자입니다!");
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
         if(!isRegexEmail(registerDto.getEmail())){
             throw new IllegalAccessException("옳바르지 않은 이메일 형식입니다.");
@@ -64,12 +87,14 @@ public class MemberAuthService {
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTOR")
                 .build();
+
         Member member = Member.builder()
                 .email(registerDto.getEmail())
                 .password(passwordEncoder.encode(registerDto.getPassword()))
                 .name(registerDto.getName())
                 .phoneNumber(registerDto.getPhoneNumber())
                 .age(registerDto.getAge())
+                .career(registerDto.getCareer())
                 .category(registerDto.getCategory())
                 .activated(true)
                 .authority(authority)
@@ -83,9 +108,9 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void menteeSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void menteeSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new IllegalAccessException("이미 가입된 사용자입니다!");
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
         if(!isRegexEmail(registerDto.getEmail())){
             throw new IllegalAccessException("옳바르지 않은 이메일 형식입니다.");
@@ -182,7 +207,6 @@ public class MemberAuthService {
         memberRepository.save(member);
     }
 
-    // 멤버 개인 조회
     public ResponseMyInfo getMyInfo(String memberName) throws IllegalAccessException {
         ResponseMyInfo responseMyInfo = ResponseMyInfo.of(memberRepository.findByUsername(memberName).orElseThrow(()
                 -> new IllegalAccessException("해당 정보가 없습니다.")));
@@ -190,8 +214,18 @@ public class MemberAuthService {
         return responseMyInfo;
     }
 
-    // 계좌 생성 이벤트 발생
-    public void createAccountEvent(Account account, Member member) {
+    @Transactional
+    public void updateProfileImg(String username, MultipartFile img) throws IOException {
+        Member member = memberRepository.findMemberByUsername(username);
+        String uploadedImgUrl = "";
+        if(!img.isEmpty()){
+            uploadedImgUrl = s3Service.upload(img, "profile", username);
+        }
+        member.setUserImage(uploadedImgUrl);
+        memberRepository.save(member);
+    }
+
+    public void createAccountEvent(Account account, Member member){
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
         applicationEventPublisher.publishEvent(memberCreateEvent);
     }
@@ -268,4 +302,37 @@ public class MemberAuthService {
         }
     }
 
+    public PostAuthCodeRes certifiedPhoneNumber(PostAuthCodeReq postAuthCodeReq) throws BaseException{
+
+        String api_key = apiKey;
+        String api_secret = apiSecretKey;
+        Message coolsms = new Message(api_key, api_secret);
+
+
+        Random rand  = new Random();
+        String numStr = "";
+        for(int i=0; i<6; i++) {
+            String ran = Integer.toString(rand.nextInt(10));
+            numStr+=ran;
+        }
+
+        String phoneNumber = postAuthCodeReq.getPhone();
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("to", phoneNumber);
+        params.put("from", "01039319312");
+        params.put("type", "SMS");
+        params.put("text", "SilverCareer_회원가입 : 인증번호는" + "["+numStr+"]" + "입니다.");
+        params.put("app_version", "test app 1.2");
+
+        try {
+            JSONObject obj = (JSONObject) coolsms.send(params);
+            System.out.println(obj.toString());
+
+            return new PostAuthCodeRes(numStr);
+        } catch (CoolsmsException e) {
+            System.out.println(e.getMessage());
+            System.out.println(e.getCode());
+        } throw new BaseException(BaseResponseStatus.FAILED_TO_SEND_SNS_AUTH_CODE);
+    }
 }

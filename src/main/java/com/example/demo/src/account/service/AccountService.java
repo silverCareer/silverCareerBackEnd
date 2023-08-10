@@ -1,3 +1,4 @@
+
 package com.example.demo.src.account.service;
 
 import com.example.demo.src.account.domain.Account;
@@ -85,3 +86,4 @@ public class AccountService {
         return true;
     }
 }
+

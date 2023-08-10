@@ -1,3 +1,4 @@
+
 package com.example.demo.src.account.controller;
 
 import com.example.demo.src.account.domain.Account;
@@ -34,3 +35,4 @@ public class AccountController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 }
+

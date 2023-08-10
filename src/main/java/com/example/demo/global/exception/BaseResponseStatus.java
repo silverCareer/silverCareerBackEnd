@@ -33,6 +33,10 @@ public enum BaseResponseStatus {
     // [POST] /auth
     LOGIN_FAIL_WRONG(false,2030,"이메일 비밀번호를 확인해주세요."),
 
+    // [POST] /signup
+    POST_USERS_EMPTY_INFO(false, 2040, "모든 정보를 입력해주세요."),
+    POST_USERS_UNREGEX_PHONE(false,2041,"휴대폰 번호를 확인해주세요."),
+
 
     /**
      * 3000 : Response 오류
@@ -44,7 +48,8 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
 
-
+    // [POST] /signup
+    FAILED_TO_SEND_SNS_AUTH_CODE(false,3015,"인증코드를 보내는데 실패하였습니다."),
 
     /**
      * 4000 : Database, Server 오류

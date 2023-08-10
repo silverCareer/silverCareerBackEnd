@@ -9,13 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties
 public class JwtProperties {
     private String header = "Authorization"; //토큰 헤더 필드
-
     @Value("${spring.security.jwt.secret}")
-    private String secret; //토큰 시크릿 스트링 필드
-
+    private String secret;
     @Value("${spring.security.jwt.refreshTokenSecret}")
     private String refreshTokenSecret;
-
     private long accessTokenValidityInSeconds = 600L; // 액세스토큰 유효기간 필드
     private long refreshTokenValidityInSeconds = 86400;// 리프레시토큰 유효기간 필드
 }
