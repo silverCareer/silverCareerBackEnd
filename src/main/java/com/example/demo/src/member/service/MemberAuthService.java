@@ -74,7 +74,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void mentorSignUp(final RequestSingUp registerDto) {
+    public void mentorSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -108,7 +108,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void menteeSignUp(final RequestSingUp registerDto) {
+    public void menteeSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
