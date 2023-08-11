@@ -51,6 +51,9 @@ public enum BaseResponseStatus {
     // [POST] /signup
     FAILED_TO_SEND_SNS_AUTH_CODE(false,3015,"인증코드를 보내는데 실패하였습니다."),
 
+    // [GET] /chat
+    NOT_FOUND_CHAT(false,3030,"존재하는 채팅방이 없습니다."),
+
     /**
      * 4000 : Database, Server 오류
      */

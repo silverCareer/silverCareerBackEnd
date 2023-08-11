@@ -18,6 +18,17 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    mongodb:
+      host: 43.201.132.241
+      port: 27017
+      authentication-database: admin
+      username: admin1
+      password: test1234
+      database: silcarMongoDB
+
+
+
 kakao-open-api:
   auth:
     rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b
