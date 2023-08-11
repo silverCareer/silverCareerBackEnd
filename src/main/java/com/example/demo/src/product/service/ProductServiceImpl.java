@@ -26,13 +26,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void createProduct(String username, CreateProductReq createProductReq) throws IOException {
+    public void createProduct(String username, MultipartFile image, CreateProductReq createProductReq) throws IOException {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-
-        MultipartFile image = createProductReq.getProductImage();
         String imageUrl = "";
-
         if (image != null && !image.isEmpty()) {
             imageUrl = s3Service.upload(image, "product",
                     username + "_" + createProductReq.getProductName());
@@ -42,6 +39,7 @@ public class ProductServiceImpl implements ProductService {
                 .productName(createProductReq.getProductName())
                 .description(createProductReq.getProductDescription())
                 .category(createProductReq.getCategory())
+                .address(createProductReq.getAddress())
                 .price(createProductReq.getPrice())
                 .image(imageUrl)
                 .likes(0L)
@@ -73,15 +71,18 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetailRes getProductDetail(Long productId) {
         Product product = productRepository.findProductByProductIdx(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-
+        Member member = product.getMember();
         return ProductDetailRes.builder()
                 .productIdx(product.getProductIdx())
                 .productName(product.getProductName())
                 .category(product.getCategory())
+                .address(product.getAddress())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .image(product.getImage())
                 .likes(product.getLikes())
+                .memberName(member.getName())
+                .memberCareer(member.getCareer())
                 .build();
     }
 }
