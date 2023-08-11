@@ -1,6 +1,8 @@
 package com.example.demo.src.product.controller;
 
 import com.example.demo.global.exception.BaseResponse;
+import com.example.demo.global.exception.dto.CommonResponse;
+import com.example.demo.src.S3Service;
 import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.service.ProductService;
 import com.example.demo.utils.SecurityUtil;
@@ -9,39 +11,47 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/product")
 public class ProductController {
     private final ProductService productService;
-    private final SecurityUtil securityUtil;
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<DisplayProductRes> displayProductByCategory(@Valid @PathVariable String category) {
-        DisplayProductReq productReq = DisplayProductReq.builder().category(category).build();
-        DisplayProductRes productRes = productService.displayProductByCategory(productReq);
-        return productRes == null
-                ? new ResponseEntity<>(null, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(productRes, HttpStatus.OK);
+    public ResponseEntity<CommonResponse> displayProductByCategory(@Valid @PathVariable String category) {
+        List<DisplayProductRes> displayProductRes = productService.displayProductByCategory(category);
+        return ResponseEntity.ok().body(CommonResponse.builder()
+                .success(true)
+                .response(displayProductRes)
+                .build());
     }
 
     @GetMapping("/detail/{productId}")
-    public ResponseEntity<ProductDetailRes> getProductDetail(@Valid @PathVariable Long productId){
-        ProductDetailReq productDetailReq = ProductDetailReq.builder().productIdx(productId).build();
-        ProductDetailRes productDetailRes = productService.getProductDetail(productDetailReq);
-        return new ResponseEntity(productDetailRes, HttpStatus.OK);
+    public ResponseEntity<CommonResponse> getProductDetail(@Valid @PathVariable Long productId){
+        ProductDetailRes productDetailRes = productService.getProductDetail(productId);
+        return ResponseEntity.ok().body(CommonResponse.builder()
+                .success(true)
+                .response(productDetailRes)
+                .build());
     }
 
-    @PostMapping("/create")
+    @PostMapping(path = "/create", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")
-    public BaseResponse<?> createProduct(@RequestBody @Valid CreateProduct createProduct){
-        return securityUtil.getCurrentUsername()
-                .map(username -> {
-                    productService.createProduct(username, createProduct);
-                    return new BaseResponse<>(HttpStatus.OK);
-                })
-                .orElse(new BaseResponse<>(HttpStatus.UNAUTHORIZED));
+    public ResponseEntity<CommonResponse> createProduct(@AuthenticationPrincipal(expression = "username") String username,
+                                                        @RequestPart CreateProductReq createProductReq,
+                                                        @RequestPart("productImage") MultipartFile productImage) throws IOException {
+            productService.createProduct(username, productImage, createProductReq);
+
+            return ResponseEntity.ok().body(CommonResponse.builder()
+                    .success(true)
+                    .response("상품등록 성공")
+                    .build());
     }
 }

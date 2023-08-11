@@ -1,11 +1,15 @@
 package com.example.demo.src.member.domain;
 
 import com.example.demo.src.account.domain.Account;
+import com.example.demo.src.suggestion.domain.Suggestion;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "members")
@@ -54,6 +58,9 @@ public class Member {
     @JoinColumn(name="authority", referencedColumnName = "authority_name", nullable = false)
     private Authority authority;
 
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<Suggestion> suggestionList = new ArrayList<>();
+
     @Builder
     public Member(String email, String password, String name, String phoneNumber, Long age,
                   String userImage, String career, String category, Long balance, Long tokenWeight,
@@ -77,16 +84,20 @@ public class Member {
         this.tokenWeight++;
     }
 
+    // 캐쉬 충전
     public void addCash(long amount) throws IllegalArgumentException {
-
         this.balance += amount;
     }
 
-    // 탈퇴한 유저 재가입 (기존 정보를 신규 가입 정보로 변경)
+    // 탈퇴한 유저 재가입 (기존 정보를 신규 가입 정보로 변경), 업데이트
     public void activateMember(Member newMember) {
 //        this.setActivated(Member.MemberStatus.ACTIVE);
         this.setName(newMember.getName());
         this.setPhoneNumber(newMember.getPhoneNumber());
         this.setPassword(newMember.getPassword());
+    }
+
+    public void addSuggestion(Suggestion suggestion){
+        this.suggestionList.add(suggestion);
     }
 }

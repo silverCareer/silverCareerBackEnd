@@ -23,19 +23,22 @@ public class Product {
     @Column(name = "category", length = 20, nullable = false)
     private String category;
 
+    @Column(name = "address", nullable = false)
+    private String address;
+
     @Column(name = "descriptions", columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(name = "price", nullable = false)
     private Long price;
 
-    @Column(name = "product_images", columnDefinition = "TEXT")
+    @Column(name = "product_images", columnDefinition = "TEXT", nullable = false)
     private String image;
 
     @Column(name = "sales_count", columnDefinition = "BIGINT")
     private Long saleCount;
 
-    @Column(name = "likes")
+    @Column(name = "likes", columnDefinition = "BIGINT")
     private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -43,11 +46,12 @@ public class Product {
     private Member member;
 
     @Builder
-    public Product(Long productIdx, String productName, String category, String description, Long price,
+    public Product(Long productIdx, String productName, String category, String address, String description, Long price,
                    String image, Long saleCount, Long likes, Member member) {
         this.productIdx = productIdx;
         this.productName = productName;
         this.category = category;
+        this.address = address;
         this.description = description;
         this.price = price;
         this.image = image;

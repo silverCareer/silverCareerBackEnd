@@ -2,7 +2,7 @@ package com.example.demo.global.exception;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
-import com.example.demo.global.exception.error.DuplicatedMemberException;
+import com.example.demo.global.exception.error.CustomException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,6 +35,11 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }
+//    @ExceptionHandler(CustomException.class)
+//    protected ResponseEntity<CommonResponse> handleCustomException(CustomException ex){
+//        return createErrorResponse()
+//    }
+
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<CommonResponse> handleRequestParamBindFailedException(BindException ex) {
         return createErrorResponse(ErrorCode.REQUEST_PARAM_BIND_FAILED);
@@ -56,10 +61,5 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodNotAllowedException.class)
     protected ResponseEntity<CommonResponse> handleMethodNotAllowedException(MethodNotAllowedException ex) {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
-    }
-
-    @ExceptionHandler(DuplicatedMemberException.class)
-    protected  ResponseEntity<CommonResponse> handleDuplicatedMemberException(DuplicatedMemberException ex){
-        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
     }
 }
