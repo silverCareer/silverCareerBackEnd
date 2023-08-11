@@ -29,13 +29,13 @@ public class Product {
     @Column(name = "price", nullable = false)
     private Long price;
 
-    @Column(name = "product_images", columnDefinition = "TEXT")
+    @Column(name = "product_images", columnDefinition = "TEXT", nullable = false)
     private String image;
 
     @Column(name = "sales_count", columnDefinition = "BIGINT")
     private Long saleCount;
 
-    @Column(name = "likes")
+    @Column(name = "likes", columnDefinition = "BIGINT")
     private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

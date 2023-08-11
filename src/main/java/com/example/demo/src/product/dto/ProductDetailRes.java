@@ -1,18 +1,17 @@
 package com.example.demo.src.product.dto;
 
-
 import com.example.demo.src.review.domain.Review;
-import lombok.Builder;
+import lombok.*;
 
 @Builder
-public record ProductDetailRes (
-        Long productIdx,
-        String productName,
-        String category,
-        String description,
-        Long price,
-        String image,
-        Long likes
+public class ProductDetailRes {
+    private Long productIdx;
+    private String productName;
+    private String category;
+    private String description;
+    private Long price;
+    private String image;
+    private Long likes;
 //        Review review
 
-) { }
+}
