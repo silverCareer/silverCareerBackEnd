@@ -1,7 +1,7 @@
 package com.example.demo.src.bid.domain;
 
 import com.example.demo.src.member.domain.Member;
-import com.example.demo.src.request.domain.Request;
+import com.example.demo.src.suggestion.domain.Suggestion;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -25,14 +25,14 @@ public class Bid {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_idx", nullable = false)
-    private Request request;
+    @JoinColumn(name = "suggestion_idx", nullable = false)
+    private Suggestion suggestion;
 
     @Builder
-    public Bid(Long price, Member member, Request request){
+    public Bid(Long price, Member member, Suggestion suggestion){
         this.price = price;
         this.member = member;
-        this.request = request;
+        this.suggestion = suggestion;
     }
 }
 
