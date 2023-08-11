@@ -173,39 +173,40 @@ public class MemberAuthService {
                 .orElse(null);
     }
 
-    // 멤버 비밀번호 수정
     @Transactional
-    public void updatePassword(MemberPasswordPatchDto memberPasswordPatchDto, String memberEmail) throws IllegalAccessException {
-        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
-                -> new IllegalAccessException("해당 유저가 없습니다."));
-        String password = memberPasswordPatchDto.getPassword();
-        if (isRegexPassword(password)) { // 비밀번호 정규식
-            String oldPassword = getMyInfo(memberEmail).getPassword();
-            if (checkSamePassword(password, oldPassword)) {
-                member.setPassword(passwordEncoder.encode(memberPasswordPatchDto.getPassword()));
+    public void updateInfo(RequestMemberPatch requestMemberPatch, String memberEmail) throws IllegalAccessException {
+        Member member = memberRepository.findMemberByUsername(memberEmail);
+        String oldPassword = getMyInfo(memberEmail).getPassword();
+        String oldPhoneNum = getMyInfo(memberEmail).getPhoneNumber();
+        String newPassword = requestMemberPatch.getPassword();
+        String newPhoneNum = requestMemberPatch.getPhoneNum();
+
+        if(newPassword != null && !newPassword.isEmpty()){
+            if (isRegexPassword(newPassword)) { // 비밀번호 정규식
+                if (checkSamePassword(newPassword, oldPassword)) {
+                    member.updatePassword(passwordEncoder.encode(newPassword));
+                } else {
+                    throw new IllegalAccessException("이전 비밀번호와 동일합니다.");
+                }
             } else {
-                throw new IllegalAccessException("이전 비밀번호와 동일합니다.");
+                throw new IllegalAccessException("잘못된 비밀번호 입력 형식입니다.");
             }
-        } else {
-            throw new IllegalAccessException("잘못된 비밀번호 입력 형식입니다.");
+        }
+        if(newPhoneNum != null && !newPhoneNum.isEmpty()){
+            if (isRegexPhoneNum(newPhoneNum)) {// 전화번호 정규식
+                newPhoneNum = makePhoneNum(newPhoneNum); // '-' 제거
+                if(checkSamePhoneNum(newPhoneNum, oldPhoneNum)){
+                    member.updatePhoneNum(newPhoneNum);
+                } else {
+                    throw new IllegalAccessException("이전 전화번호와 동일합니다.");
+                }
+            } else {
+                throw new IllegalAccessException("잘못된 전화번호 입력 형식입니다.");
+            }
         }
         memberRepository.save(member);
     }
 
-    // 멤버 전화번호 수정
-    @Transactional
-    public void updatePhoneNum(MemberPhonePatchDto memberPhonePatchDto, String memberEmail) throws IllegalAccessException {
-        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
-                -> new IllegalAccessException("해당 유저가 없습니다."));
-        String phoneNum = memberPhonePatchDto.getPhoneNum();
-        if (isRegexPhoneNum(phoneNum)) { // 전화번호 정규식
-            phoneNum = makePhoneNum(phoneNum); // '-' 제거
-        } else {
-            throw new IllegalAccessException("잘못된 전화번호 입력 형식입니다.");
-        }
-        member.setPhoneNumber(phoneNum);
-        memberRepository.save(member);
-    }
 
     public ResponseMyInfo getMyInfo(String memberName) throws IllegalAccessException {
         ResponseMyInfo responseMyInfo = ResponseMyInfo.of(memberRepository.findByUsername(memberName).orElseThrow(()
@@ -221,7 +222,7 @@ public class MemberAuthService {
         if(!img.isEmpty()){
             uploadedImgUrl = s3Service.upload(img, "profile", username);
         }
-        member.setUserImage(uploadedImgUrl);
+        member.updateProfileImg(uploadedImgUrl);
         memberRepository.save(member);
     }
 
@@ -296,6 +297,15 @@ public class MemberAuthService {
     // 과거 비밀번호와 현재 비밀번호 같은지 판별
     public boolean checkSamePassword(String newPassword, String oldPassword) {
         if (passwordEncoder.matches(newPassword, oldPassword)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // 과거 전화번호와 현재 전화번호 같은지 판별
+    public boolean checkSamePhoneNum(String newPhoneNum, String oldPhoneNum) {
+        if (newPhoneNum.equals(oldPhoneNum)) {
             return false;
         } else {
             return true;
