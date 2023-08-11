@@ -3,6 +3,7 @@ package com.example.demo.src.product.dto;
 import com.example.demo.src.product.domain.Product;
 import lombok.Builder;
 
+@Data
 @Builder
 public class DisplayProductRes{
     private Long productIdx;
