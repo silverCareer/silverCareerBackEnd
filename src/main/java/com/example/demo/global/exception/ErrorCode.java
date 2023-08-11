@@ -11,7 +11,9 @@ public enum ErrorCode {
     NOT_FOUND_ELEMENT(HttpStatus.NOT_FOUND, "NOT_FOUND_001", "일치하는 요소가 잘못됐거나 없습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "ALLOW_001", "잘못된 http method 방식입니다."),
 
-    DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복");
+    DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복"),
+    DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
