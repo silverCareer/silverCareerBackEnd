@@ -1,6 +1,7 @@
 package com.example.demo.src.product.service;
 
 import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.src.S3Service;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
