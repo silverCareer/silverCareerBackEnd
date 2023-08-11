@@ -100,25 +100,13 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 멤버 비밀번호 수정
-    @PatchMapping("/modifyPassword")
-    public ResponseEntity updateMemberPassword(@RequestBody MemberPasswordPatchDto memberPasswordPatchDto,
-                                       @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        if(!memberPasswordPatchDto.getPassword().isEmpty() && memberPasswordPatchDto.getPassword() != null){
-            memberAuthService.updatePassword(memberPasswordPatchDto, memberEmail);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    // 멤버 전화번호 수정
-    @PatchMapping("/modifyPhoneNum")
-    public ResponseEntity updateMemberPhoneNum(@RequestBody MemberPhonePatchDto memberPhonePatchDto,
+    // 멤버 정보 수정
+    @PatchMapping("/modify")
+    public ResponseEntity updateMember(@RequestBody RequestMemberPatch requestMemberPatch,
                                                @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        String phoneNum = memberPhonePatchDto.getPhoneNum();
-        if (phoneNum != null && !phoneNum.isEmpty()) {
-            memberAuthService.updatePhoneNum(new MemberPhonePatchDto(phoneNum), memberEmail);
-        }
-        return ResponseEntity.ok().build();
+        memberAuthService.updateInfo(requestMemberPatch, memberEmail);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
