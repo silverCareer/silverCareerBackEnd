@@ -45,19 +45,10 @@ public class ProductController {
     @PostMapping(path = "/create", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")
     public ResponseEntity<CommonResponse> createProduct(@AuthenticationPrincipal(expression = "username") String username,
-                                                        @RequestParam("productName") String productName,
-                                                        @RequestParam("productDescription") String productDescription,
-                                                        @RequestParam("category") String category,
-                                                        @RequestParam("price") Long price,
-                                                        @RequestParam("productImage") MultipartFile productImage) throws IOException {
-            CreateProductReq createProductReq = CreateProductReq.builder()
-                    .productName(productName)
-                    .productDescription(productDescription)
-                    .category(category)
-                    .price(price)
-                    .productImage(productImage)
-                    .build();
-            productService.createProduct(username, createProductReq);
+                                                        @RequestPart CreateProductReq createProductReq,
+                                                        @RequestPart("productImage") MultipartFile productImage) throws IOException {
+            productService.createProduct(username, productImage, createProductReq);
+
             return ResponseEntity.ok().body(CommonResponse.builder()
                     .success(true)
                     .response("상품등록 성공")
