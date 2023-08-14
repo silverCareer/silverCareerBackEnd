@@ -1,6 +1,8 @@
 
 package com.example.demo.src.account.service;
 
+import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.account.dto.RequestAccountCharge;
 import com.example.demo.src.account.repository.AccountRepository;
@@ -27,7 +29,7 @@ public class AccountService {
     public void createAccount(MemberCreateEvent memberCreateEvent) throws IllegalAccessException {
 
         Member member = memberRepository.findByUsername(memberCreateEvent.getUsername()).orElseThrow(()
-                -> new IllegalAccessException("해당 유저가 없습니다."));
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
         Account account = Account.builder()
                 .bankName(memberCreateEvent.getBankName())
@@ -57,10 +59,9 @@ public class AccountService {
 
     // 계좌 잔액 차감
     @Transactional
-    public void accountDeduct(@Valid MemberCashChargeEvent memberCashChargeEvent) throws IllegalAccessException {
-        Account account = accountRepository.findByMember_Username(memberCashChargeEvent.getEmail()).orElseThrow(() ->
-                new IllegalAccessException("해당 유저의 계정 정보를 찾을 수 없습니다.")
-        );
+    public void accountDeduct(@Valid MemberCashChargeEvent memberCashChargeEvent){
+        Account account = accountRepository.findByMember_Username(memberCashChargeEvent.getEmail()).orElseThrow(()
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
         long amount = memberCashChargeEvent.getBalance();
 
@@ -73,7 +74,7 @@ public class AccountService {
     // 금액이 0 이상의 정수인지 판단
     public boolean validateBalance(long amount){
         if(amount <= 0){
-            throw new IllegalArgumentException("0원 이하는 입금 불가능합니다.");
+            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
         }
         return true;
     }
@@ -81,7 +82,7 @@ public class AccountService {
     // 잔액 확인
     public boolean validateAccountBalance(long amount, long accountBalance){
         if(accountBalance < amount){
-            throw new IllegalArgumentException("잔액이 충분하지 않습니다.");
+            throw new CustomException(ErrorCode.NOT_ENOUGH_ACCOUNT_BALANCE);
         }
         return true;
     }

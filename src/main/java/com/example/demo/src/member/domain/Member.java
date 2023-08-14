@@ -15,7 +15,6 @@ import java.util.List;
 @Entity
 @Table(name = "members")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Member {
     @Id
@@ -93,12 +92,20 @@ public class Member {
         this.balance += amount;
     }
 
-    // 탈퇴한 유저 재가입 (기존 정보를 신규 가입 정보로 변경), 업데이트
-    public void activateMember(Member newMember) {
-//        this.setActivated(Member.MemberStatus.ACTIVE);
-        this.setName(newMember.getName());
-        this.setPhoneNumber(newMember.getPhoneNumber());
-        this.setPassword(newMember.getPassword());
+    public void deductCash(long amount) throws IllegalAccessException{
+        this.balance -= amount;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updatePhoneNum(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updateProfileImg(String imgUrl){
+        this.userImage = imgUrl;
     }
 
     public void addSuggestion(Suggestion suggestion){

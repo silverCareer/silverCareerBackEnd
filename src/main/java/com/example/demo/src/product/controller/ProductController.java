@@ -1,14 +1,10 @@
 package com.example.demo.src.product.controller;
 
-import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.src.S3Service;
 import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.service.ProductService;
-import com.example.demo.utils.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,19 +41,10 @@ public class ProductController {
     @PostMapping(path = "/create", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")
     public ResponseEntity<CommonResponse> createProduct(@AuthenticationPrincipal(expression = "username") String username,
-                                                        @RequestParam("productName") String productName,
-                                                        @RequestParam("productDescription") String productDescription,
-                                                        @RequestParam("category") String category,
-                                                        @RequestParam("price") Long price,
-                                                        @RequestParam("productImage") MultipartFile productImage) throws IOException {
-            CreateProductReq createProductReq = CreateProductReq.builder()
-                    .productName(productName)
-                    .productDescription(productDescription)
-                    .category(category)
-                    .price(price)
-                    .productImage(productImage)
-                    .build();
-            productService.createProduct(username, createProductReq);
+                                                        @RequestPart CreateProductReq createProductReq,
+                                                        @RequestPart("productImage") MultipartFile productImage) throws IOException {
+            productService.createProduct(username, productImage, createProductReq);
+
             return ResponseEntity.ok().body(CommonResponse.builder()
                     .success(true)
                     .response("상품등록 성공")
