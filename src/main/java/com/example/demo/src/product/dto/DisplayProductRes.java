@@ -2,6 +2,7 @@ package com.example.demo.src.product.dto;
 
 import com.example.demo.src.product.domain.Product;
 import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
