@@ -63,13 +63,14 @@ public class MemberAuthService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         String accessToken = tokenProvider.createJwt(authentication);
-
         Long tokenWeight = ((AuthAdapter) authentication.getPrincipal()).getAuth().getTokenWeight();
         String refreshToken = refreshTokenProvider.createRefreshToken(authentication, tokenWeight);
+        Member member = memberRepository.findMemberByUsername(username);
 
         return ResponseLogin.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .name(member.getName())
                 .build();
     }
 
