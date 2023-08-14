@@ -1,10 +1,14 @@
 package com.example.demo.src.product.domain;
 
 import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.review.domain.Review;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -45,6 +49,9 @@ public class Product {
     @JoinColumn(name = "email", nullable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
+
     @Builder
     public Product(Long productIdx, String productName, String category, String address, String description, Long price,
                    String image, Long saleCount, Long likes, Member member) {
@@ -58,5 +65,9 @@ public class Product {
         this.saleCount = saleCount;
         this.likes = likes;
         this.member = member;
+    }
+
+    public void addReview(Review review){
+        this.reviews.add(review);
     }
 }

@@ -1,14 +1,10 @@
 package com.example.demo.src.product.controller;
 
-import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.src.S3Service;
 import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.service.ProductService;
-import com.example.demo.utils.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

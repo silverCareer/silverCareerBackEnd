@@ -8,6 +8,7 @@ import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.repository.ProductRepository;
+import com.example.demo.src.review.dto.ReviewDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +73,8 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findProductByProductIdx(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         Member member = product.getMember();
+        List<ReviewDto> reviews = product.getReviews().stream().map(ReviewDto::of).collect(Collectors.toList());
+
         return ProductDetailRes.builder()
                 .productIdx(product.getProductIdx())
                 .productName(product.getProductName())
@@ -83,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
                 .likes(product.getLikes())
                 .memberName(member.getName())
                 .memberCareer(member.getCareer())
+                .reviews(reviews)
                 .build();
     }
 }
