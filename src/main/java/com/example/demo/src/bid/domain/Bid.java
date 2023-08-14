@@ -5,13 +5,13 @@ import com.example.demo.src.suggestion.domain.Suggestion;
 import lombok.*;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "bid")
 @Getter
 @NoArgsConstructor
 public class Bid {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bid_idx")
@@ -22,9 +22,9 @@ public class Bid {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "email", nullable = false)
-    private Member member;
+    private Member member; //멘토들
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "suggestion_idx", nullable = false)
     private Suggestion suggestion;
 

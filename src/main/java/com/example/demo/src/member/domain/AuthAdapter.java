@@ -8,22 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuthAdapter extends User {
-//    private Auth auth;
-//
-//    public AuthAdapter(Auth auth) {
-//        super(auth.getUsername(), auth.getPassword(), authorities(auth.getAuthorities()));
-//        this.auth = auth;
-//    }
-//
-//    public Auth getAuth() {
-//        return this.auth;
-//    }
-//    private static List<GrantedAuthority> authorities(Set<Authority> authorities) {
-//        return authorities.stream()
-//                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-//                .collect(Collectors.toList());
-//    }
-
     private Member member;
 
     public AuthAdapter(Member member){

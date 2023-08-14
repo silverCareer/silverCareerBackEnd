@@ -35,10 +35,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }
-//    @ExceptionHandler(CustomException.class)
-//    protected ResponseEntity<CommonResponse> handleCustomException(CustomException ex){
-//        return createErrorResponse()
-//    }
 
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<CommonResponse> handleRequestParamBindFailedException(BindException ex) {

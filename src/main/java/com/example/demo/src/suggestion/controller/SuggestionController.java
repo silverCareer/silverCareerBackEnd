@@ -4,7 +4,6 @@ import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.suggestion.dto.RequestCreateSuggestion;
 import com.example.demo.src.suggestion.dto.ResponseSuggestion;
 import com.example.demo.src.suggestion.service.SuggestionServiceImpl;
-import com.example.demo.utils.SecurityUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.List;
 @RequestMapping("/api")
 public class SuggestionController {
     private final SuggestionServiceImpl suggestionServiceImpl;
-    private final SecurityUtil securityUtil;
 
     @GetMapping("/suggestion")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")

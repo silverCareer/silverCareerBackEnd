@@ -1,6 +1,7 @@
 package com.example.demo.src.member.domain;
 
 import com.example.demo.src.account.domain.Account;
+import com.example.demo.src.bid.domain.Bid;
 import com.example.demo.src.suggestion.domain.Suggestion;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -60,6 +61,9 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Suggestion> suggestionList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<Bid> bidList = new ArrayList<>();
+
     @Builder
     public Member(String email, String password, String name, String phoneNumber, Long age,
                   String userImage, String career, String category, Long balance, Long tokenWeight,
@@ -106,5 +110,8 @@ public class Member {
 
     public void addSuggestion(Suggestion suggestion){
         this.suggestionList.add(suggestion);
+    }
+    public void addBid(Bid bid) {
+        this.bidList.add(bid);
     }
 }

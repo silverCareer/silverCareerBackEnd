@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class ResponseSuggestion {
     private Long suggestionIdx;
+    private String title;
     private String description;
     private String category;
     private Long price;
