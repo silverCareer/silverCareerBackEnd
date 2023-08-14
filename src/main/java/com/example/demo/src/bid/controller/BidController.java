@@ -22,8 +22,8 @@ public class BidController {
     @PostMapping("/suggestion/{suggestionIdx}/bid")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")
     public ResponseEntity<CommonResponse> registerBid(@AuthenticationPrincipal(expression = "username") String memberEmail,
-                                                      @Valid @PathVariable Long suggestionIdx
-            , @Valid @RequestBody RequestBid bidDto) {
+                                                      @Valid @PathVariable Long suggestionIdx, @Valid @RequestBody RequestBid bidDto) {
+        System.out.println(memberEmail);
         bidServiceImpl.registerBid(memberEmail, suggestionIdx, bidDto);
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
@@ -45,6 +45,7 @@ public class BidController {
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> getRegisterBidsDetail(@AuthenticationPrincipal(expression = "username") String memberEmail
             , @Valid @PathVariable Long bidIdx) {
+        System.out.println(memberEmail);
         ResponseBid res = bidServiceImpl.getRegisterBidsDetail(bidIdx);
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
@@ -53,12 +54,14 @@ public class BidController {
     }
 
     @PostMapping("/bid/{bidIdx}/confirm")
-    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(@AuthenticationPrincipal(expression = "username") String memberEmail,
+    @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
+    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(@AuthenticationPrincipal(expression = "username") String memberEmail, @AuthenticationPrincipal(expression = "authorities") String authority,
                                                                 @Valid @PathVariable Long bidIdx) {
-        bidServiceImpl.acceptBidOfSuggestion(memberEmail,bidIdx);
+        System.out.println(authority);
+        bidServiceImpl.acceptBidOfSuggestion(memberEmail, bidIdx);
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
-                .response("의뢰 수락되었습니다.")
+                .response("의뢰가 입찰 되었습니다.")
                 .build());
     }
 
