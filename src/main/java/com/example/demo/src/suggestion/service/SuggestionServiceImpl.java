@@ -25,16 +25,17 @@ public class SuggestionServiceImpl implements SuggestionService {
 
     @Override
     @Transactional
-    public void createSuggestion(final String username, final RequestCreateSuggestion dto) {
-        Member member = memberRepository.findMemberByUsername(username);
+    public void createSuggestion(final String username, final RequestCreateSuggestion suggestionDto) {
+        Member mentee = memberRepository.findMemberByUsername(username);
         Suggestion suggestion = Suggestion.builder()
-                .description(dto.description())
-                .category(dto.category())
-                .price(dto.price())
-                .member(member)
+                .title((suggestionDto.getTitle()))
+                .description(suggestionDto.getDescription())
+                .category(suggestionDto.getCategory())
+                .price(suggestionDto.getPrice())
+                .member(mentee)
                 .build();
         suggestionRepository.save(suggestion);
-        member.addSuggestion(suggestion);
+        mentee.addSuggestion(suggestion);
     }
 
     @Override
@@ -54,10 +55,11 @@ public class SuggestionServiceImpl implements SuggestionService {
     @Override
     @Transactional(readOnly = true)
     public ResponseSuggestion getSuggestionDetail(final Long suggestionIdx) {
-        Optional<Suggestion> OptionalSuggestion = suggestionRepository.findById(suggestionIdx);
-        Suggestion suggestion = OptionalSuggestion.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Optional<Suggestion> optionalSuggestion = suggestionRepository.findById(suggestionIdx);
+        Suggestion suggestion = optionalSuggestion.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         return ResponseSuggestion.builder()
                 .suggestionIdx(suggestion.getSuggestionIdx())
+                .title(suggestion.getTitle())
                 .description(suggestion.getDescription())
                 .category(suggestion.getCategory())
                 .price(suggestion.getPrice())
