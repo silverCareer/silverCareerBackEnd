@@ -1,9 +1,8 @@
-package com.example.demo.src.payment.domain;
+package com.example.demo.src.payment.shared.domain;
 
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.product.domain.Product;
 import lombok.*;
-
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -38,7 +37,7 @@ public class Payment {
 
     @Builder
     public Payment(Long paymentIdx, LocalDate paymentDate, Long paymentAmount,
-                   boolean paymentSuccess, Product product, Member member){
+                   boolean paymentSuccess, Product product, Member member) {
         this.paymentIdx = paymentIdx;
         this.paymentDate = paymentDate;
         this.paymentAmount = paymentAmount;

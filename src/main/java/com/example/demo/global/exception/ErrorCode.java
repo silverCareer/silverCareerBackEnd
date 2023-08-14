@@ -11,8 +11,9 @@ public enum ErrorCode {
     NOT_FOUND_ELEMENT(HttpStatus.NOT_FOUND, "NOT_FOUND_001", "일치하는 요소가 잘못됐거나 없습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "ALLOW_001", "잘못된 http method 방식입니다."),
 
-    DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복");
+    DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복"),
 
+    NOT_FOUND_PAYMENT_HISTORY(HttpStatus.NOT_FOUND, "NOT_FOUND_001", "결제 기록이 존재하지 않습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

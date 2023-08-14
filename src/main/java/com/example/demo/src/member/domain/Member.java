@@ -88,6 +88,10 @@ public class Member {
         this.balance += amount;
     }
 
+    public void deductCash(long amount) throws IllegalAccessException{
+        this.balance -= amount;
+    }
+
     public void updatePassword(String password) {
         this.password = password;
     }
