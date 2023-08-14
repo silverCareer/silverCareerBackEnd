@@ -79,10 +79,10 @@ public class MemberAuthService {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
         if(!isRegexEmail(registerDto.getEmail())){
-            throw new IllegalAccessException("옳바르지 않은 이메일 형식입니다.");
+            throw new CustomException(ErrorCode.WRONG_EMAIL_INPUT);
         }
         if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
-            throw new IllegalAccessException("옳바르지 않은 비밀번호 형식입니다.");
+            throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTOR")
@@ -113,10 +113,10 @@ public class MemberAuthService {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
         if(!isRegexEmail(registerDto.getEmail())){
-            throw new IllegalAccessException("옳바르지 않은 이메일 형식입니다.");
+            throw new CustomException(ErrorCode.WRONG_EMAIL_INPUT);
         }
         if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
-            throw new IllegalAccessException("옳바르지 않은 비밀번호 형식입니다.");
+            throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTEE")
@@ -149,12 +149,12 @@ public class MemberAuthService {
     @Transactional
     public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
-                -> new IllegalAccessException("해당 유저가 없습니다."));
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         long amount = requestCashCharge.getBalance();
         if (validateCash(amount)) {
             memberAccountDeductEvent(memberEmail, amount);
         } else {
-            throw new IllegalAccessException("양수만 입력 가능합니다.");
+            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
         }
         member.addCash(amount);
         memberRepository.save(member);
@@ -186,10 +186,10 @@ public class MemberAuthService {
                 if (checkSamePassword(newPassword, oldPassword)) {
                     member.updatePassword(passwordEncoder.encode(newPassword));
                 } else {
-                    throw new IllegalAccessException("이전 비밀번호와 동일합니다.");
+                    throw new CustomException(ErrorCode.DUPLICATE_MEMBER_PASSWORD);
                 }
             } else {
-                throw new IllegalAccessException("잘못된 비밀번호 입력 형식입니다.");
+                throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
             }
         }
         if(newPhoneNum != null && !newPhoneNum.isEmpty()){
@@ -198,10 +198,10 @@ public class MemberAuthService {
                 if(checkSamePhoneNum(newPhoneNum, oldPhoneNum)){
                     member.updatePhoneNum(newPhoneNum);
                 } else {
-                    throw new IllegalAccessException("이전 전화번호와 동일합니다.");
+                    throw new CustomException(ErrorCode.DUPLICATE_MEMBER_PHONE_NUM);
                 }
             } else {
-                throw new IllegalAccessException("잘못된 전화번호 입력 형식입니다.");
+                throw new CustomException(ErrorCode.WRONG_PHONE_NUM_INPUT);
             }
         }
         memberRepository.save(member);
@@ -210,7 +210,7 @@ public class MemberAuthService {
 
     public ResponseMyInfo getMyInfo(String memberName) throws IllegalAccessException {
         ResponseMyInfo responseMyInfo = ResponseMyInfo.of(memberRepository.findByUsername(memberName).orElseThrow(()
-                -> new IllegalAccessException("해당 정보가 없습니다.")));
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT)));
 
         return responseMyInfo;
     }
@@ -240,7 +240,7 @@ public class MemberAuthService {
     // 충전하려는 금액 양의 정수인지 확인
     public boolean validateCash(long amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("0원 이하는 충전이 불가능합니다.");
+            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
         }
         return true;
     }

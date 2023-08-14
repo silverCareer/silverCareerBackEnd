@@ -55,7 +55,7 @@ public class PaymentService {
     @Transactional
     public List<ResponsePaymentHistory> getPaymentHistory(String memberEmail) {
         List<Payment> paymentList = paymentRepository.findPaymentsByMember_Username(memberEmail).orElseThrow(()
-                -> new CustomException(ErrorCode.NOT_FOUND_PAYMENT_HISTORY));;
+                -> new CustomException(ErrorCode.NOT_FOUND_PAYMENT_HISTORY));
 
         return paymentList.stream().map(ResponsePaymentHistory::of).collect(Collectors.toList());
     }
@@ -81,7 +81,7 @@ public class PaymentService {
 
     public boolean validateMemberBalance(Long memberBalance, Long productPrice){
         if(memberBalance < productPrice){
-            throw new IllegalArgumentException("잔액이 충분하지 않습니다.");
+            throw new CustomException(ErrorCode.NOT_ENOUGH_MEMBER_BALANCE);
         }
         return true;
     }

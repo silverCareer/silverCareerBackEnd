@@ -111,7 +111,7 @@ public class MemberController {
 
 
     @PatchMapping("/updateProfileImg")
-    public ResponseEntity updateProfileImg(@RequestParam(value="img")MultipartFile img) throws IOException{
+    public ResponseEntity updateProfileImg(@RequestParam(value="img")MultipartFile img) {
         return securityUtil.getCurrentUsername()
                 .map(username -> {
                     try {
