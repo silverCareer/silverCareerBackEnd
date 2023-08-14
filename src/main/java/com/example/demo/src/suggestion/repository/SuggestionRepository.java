@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
     List<Suggestion> findByCategory(String category);
-    Suggestion findSuggestionByMember(String email);
+    Suggestion findByMemberName(String email);
 
 
 }

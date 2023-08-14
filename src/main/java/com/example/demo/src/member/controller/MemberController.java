@@ -103,7 +103,7 @@ public class MemberController {
     // 멤버 정보 수정
     @PatchMapping("/modify")
     public ResponseEntity updateMember(@RequestBody RequestMemberPatch requestMemberPatch,
-                                               @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+                                       @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
         memberAuthService.updateInfo(requestMemberPatch, memberEmail);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -111,7 +111,7 @@ public class MemberController {
 
 
     @PatchMapping("/updateProfileImg")
-    public ResponseEntity updateProfileImg(@RequestParam(value="img")MultipartFile img) {
+    public ResponseEntity updateProfileImg(@RequestParam(value = "img") MultipartFile img) {
         return securityUtil.getCurrentUsername()
                 .map(username -> {
                     try {
