@@ -18,7 +18,7 @@ public enum ErrorCode {
     WRONG_PHONE_NUM_INPUT(HttpStatus.CONFLICT, "AUTH_006", "잘못된 전화번호 형식입니다."),
     WRONG_EMAIL_INPUT(HttpStatus.CONFLICT, "AUTH_007", "잘못된 이메일 형식입니다."),
 
-    DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다.");
+    DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
 
     //account
     NOT_ENOUGH_ACCOUNT_BALANCE(HttpStatus.FORBIDDEN, "ACCOUNT_001", "계좌 잔액이 충분하지 않습니다."),
@@ -29,6 +29,7 @@ public enum ErrorCode {
 
     //common
     UNDER_ZERO_AMOUNT(HttpStatus.FORBIDDEN, "COMMON_001", "0원 이하의 금액은 입금할 수 없습니다."); // account, member에서 각각 계좌 잔액 충전, 멤버 캐시 충전에서 사용
+
 
     private final HttpStatus httpStatus;
     private final String code;
