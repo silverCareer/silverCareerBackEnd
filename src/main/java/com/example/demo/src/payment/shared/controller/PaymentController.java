@@ -29,7 +29,7 @@ public class PaymentController {
     }
 
     @GetMapping("/paymentHistory")
-    public ResponseEntity<CommonResponse> getPaymentHistory(@AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> getPaymentHistory(@AuthenticationPrincipal(expression = "username") String memberEmail) {
         List<ResponsePaymentHistory> responsePaymentHistoryList = paymentService.getPaymentHistory(memberEmail);
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
