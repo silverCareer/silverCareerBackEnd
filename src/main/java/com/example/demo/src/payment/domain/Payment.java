@@ -1,4 +1,4 @@
-package com.example.demo.src.payment.shared.domain;
+package com.example.demo.src.payment.domain;
 
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.product.domain.Product;

@@ -1,11 +1,10 @@
-package com.example.demo.src.payment.shared.controller;
+package com.example.demo.src.payment.controller;
 
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.src.payment.shared.dto.RequestPayment;
-import com.example.demo.src.payment.shared.dto.ResponsePayment;
-import com.example.demo.src.payment.shared.dto.ResponsePaymentHistory;
-import com.example.demo.src.payment.shared.service.PaymentService;
-import jakarta.validation.Valid;
+import com.example.demo.src.payment.service.PaymentService;
+import com.example.demo.src.payment.dto.RequestPayment;
+import com.example.demo.src.payment.dto.ResponsePayment;
+import com.example.demo.src.payment.dto.ResponsePaymentHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

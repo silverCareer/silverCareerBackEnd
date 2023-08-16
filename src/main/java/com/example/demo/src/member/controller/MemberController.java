@@ -109,6 +109,13 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PatchMapping("/deleteMember")
+    public ResponseEntity deleteMember(@AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+        memberAuthService.deleteMember(memberEmail);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @PatchMapping("/updateProfileImg")
     public ResponseEntity updateProfileImg(@RequestParam(value = "img") MultipartFile img) {

@@ -100,6 +100,10 @@ public class Member {
         this.password = password;
     }
 
+    public void memberActivationControl(Boolean activated){
+        this.activated = activated;
+    }
+
     public void updatePhoneNum(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }

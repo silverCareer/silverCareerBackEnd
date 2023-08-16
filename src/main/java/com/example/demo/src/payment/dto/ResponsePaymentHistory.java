@@ -1,6 +1,6 @@
-package com.example.demo.src.payment.shared.dto;
+package com.example.demo.src.payment.dto;
 
-import com.example.demo.src.payment.shared.domain.Payment;
+import com.example.demo.src.payment.domain.Payment;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
