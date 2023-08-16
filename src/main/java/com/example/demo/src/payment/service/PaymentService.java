@@ -1,4 +1,4 @@
-package com.example.demo.src.payment.shared.service;
+package com.example.demo.src.payment.service;
 
 
 import com.example.demo.global.exception.ErrorCode;
@@ -7,11 +7,11 @@ import com.example.demo.src.bid.domain.Bid;
 import com.example.demo.src.bid.repository.BidRepository;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
-import com.example.demo.src.payment.shared.domain.Payment;
-import com.example.demo.src.payment.shared.dto.RequestPayment;
-import com.example.demo.src.payment.shared.dto.ResponsePayment;
-import com.example.demo.src.payment.shared.dto.ResponsePaymentHistory;
-import com.example.demo.src.payment.shared.repository.PaymentRepository;
+import com.example.demo.src.payment.domain.Payment;
+import com.example.demo.src.payment.dto.RequestPayment;
+import com.example.demo.src.payment.dto.ResponsePayment;
+import com.example.demo.src.payment.dto.ResponsePaymentHistory;
+import com.example.demo.src.payment.repository.PaymentRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.repository.ProductRepository;
 import com.example.demo.src.suggestion.domain.Suggestion;
@@ -20,9 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

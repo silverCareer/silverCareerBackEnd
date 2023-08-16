@@ -1,4 +1,4 @@
-package com.example.demo.src.payment.shared.dto;
+package com.example.demo.src.payment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

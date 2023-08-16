@@ -28,11 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Random;
 
 
@@ -59,13 +59,15 @@ public class MemberAuthService {
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+        Member member = memberRepository.findMemberByUsername(username);
+        if(!member.isActivated()){
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
         String accessToken = tokenProvider.createJwt(authentication);
         Long tokenWeight = ((AuthAdapter) authentication.getPrincipal()).getAuth().getTokenWeight();
         String refreshToken = refreshTokenProvider.createRefreshToken(authentication, tokenWeight);
-        Member member = memberRepository.findMemberByUsername(username);
 
         return ResponseLogin.builder()
                 .accessToken(accessToken)
@@ -75,7 +77,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void mentorSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void mentorSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -109,7 +111,14 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void menteeSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void menteeSignUp(final RequestSingUp registerDto) {
+        Member findMember = memberRepository.findByUsername(registerDto.getEmail()).orElseThrow(()
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        if(findDeletedMember(findMember.getUsername()).isPresent()){
+            findMember.memberActivationControl(true);
+            memberRepository.save(findMember);
+            return;
+        }
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -148,7 +157,7 @@ public class MemberAuthService {
 
     // 캐시 충전
     @Transactional
-    public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) throws IllegalAccessException {
+    public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) {
         Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
                 -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         long amount = requestCashCharge.getBalance();
@@ -226,6 +235,20 @@ public class MemberAuthService {
         member.updateProfileImg(uploadedImgUrl);
         memberRepository.save(member);
     }
+
+    @Transactional
+    public void deleteMember(String memberEmail){
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        member.memberActivationControl(false);
+        memberRepository.save(member);
+    }
+
+    // 탈퇴한 회원의 재가입인지 확인 -> 탈퇴상태 회원 리턴
+    private Optional<Member> findDeletedMember(String memberEmail) {
+        return memberRepository.findDeletedUserByMemberEmail(memberEmail);
+    }
+
 
     public void createAccountEvent(Account account, Member member){
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
