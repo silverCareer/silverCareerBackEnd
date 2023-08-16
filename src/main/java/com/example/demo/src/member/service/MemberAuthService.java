@@ -78,6 +78,13 @@ public class MemberAuthService {
 
     @Transactional
     public void mentorSignUp(final RequestSingUp registerDto) {
+        Member findMember = memberRepository.findByUsername(registerDto.getEmail()).orElseThrow(()
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        if(findDeletedMember(findMember.getUsername()).isPresent()){
+            findMember.memberActivationControl(true);
+            memberRepository.save(findMember);
+            return;
+        }
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
