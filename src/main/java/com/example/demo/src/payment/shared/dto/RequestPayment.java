@@ -16,13 +16,12 @@ import java.time.LocalDateTime;
 public class RequestPayment {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate localDate;
+    private String paymentName;
 
-    private Long productId;
-
-    public static RequestPayment withCurrentTime(Long productId) {
+    public static RequestPayment withCurrentTime(String paymentName) {
         return RequestPayment.builder()
                 .localDate(LocalDate.now())
-                .productId(productId)
+                .paymentName(paymentName)
                 .build();
     }
 }

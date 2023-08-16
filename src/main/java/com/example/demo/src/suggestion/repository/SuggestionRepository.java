@@ -10,6 +10,5 @@ public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
     List<Suggestion> findByCategory(String category);
     Suggestion findByMemberName(String email);
-
-
+    Optional<Suggestion> findByTitle(String title);
 }
