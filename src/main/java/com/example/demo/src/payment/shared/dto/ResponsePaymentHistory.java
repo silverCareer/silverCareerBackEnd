@@ -14,13 +14,13 @@ public class ResponsePaymentHistory {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate localDate;
     private Long amount;
-    private String productName;
+    private String paymentName;
 
     public static ResponsePaymentHistory of(Payment payment){
         return ResponsePaymentHistory.builder()
                 .localDate(payment.getPaymentDate())
                 .amount(payment.getPaymentAmount())
-                .productName(payment.getProduct().getProductName())
+                .paymentName(payment.getPaymentName())
                 .build();
     }
 }
