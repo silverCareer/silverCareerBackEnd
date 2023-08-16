@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponsePayment {
-    private Long productIdx;
+    private String paymentName;
     private Long price;
 }

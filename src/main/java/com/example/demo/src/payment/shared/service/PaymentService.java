@@ -3,6 +3,8 @@ package com.example.demo.src.payment.shared.service;
 
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.src.bid.domain.Bid;
+import com.example.demo.src.bid.repository.BidRepository;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.payment.shared.domain.Payment;
@@ -12,6 +14,8 @@ import com.example.demo.src.payment.shared.dto.ResponsePaymentHistory;
 import com.example.demo.src.payment.shared.repository.PaymentRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.repository.ProductRepository;
+import com.example.demo.src.suggestion.domain.Suggestion;
+import com.example.demo.src.suggestion.repository.SuggestionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,27 +32,54 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final SuggestionRepository suggestionRepository;
+    private final BidRepository bidRepository;
     @Transactional
-    public ResponsePayment doPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
+    public ResponsePayment doProductPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         Long memberBalance = member.getBalance();
-
-        Long productId = requestPayment.getProductId();
-        requestPayment  = requestPayment.withCurrentTime(productId);
-        Product product = productRepository.findProductByProductIdx(productId)
+        String paymentName = requestPayment.getPaymentName();
+        requestPayment  = requestPayment.withCurrentTime(paymentName);
+        Product product = productRepository.findProductByProductName(paymentName)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         Long productPrice = product.getPrice();
 
         if(validateMemberBalance(memberBalance, productPrice)){
             // payment 테이블에 기록
-            updateExchangeRecord(requestPayment, paymentRepository, member, product, productPrice);
+            updateExchangeRecordProduct(requestPayment, paymentRepository, member, productPrice);
             // member balance 차감
             deductMemberBalance(memberRepository, memberEmail, productPrice);
         }
         return ResponsePayment.builder()
-                .productIdx(productId)
+                .paymentName(paymentName)
                 .price(productPrice)
+                .build();
+    }
+
+    @Transactional
+    public ResponsePayment doBidPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
+        Member member = memberRepository.findByUsername(memberEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Long memberBalance = member.getBalance();
+        String paymentName = requestPayment.getPaymentName();
+        requestPayment  = requestPayment.withCurrentTime(paymentName);
+        Suggestion suggestion = suggestionRepository.findByTitle(paymentName)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Bid bid = bidRepository.findBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+
+        Long bidPrice = bid.getPrice();
+
+        if(validateMemberBalance(memberBalance, bidPrice)){
+            // payment 테이블에 기록
+            updateExchangeRecordBid(requestPayment, paymentRepository, member, bidPrice);
+            // member balance 차감
+            deductMemberBalance(memberRepository, memberEmail, bidPrice);
+        }
+        return ResponsePayment.builder()
+                .paymentName(paymentName)
+                .price(bidPrice)
                 .build();
     }
 
@@ -60,12 +91,25 @@ public class PaymentService {
         return paymentList.stream().map(ResponsePaymentHistory::of).collect(Collectors.toList());
     }
 
-    private static void updateExchangeRecord(RequestPayment requestPayment, PaymentRepository paymentRepository, Member member, Product product, Long productPrice){
+    private static void updateExchangeRecordProduct(RequestPayment requestPayment, PaymentRepository paymentRepository, Member member, Long productPrice){
         Payment payment = Payment.builder()
                 .paymentDate(requestPayment.getLocalDate())
                 .paymentAmount(productPrice)
                 .paymentSuccess(Boolean.parseBoolean("true"))
-                .product(product)
+                .paymentType("상품")
+                .paymentName(requestPayment.getPaymentName())
+                .member(member)
+                .build();
+        paymentRepository.save(payment);
+    }
+
+    private static void updateExchangeRecordBid(RequestPayment requestPayment, PaymentRepository paymentRepository, Member member, Long productPrice){
+        Payment payment = Payment.builder()
+                .paymentDate(requestPayment.getLocalDate())
+                .paymentAmount(productPrice)
+                .paymentSuccess(Boolean.parseBoolean("true"))
+                .paymentType("입찰")
+                .paymentName(requestPayment.getPaymentName())
                 .member(member)
                 .build();
         paymentRepository.save(payment);

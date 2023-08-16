@@ -27,9 +27,11 @@ public class Payment {
     @Column(name = "payment_success", nullable = false)
     private boolean paymentSuccess;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_idx", nullable = false)
-    private Product product;
+    @Column(name = "payment_type", nullable = false)
+    private String paymentType;
+
+    @Column(name = "payment_name", nullable = false)
+    private String paymentName;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "email", nullable = false)
@@ -37,12 +39,13 @@ public class Payment {
 
     @Builder
     public Payment(Long paymentIdx, LocalDate paymentDate, Long paymentAmount,
-                   boolean paymentSuccess, Product product, Member member) {
+                   boolean paymentSuccess, String paymentType, String paymentName, Member member) {
         this.paymentIdx = paymentIdx;
         this.paymentDate = paymentDate;
         this.paymentAmount = paymentAmount;
         this.paymentSuccess = paymentSuccess;
-        this.product = product;
+        this.paymentType = paymentType;
+        this.paymentName = paymentName;
         this.member = member;
     }
 }

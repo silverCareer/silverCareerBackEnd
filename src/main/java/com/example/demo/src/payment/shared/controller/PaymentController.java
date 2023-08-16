@@ -21,13 +21,23 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/pay")
-    public ResponseEntity<ResponsePayment> pay(@RequestBody RequestPayment requestPayment, @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        ResponsePayment responsePayment = paymentService.doPayment(requestPayment, memberEmail);
+    // 상품 결제
+    @PostMapping("/productPayment")
+    public ResponseEntity<ResponsePayment> productPayment(@RequestBody RequestPayment requestPayment, @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+        ResponsePayment responsePayment = paymentService.doProductPayment(requestPayment, memberEmail);
 
         return new ResponseEntity<>(responsePayment, HttpStatus.OK);
     }
 
+    // 입찰 결제
+    @PostMapping("/bidPayment")
+    public ResponseEntity<ResponsePayment> bidPayment(@RequestBody RequestPayment requestPayment, @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+        ResponsePayment responsePayment = paymentService.doBidPayment(requestPayment, memberEmail);
+
+        return new ResponseEntity<>(responsePayment, HttpStatus.OK);
+    }
+
+    // 결제 내역 조회
     @GetMapping("/paymentHistory")
     public ResponseEntity<CommonResponse> getPaymentHistory(@AuthenticationPrincipal(expression = "username") String memberEmail) {
         List<ResponsePaymentHistory> responsePaymentHistoryList = paymentService.getPaymentHistory(memberEmail);
