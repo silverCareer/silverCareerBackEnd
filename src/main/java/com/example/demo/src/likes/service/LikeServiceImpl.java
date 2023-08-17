@@ -21,7 +21,7 @@ public class LikeServiceImpl implements LikeService {
     public void addLikesCount(final String username, final Long productIdx) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        if (likeRepository.existsByProductIdxAndMemberEmail(username, productIdx)) {
+        if (likeRepository.existsByMemberEmailAndProductIdx(username,productIdx)) {
             throw new CustomException(ErrorCode.EXIST_LIKES);
         }
 
@@ -37,7 +37,7 @@ public class LikeServiceImpl implements LikeService {
     public void removeLikesCount(final String username, final Long productIdx) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        Like like = likeRepository.findByProductIdxAndMemberEmail(username, productIdx)
+        Like like = likeRepository.findByMemberEmailAndProductIdx(username, productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
         product.decreaseLikesCount();
