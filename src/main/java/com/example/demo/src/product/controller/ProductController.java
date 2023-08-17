@@ -5,6 +5,10 @@ import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,12 +25,14 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<CommonResponse> displayProductByCategory(@Valid @PathVariable String category) {
-        List<DisplayProductRes> displayProductRes = productService.displayProductByCategory(category);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response(displayProductRes)
-                .build());
+    public ResponseEntity<ResponseMultiProduct> displayProductByCategory(
+            @Valid @PathVariable String category,
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "1000") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "productIdx"));
+        ResponseMultiProduct responseMultiProduct = productService.displayProductByCategory(category, pageable);
+
+        return new ResponseEntity<>(responseMultiProduct, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{productId}")
