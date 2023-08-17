@@ -11,6 +11,7 @@ public class ChatController {
     @MessageMapping("/sendMessage")
     @SendTo("/topic/messages")
     public Message sendMessage(Message message) {
+        System.out.println("보낸다1");
         return message;
     }
 }
