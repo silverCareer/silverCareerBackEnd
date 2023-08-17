@@ -1,8 +1,10 @@
 package com.example.demo.src.product.dto;
 
 import com.example.demo.src.product.domain.Product;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
