@@ -21,12 +21,12 @@ spring:
 
   data:
     mongodb:
-      host: 43.201.132.241
-#      host : localhost
+#      host: 43.201.132.241
+      host : localhost
       port: 27017
-      authentication-database: admin
-      username: admin1
-      password: test1234
+#      authentication-database: admin
+#      username: admin1
+#      password: test1234
       database: silcarMongoDB
 
 
