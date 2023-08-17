@@ -10,6 +10,7 @@ public class DisplayProductRes{
     private Long productIdx;
     private String productName;
     private String productDescription;
+    private String category;
     private String productImage;
     private Long productLikes;
     private Long productPrice;
@@ -19,6 +20,7 @@ public class DisplayProductRes{
                 .productIdx(product.getProductIdx())
                 .productName(product.getProductName())
                 .productDescription(product.getDescription())
+                .category(product.getCategory())
                 .productImage(product.getImage())
                 .productLikes(product.getLikes())
                 .productPrice(product.getPrice())
