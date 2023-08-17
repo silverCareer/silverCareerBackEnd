@@ -19,7 +19,8 @@ public enum ErrorCode {
     WRONG_EMAIL_INPUT(HttpStatus.CONFLICT, "AUTH_007", "잘못된 이메일 형식입니다."),
 
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
-
+    //likes
+    EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 있습니다"),
     //account
     NOT_ENOUGH_ACCOUNT_BALANCE(HttpStatus.FORBIDDEN, "ACCOUNT_001", "계좌 잔액이 충분하지 않습니다."),
 
