@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -55,8 +54,8 @@ public class SuggestionServiceImpl implements SuggestionService {
     @Override
     @Transactional(readOnly = true)
     public ResponseSuggestion getSuggestionDetail(final Long suggestionIdx) {
-        Optional<Suggestion> optionalSuggestion = suggestionRepository.findById(suggestionIdx);
-        Suggestion suggestion = optionalSuggestion.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         return ResponseSuggestion.builder()
                 .suggestionIdx(suggestion.getSuggestionIdx())
                 .title(suggestion.getTitle())
