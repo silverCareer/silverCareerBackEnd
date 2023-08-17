@@ -78,13 +78,6 @@ public class MemberAuthService {
 
     @Transactional
     public void mentorSignUp(final RequestSingUp registerDto) {
-        Member findMember = memberRepository.findByUsername(registerDto.getEmail()).orElseThrow(()
-                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        if(findDeletedMember(findMember.getUsername()).isPresent()){
-            findMember.memberActivationControl(true);
-            memberRepository.save(findMember);
-            return;
-        }
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -119,13 +112,6 @@ public class MemberAuthService {
 
     @Transactional
     public void menteeSignUp(final RequestSingUp registerDto) {
-        Member findMember = memberRepository.findByUsername(registerDto.getEmail()).orElseThrow(()
-                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        if(findDeletedMember(findMember.getUsername()).isPresent()){
-            findMember.memberActivationControl(true);
-            memberRepository.save(findMember);
-            return;
-        }
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -250,12 +236,6 @@ public class MemberAuthService {
         member.memberActivationControl(false);
         memberRepository.save(member);
     }
-
-    // 탈퇴한 회원의 재가입인지 확인 -> 탈퇴상태 회원 리턴
-    private Optional<Member> findDeletedMember(String memberEmail) {
-        return memberRepository.findDeletedUserByMemberEmail(memberEmail);
-    }
-
 
     public void createAccountEvent(Account account, Member member){
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
