@@ -87,6 +87,10 @@ dependencies {
     // Redis - Redisson
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.19.0'
+
+    testImplementation(
+            'org.assertj:assertj-core:3.21.0'
+    )
 }
 
 test {

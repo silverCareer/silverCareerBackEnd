@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    boolean existsByMemberEmailAndProductIdx(String username, Long productIdx);
-    Optional<Like> findByMemberEmailAndProductIdx(String username, Long productIdx);
+    boolean existsByProductIdxAndMemberEmail(Long productIdx ,String username);
+    Optional<Like> findByProductIdxAndMemberEmail(Long productIdx, String username);
 }

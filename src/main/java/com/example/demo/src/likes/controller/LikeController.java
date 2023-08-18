@@ -19,7 +19,7 @@ public class LikeController {
     @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> addLikesCount(@AuthenticationPrincipal(expression = "username") String username,
                                                         @Valid @PathVariable Long productId) {
-        likeRedisson.addLike(username, productId);
+        likeRedisson.addLike(productId, username);
         return ResponseEntity.ok(CommonResponse.builder()
                 .success(true)
                 .response("좋아요 등록 성공")
@@ -30,7 +30,7 @@ public class LikeController {
     @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> removeLikesCount(@AuthenticationPrincipal(expression = "username") String username,
                                                            @Valid @PathVariable Long productId) {
-        likeRedisson.removeLike(username, productId);
+        likeRedisson.removeLike(productId,username);
         return ResponseEntity.ok(CommonResponse.builder()
                 .success(true)
                 .response("좋아요 취소 성공")

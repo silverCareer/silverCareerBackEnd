@@ -18,10 +18,10 @@ public class LikeServiceImpl implements LikeService {
     private final ProductRepository productRepository;
 
     @Override
-    public void addLikesCount(final String username, final Long productIdx) {
+    public void addLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        if (likeRepository.existsByMemberEmailAndProductIdx(username,productIdx)) {
+        if (likeRepository.existsByProductIdxAndMemberEmail(productIdx, username)) {
             throw new CustomException(ErrorCode.EXIST_LIKES);
         }
 
@@ -29,18 +29,18 @@ public class LikeServiceImpl implements LikeService {
                 .productIdx(product.getProductIdx())
                 .memberEmail(username)
                 .build();
-        product.increaseLikesCount();
         likeRepository.save(like);
+        product.increaseLikesCount();
     }
 
     @Override
-    public void removeLikesCount(final String username, final Long productIdx) {
+    public void removeLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        Like like = likeRepository.findByMemberEmailAndProductIdx(username, productIdx)
+        Like like = likeRepository.findByProductIdxAndMemberEmail(productIdx, username)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
-        product.decreaseLikesCount();
         likeRepository.delete(like);
+        product.decreaseLikesCount();
     }
 }
