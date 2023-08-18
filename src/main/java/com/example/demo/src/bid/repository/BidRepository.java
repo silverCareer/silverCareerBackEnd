@@ -1,6 +1,8 @@
 package com.example.demo.src.bid.repository;
 
 import com.example.demo.src.bid.domain.Bid;
+import com.example.demo.src.bid.domain.BidStatus;
+import com.example.demo.src.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +22,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     Optional<Bid> findBySuggestion_SuggestionIdx(Long suggestionIdx);
 
     Optional<Bid> findBidsByBidIdx(Long bidIdx);
+
+    List<Bid> findBidBySuggestionMemberAndStatus(Member member, BidStatus status);
+
 }

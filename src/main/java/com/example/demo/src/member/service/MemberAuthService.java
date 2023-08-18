@@ -8,11 +8,15 @@ import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.src.S3Service;
 import com.example.demo.src.account.domain.Account;
+import com.example.demo.src.bid.domain.BidStatus;
+import com.example.demo.src.bid.repository.BidRepository;
 import com.example.demo.src.member.domain.AuthAdapter;
 import com.example.demo.src.member.domain.Authority;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.repository.MemberRepository;
+import com.example.demo.src.suggestion.domain.Suggestion;
+import com.example.demo.src.suggestion.repository.SuggestionRepository;
 import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
@@ -28,12 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -43,6 +46,8 @@ public class MemberAuthService {
     private final RefreshTokenProvider refreshTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
+    private final SuggestionRepository suggestionRepository;
+    private final BidRepository bidRepository;
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -55,6 +60,39 @@ public class MemberAuthService {
 
     @Value("${sns.service.api-secret-key}")
     private String apiSecretKey;
+
+    public Object getNotification(final String username, final String authority) {
+        Member member = memberRepository.findMemberByUsername(username);
+        String category = member.getCategory();
+        Object res;
+
+        if (authority.equals("ROLE_MENTOR")) {
+            List<Suggestion> getFromSuggestions = suggestionRepository.findByCategory(category);
+            List<Suggestion> terminatedSuggestions = suggestionRepository.findSuggestionsWithCompleteBidsAndMember(member);
+
+            List<Suggestion> notifications = getFromSuggestions.stream()
+                    .filter(suggestion -> !terminatedSuggestions.contains(suggestion))
+                    .collect(Collectors.toList());
+
+            Map<Suggestion, Boolean> notificationMap = new HashMap<>();
+            notifications.forEach(suggestion -> notificationMap.put(suggestion, false));
+
+            suggestionRepository.findSuggestionsWithInCompleteBidsAndMember(member)
+                    .forEach(suggestion -> notificationMap.put(suggestion, true));
+
+            res = notificationMap.entrySet().stream()
+                    .sorted(Comparator.comparingLong(entry-> -entry.getKey().getSuggestionIdx()))
+                    .map(entry -> MentorNotificationRes.of(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+        } else {
+            res = bidRepository.findBidBySuggestionMemberAndStatus(member, BidStatus.진행중)
+                    .stream()
+                    .map(MenteeNotificationRes::of)
+                    .collect(Collectors.toList());
+        }
+        member.updateAlarmStatus(false);
+        return res;
+    }
 
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
