@@ -13,10 +13,11 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findAll();
-    List<Product> findByCategory(String category);
+    Page<Product> findAll(Pageable pageable);
+    Page<Product> findByCategory(String category, Pageable pageable);
     Optional<Product> findProductByProductIdx(Long productIdx);
-    Optional<Product> findProductByProductName(String productName);
+    Optional<Product> findProductsByProductIdx(Long productIdx);
+//    Optional<Product> findProductByProductName(String productName);
     @Query("SELECT p FROM Product p where p.productName LIKE CONCAT('%', :query, '%')")
     Page<Product> findByProductName(@Param("query")String query, Pageable pageable);
 }
