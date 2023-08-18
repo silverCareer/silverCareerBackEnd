@@ -61,6 +61,7 @@ public class MemberAuthService {
     @Value("${sns.service.api-secret-key}")
     private String apiSecretKey;
 
+    @Transactional
     public Object getNotification(final String username, final String authority) {
         Member member = memberRepository.findMemberByUsername(username);
         String category = member.getCategory();
@@ -92,6 +93,17 @@ public class MemberAuthService {
         }
         member.updateAlarmStatus(false);
         return res;
+    }
+
+    @Transactional
+    public AlarmStatus getAlarmStatus(final String username){
+        Member member = memberRepository.findMemberByUsername(username);
+        String msg = member.isCheckedAlarm() ? "새로운 알림이 도착했습니다." : "";
+
+        return AlarmStatus.builder()
+                .status(member.isCheckedAlarm())
+                .message(msg)
+                .build();
     }
 
     public ResponseLogin login(final String username, final String password) {

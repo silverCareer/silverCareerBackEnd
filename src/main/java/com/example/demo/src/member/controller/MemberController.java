@@ -143,4 +143,16 @@ public class MemberController {
                         .build()
         );
     }
+
+    @GetMapping("/alarmStatus")
+    public ResponseEntity getAlarmStatus(@AuthenticationPrincipal(expression = "username") String username){
+        AlarmStatus res = memberAuthService.getAlarmStatus(username);
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder()
+                        .success(true)
+                        .response(res)
+                        .build()
+        );
+    }
 }
