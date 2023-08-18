@@ -1,10 +1,8 @@
 package com.example.demo.src.payment.controller;
 
 import com.example.demo.global.exception.dto.CommonResponse;
+import com.example.demo.src.payment.dto.*;
 import com.example.demo.src.payment.service.PaymentService;
-import com.example.demo.src.payment.dto.RequestPayment;
-import com.example.demo.src.payment.dto.ResponsePayment;
-import com.example.demo.src.payment.dto.ResponsePaymentHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +26,12 @@ public class PaymentController {
         return new ResponseEntity<>(responsePayment, HttpStatus.OK);
     }
 
-    // 입찰 결제
+//     입찰 결제
     @PostMapping("/bidPayment")
-    public ResponseEntity<ResponsePayment> bidPayment(@RequestBody RequestPayment requestPayment, @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        ResponsePayment responsePayment = paymentService.doBidPayment(requestPayment, memberEmail);
+    public ResponseEntity<ResponseBidPayment> bidPayment(@RequestBody RequestBidPayment requestBidPayment, @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
+        ResponseBidPayment responsebidPayment = paymentService.doBidPayment(requestBidPayment, memberEmail);
 
-        return new ResponseEntity<>(responsePayment, HttpStatus.OK);
+        return new ResponseEntity<>(responsebidPayment, HttpStatus.OK);
     }
 
     // 결제 내역 조회

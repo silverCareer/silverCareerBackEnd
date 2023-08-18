@@ -8,9 +8,7 @@ import com.example.demo.src.bid.repository.BidRepository;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.payment.domain.Payment;
-import com.example.demo.src.payment.dto.RequestPayment;
-import com.example.demo.src.payment.dto.ResponsePayment;
-import com.example.demo.src.payment.dto.ResponsePaymentHistory;
+import com.example.demo.src.payment.dto.*;
 import com.example.demo.src.payment.repository.PaymentRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.repository.ProductRepository;
@@ -20,6 +18,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,77 +37,112 @@ public class PaymentService {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         Long memberBalance = member.getBalance();
-        String paymentName = requestPayment.getPaymentName();
-        requestPayment  = requestPayment.withCurrentTime(paymentName);
-        Product product = productRepository.findProductByProductName(paymentName)
+        Long productIdx = requestPayment.getProductIdx();
+
+        Product product = productRepository.findProductByProductIdx(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         Long productPrice = product.getPrice();
+        String productName = product.getProductName();
 
         if(validateMemberBalance(memberBalance, productPrice)){
             // payment 테이블에 기록
-            updateExchangeRecordProduct(requestPayment, paymentRepository, member, productPrice);
+            updateExchangeRecordProduct(paymentRepository, member, productPrice, productName, productIdx);
             // member balance 차감
             deductMemberBalance(memberRepository, memberEmail, productPrice);
         }
         return ResponsePayment.builder()
-                .paymentName(paymentName)
+                .productIdx(productIdx)
                 .price(productPrice)
                 .build();
     }
 
     @Transactional
-    public ResponsePayment doBidPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
+    public ResponseBidPayment doBidPayment(RequestBidPayment requestBidPayment, String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         Long memberBalance = member.getBalance();
-        String paymentName = requestPayment.getPaymentName();
-        requestPayment  = requestPayment.withCurrentTime(paymentName);
-        Suggestion suggestion = suggestionRepository.findByTitle(paymentName)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        Bid bid = bidRepository.findBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-
+        Long bidIdx = requestBidPayment.getBidIdx();
+        Bid bid = bidRepository.findByBidIdx(bidIdx);
         Long bidPrice = bid.getPrice();
+        Long suggestionIdx = bid.getSuggestion().getSuggestionIdx();
+
+        Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        String bidName = suggestion.getTitle();
 
         if(validateMemberBalance(memberBalance, bidPrice)){
             // payment 테이블에 기록
-            updateExchangeRecordBid(requestPayment, paymentRepository, member, bidPrice);
+            updateExchangeRecordBid(paymentRepository, member, bidName, bidPrice, bidIdx);
             // member balance 차감
             deductMemberBalance(memberRepository, memberEmail, bidPrice);
         }
-        return ResponsePayment.builder()
-                .paymentName(paymentName)
+        return ResponseBidPayment.builder()
+                .bidIdx(bidIdx)
                 .price(bidPrice)
                 .build();
     }
 
     @Transactional
     public List<ResponsePaymentHistory> getPaymentHistory(String memberEmail) {
-        List<Payment> paymentList = paymentRepository.findPaymentsByMember_Username(memberEmail).orElseThrow(()
-                -> new CustomException(ErrorCode.NOT_FOUND_PAYMENT_HISTORY));
+        List<Payment> paymentList = paymentRepository.findPaymentsByMember_Username(memberEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PAYMENT_HISTORY));
 
-        return paymentList.stream().map(ResponsePaymentHistory::of).collect(Collectors.toList());
+        List<ResponsePaymentHistory> responsePaymentHistoryList = new ArrayList<>();
+        String mentorName = "";
+        for (Payment payment : paymentList) {
+            Long paymentIdx = payment.getProductIdx(); // product title 조회
+            String paymentType = payment.getPaymentType();
+            if(paymentType.equals("상품")){
+                Product product = productRepository.findProductsByProductIdx(paymentIdx)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+                String email = product.getMember().getUsername();
+                Member member = memberRepository.findByUsername(email)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+                mentorName = member.getName();
+                responsePaymentHistoryList.add(ResponsePaymentHistory.of(payment, mentorName));
+            } else {
+                Bid bid = bidRepository.findBidsByBidIdx(paymentIdx)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+                String email = bid.getMember().getUsername();
+                Member member = memberRepository.findByUsername(email)
+                        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+                mentorName = member.getName();
+                responsePaymentHistoryList.add(ResponsePaymentHistory.of(payment, mentorName));
+            }
+        }
+
+        return responsePaymentHistoryList;
     }
 
-    private static void updateExchangeRecordProduct(RequestPayment requestPayment, PaymentRepository paymentRepository, Member member, Long productPrice){
+//    @Transactional
+//    public List<ResponsePaymentHistory> getPaymentHistory(String memberEmail) {
+//        List<Payment> paymentList = paymentRepository.findPaymentsByMember_Username(memberEmail).orElseThrow(()
+//                -> new CustomException(ErrorCode.NOT_FOUND_PAYMENT_HISTORY));
+//
+//        return paymentList.stream().map(ResponsePaymentHistory::of).collect(Collectors.toList());
+//    }
+
+    private static void updateExchangeRecordProduct(PaymentRepository paymentRepository, Member member, Long productPrice, String productName, Long productIdx){
         Payment payment = Payment.builder()
-                .paymentDate(requestPayment.getLocalDate())
+                .paymentDate(LocalDate.now())
                 .paymentAmount(productPrice)
                 .paymentSuccess(Boolean.parseBoolean("true"))
                 .paymentType("상품")
-                .paymentName(requestPayment.getPaymentName())
+                .paymentName(productName)
+                .productIdx(productIdx)
                 .member(member)
                 .build();
         paymentRepository.save(payment);
     }
 
-    private static void updateExchangeRecordBid(RequestPayment requestPayment, PaymentRepository paymentRepository, Member member, Long productPrice){
+    private static void updateExchangeRecordBid(PaymentRepository paymentRepository, Member member, String bidName, Long bidPrice, Long bidIdx){
         Payment payment = Payment.builder()
-                .paymentDate(requestPayment.getLocalDate())
-                .paymentAmount(productPrice)
+                .paymentDate(LocalDate.now())
+                .paymentAmount(bidPrice)
                 .paymentSuccess(Boolean.parseBoolean("true"))
                 .paymentType("입찰")
-                .paymentName(requestPayment.getPaymentName())
+                .paymentName(bidName)
+                .productIdx(bidIdx)
                 .member(member)
                 .build();
         paymentRepository.save(payment);
