@@ -131,4 +131,16 @@ public class MemberController {
                 .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
 
+    @GetMapping("/notification")
+    public ResponseEntity getNotification(@AuthenticationPrincipal(expression = "username") String username,
+                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority){
+        Object notificationRes = memberAuthService.getNotification(username, authority);
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder()
+                        .success(true)
+                        .response(notificationRes)
+                        .build()
+        );
+    }
 }
