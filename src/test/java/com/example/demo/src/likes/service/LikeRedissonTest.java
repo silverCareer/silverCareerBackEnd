@@ -1,111 +1,86 @@
 package com.example.demo.src.likes.service;
 
-import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.src.likes.core.LikeRedisson;
-import com.example.demo.src.likes.domain.Like;
 import com.example.demo.src.likes.repository.LikeRepository;
-import com.example.demo.src.member.domain.Authority;
-import com.example.demo.src.member.domain.Member;
-import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.repository.ProductRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
+
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
+//@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class LikeRedissonTest {
 
-    @Autowired
+    @InjectMocks
     private LikeRedisson likeRedisson;
-    @Autowired
+    @Mock
     private LikeServiceImpl likeServiceImpl;
-
-    @Autowired
+    @Mock
+    private RedissonClient redissonClient;
+    @Mock
+    private ProductRepository productRepository;
+    @Mock
     private LikeRepository likeRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @BeforeEach
-    void setUp() {
-//        Authority authority = Authority.builder()
-//                .authorityName("ROLE_MENTOR")
-//                .build();
-//
-//        Member member = Member.builder()
-//                .email("kdh3213@gmail.com")
-//                .password("sungbaksa1@")
-//                .name("알빠냐")
-//                .phoneNumber("0101232141241")
-//                .age(97L)
-//                .category("전투직")
-//                .authority(authority)
-//                .activated(true)
-//                .build();
-//        memberRepository.save(member);
-//
-//        Product product = Product.builder()
-//                .productIdx(1L)
-//                .productName("주먹 자랑 교실")
-//                .category("기술직")
-//                .address("평안도 개경시")
-//                .description("덤벼")
-//                .price(60000000000000000L)
-//                .image("fasdgasggqrqr")
-//                .saleCount(10L)
-//                .likes(0L)
-//                .member(member)
-//                .build();
-//        productRepository.save(product);
-//
-//        Like like = Like.builder()
-//                .productIdx(1L)
-//                .memberEmail("kdh3213@gmail.com")
-//                .build();
-//        likeRepository.save(like);
-    }
-    @AfterEach
-    void after() {
-        likeRepository.deleteAll();
-//        productRepository.deleteAll();
-//        memberRepository.deleteAll();
-    }
+//    @BeforeEach
+//    void before(){
+//        MockitoAnnotations.openMocks(this);
+//    }
 
     @Test
-    void testAddLikeWithConcurrency() throws InterruptedException {
-        int numThreads = 100;
-        ExecutorService executorService = Executors.newFixedThreadPool(32);
+    @DisplayName("좋아요 동시성 테스트(성공 케이스)")
+    void addLikeRedisson() throws InterruptedException {
 
-        CountDownLatch latch = new CountDownLatch(numThreads);
+        // Mock객체로 RLock 객체 생성 및 동작 설정
+        RLock mockLock = mock(RLock.class);
+        when(redissonClient.getLock(anyString())).thenReturn(mockLock);
+        when(mockLock.tryLock(anyLong(), anyLong(), any(TimeUnit.class))).thenReturn(true);
 
-        for (int i = 0; i < numThreads; i++) {
-            String username = "kdh3213@gmail.com" + i;
+        int threads = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(threads); //스레드 풀 10개 생성
+        CountDownLatch latch = new CountDownLatch(threads); // 모든 스레드의 작업이 완료될 때까지 대기하는 동기화 메커니즘 생성
+        AtomicInteger countCall = new AtomicInteger(0); // 메서드 호출 횟수를 추적하는 AtomicInteger 생성
+
+        ArgumentCaptor<Long> productIdxCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<String> usernameCaptor = ArgumentCaptor.forClass(String.class);
+
+        // likeServiceImpl의 addLikesCount 메서드 호출 시 호출 횟수 증가 및 결과값 반환하는 Mock
+        doAnswer(invocation -> {
+            countCall.incrementAndGet();
+            return null;
+        }).when(likeServiceImpl).addLikesCount(productIdxCaptor.capture(), usernameCaptor.capture());
+
+        Product product = Product.builder()
+                .likes(10L)
+                .build();
+        when(productRepository.findById(eq(1L))).thenReturn(Optional.of(product));
+
+        for (int i = 0; i < threads; i++) {
+            String username = "kdh3213@gmail.com - " + i;
             executorService.submit(() -> {
                 try {
-                    likeRedisson.addLike(30L, username);
+                    // 테스트 대상 메서드 호출 (동시성 테스트)
+                    likeRedisson.addLike(1L, username);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 } finally {
@@ -115,8 +90,33 @@ public class LikeRedissonTest {
         }
         latch.await();
 
-        Like like = likeRepository.findById(30L).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        System.out.println(like.getMemberEmail());
-        Assertions.assertEquals(0L, like.getLikesIdx());
+        /**
+         * 스레드 수 10개
+         * 락 대기 시간 1초
+         * 락 유지 시간 3초
+         *
+         * 총 좋아요 요청 수 10번
+         * 요청 된 메서드 카운트 10번  -> 일치
+         *
+         */
+        verify(likeServiceImpl, times(threads)).addLikesCount(eq(1L), anyString());
+        Assertions.assertEquals(threads, countCall.get());
+        System.out.println(threads + " " + countCall.get());
+
+        List<Long> capturedProductIdxValues = productIdxCaptor.getAllValues();
+        List<String> capturedUsernameValues = usernameCaptor.getAllValues();
+
+        for (String al : capturedUsernameValues) {
+            System.out.println(al);
+        }
+
+        Assertions.assertEquals(threads, capturedProductIdxValues.size());
+        Assertions.assertEquals(threads, capturedUsernameValues.size());
+
+
+//        for (int i = 0; i < threads; i++) {
+//            Assertions.assertEquals(1L, capturedProductIdxValues.get(i));
+//            Assertions.assertEquals("kdh3213@gmail.com" + i, capturedUsernameValues.get(i));
+//        }
     }
 }

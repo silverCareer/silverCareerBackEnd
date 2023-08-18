@@ -24,23 +24,22 @@ public class LikeServiceImpl implements LikeService {
         if (likeRepository.existsByProductIdxAndMemberEmail(productIdx, username)) {
             throw new CustomException(ErrorCode.EXIST_LIKES);
         }
-
+        product.increaseLikesCount();
         Like like = Like.builder()
                 .productIdx(product.getProductIdx())
                 .memberEmail(username)
                 .build();
         likeRepository.save(like);
-        product.increaseLikesCount();
     }
 
     @Override
     public void removeLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        product.decreaseLikesCount();
         Like like = likeRepository.findByProductIdxAndMemberEmail(productIdx, username)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
         likeRepository.delete(like);
-        product.decreaseLikesCount();
     }
 }

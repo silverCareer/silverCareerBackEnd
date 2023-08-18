@@ -22,13 +22,15 @@ public class LikeRedisson {
         try {
             boolean available = rLock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS); // 1초로 대기, 최대 3초
             if (!available) {
-                throw new IllegalAccessException("잠금 락 획득 실패!");
+                throw new IllegalAccessException("락 획득 실패!");
             }
             likeOperation.perform(productIdx, username);
         } catch (InterruptedException | IllegalAccessException ex) {
             throw new RuntimeException(ex);
         } finally {
-            rLock.unlock();
+            if (rLock != null && rLock.isLocked()) {
+                rLock.unlock();
+            }
         }
     }
 
