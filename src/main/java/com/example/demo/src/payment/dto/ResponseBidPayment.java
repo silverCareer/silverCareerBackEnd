@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponsePayment {
-    private Long productIdx;
+public class ResponseBidPayment {
+    private Long bidIdx;
     private Long price;
 }

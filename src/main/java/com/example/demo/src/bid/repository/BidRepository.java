@@ -20,5 +20,9 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     void deleteBidsByIdIn(@Param("bidIds") List<Long> bidIds);
 
     Optional<Bid> findBySuggestion_SuggestionIdx(Long suggestionIdx);
+
+    Optional<Bid> findBidsByBidIdx(Long bidIdx);
+
     List<Bid> findBidBySuggestionMemberAndStatus(Member member, BidStatus status);
+
 }
