@@ -1,5 +1,6 @@
 package com.example.demo.src.likes.service;
 
+import com.example.demo.global.DistributeLock;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.src.likes.domain.Like;
@@ -18,6 +19,7 @@ public class LikeServiceImpl implements LikeService {
     private final ProductRepository productRepository;
 
     @Override
+    @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
     public void addLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
@@ -33,6 +35,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
+    @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
     public void removeLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
