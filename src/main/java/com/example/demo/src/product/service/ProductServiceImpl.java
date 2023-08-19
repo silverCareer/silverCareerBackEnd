@@ -1,5 +1,6 @@
 package com.example.demo.src.product.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.src.S3Service;
@@ -32,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void createProduct(String username, MultipartFile image, CreateProductReq createProductReq) throws IOException {
         Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+                .orElseThrow(() -> new NotFoundException("잘못된 인증 요청입니다."));
         String imageUrl = "";
         if (image != null && !image.isEmpty()) {
             imageUrl = s3Service.upload(image, "product",

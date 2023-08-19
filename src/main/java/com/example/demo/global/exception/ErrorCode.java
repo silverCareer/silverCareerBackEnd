@@ -5,12 +5,14 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
-    //member
+    //common
     REQUEST_PARAM_BIND_FAILED(HttpStatus.BAD_REQUEST, "REQ_001", "요청 시 바인딩된 파라미터가 유효하지 않습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH_001", "유효하지 않은 인증 요청입니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "FBI_001", "유효하지 않은 권한의 요청입니다."),
     NOT_FOUND_ELEMENT(HttpStatus.NOT_FOUND, "NOT_FOUND_001", "일치하는 요소가 잘못됐거나 없습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "ALLOW_001", "잘못된 http method 방식입니다."),
+
+    //member
     DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복"),
     DUPLICATE_MEMBER_PASSWORD(HttpStatus.CONFLICT, "AUTH_003", "멤버 비밀번호 중복"),
     DUPLICATE_MEMBER_PHONE_NUM(HttpStatus.CONFLICT, "AUTH_004", "멤버 전화번호 중복"),
