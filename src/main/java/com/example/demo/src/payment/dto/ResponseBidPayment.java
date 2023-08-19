@@ -1,4 +1,4 @@
-package com.example.demo.src.payment.shared.dto;
+package com.example.demo.src.payment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponsePayment {
-    private String paymentName;
+public class ResponseBidPayment {
+    private Long bidIdx;
     private Long price;
 }

@@ -35,8 +35,10 @@ public class SuggestionServiceImpl implements SuggestionService {
                 .price(suggestionDto.getPrice())
                 .member(mentee)
                 .build();
+        List<Member> mentors = memberRepository.findMembersByCategory(suggestionDto.getCategory());
         suggestionRepository.save(suggestion);
         mentee.addSuggestion(suggestion);
+        mentors.forEach(member -> member.updateAlarmStatus(true));
     }
 
     @Override

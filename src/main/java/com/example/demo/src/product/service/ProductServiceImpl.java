@@ -10,11 +10,14 @@ import com.example.demo.src.product.dto.*;
 import com.example.demo.src.product.repository.ProductRepository;
 import com.example.demo.src.review.dto.ReviewDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,18 +56,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DisplayProductRes> displayProductByCategory(String category) {
-        List<Product> productList = category.equals("all")
-                ? productRepository.findAll()
-                : productRepository.findByCategory(category);
+    public ResponseMultiProduct<DisplayProductRes> displayProductByCategory(String category, Pageable pageable) {
+        Page<Product> productPage;
+        if(category.equals("all")){
+            productPage = productRepository.findAll(pageable);
+        } else {
+            productPage = productRepository.findByCategory(category, pageable);
+        }
 
-        if (productList.isEmpty()) {
+        List<Product> products = productPage.getContent();
+
+        if (products.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
         }
 
-        return productList.stream()
-                .map(DisplayProductRes::of) // 람다 표현식 사용
-                .collect(Collectors.toList());
+        List<DisplayProductRes> response = productPage.stream().map(DisplayProductRes::of).collect(Collectors.toList());
+
+        return new ResponseMultiProduct<>(response, productPage.getNumber() + 1, productPage.getTotalPages());
     }
 
     @Override

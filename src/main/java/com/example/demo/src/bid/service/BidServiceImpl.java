@@ -3,6 +3,7 @@ package com.example.demo.src.bid.service;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.src.bid.domain.Bid;
+import com.example.demo.src.bid.domain.BidStatus;
 import com.example.demo.src.bid.dto.RequestBid;
 import com.example.demo.src.bid.dto.ResponseBid;
 import com.example.demo.src.bid.repository.BidRepository;
@@ -30,13 +31,17 @@ public class BidServiceImpl implements BidService {
         Member mentor = memberRepository.findMemberByUsername(username);
         Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Member mentee = memberRepository.findMemberByUsername(suggestion.getMember().getUsername());
+
         Bid bid = Bid.builder()
                 .price(bidDto.getPrice())
+                .status(BidStatus.진행중)
                 .suggestion(suggestion)
                 .member(mentor)
                 .build();
         bidRepository.save(bid);
         mentor.addBid(bid);
+        mentee.updateAlarmStatus(true);
     }
 
     @Override
@@ -64,8 +69,11 @@ public class BidServiceImpl implements BidService {
     @Override
     @Transactional
     public void acceptBidOfSuggestion(final String memberEmail, final Long bidIdx) { //멘티가 입찰한 멘토의 입찰건 중 하나를 채택하기
-        Bid bid = bidRepository.findById(bidIdx)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Bid bid = bidRepository.findByBidIdx(bidIdx);
+        if (bid == null) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
+        }
+        bid.updateStatus(BidStatus.완료);
         List<Bid> otherBids = bidRepository.findAll();
         List<Long> bidIdxToDelete = otherBids.stream()
                 .filter(bids -> !bids.getBidIdx().equals(bid.getBidIdx()))
