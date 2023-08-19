@@ -52,7 +52,7 @@ public class LikeRedissonTest {
         when(mockLock.tryLock(anyLong(), anyLong(), any(TimeUnit.class))).thenReturn(true);
 
         int threads = 50;
-        ExecutorService executorService = Executors.newFixedThreadPool(threads); //스레드 풀 10개 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(threads); //스레드 풀 50개 생성
         CountDownLatch latch = new CountDownLatch(threads); // 모든 스레드의 작업이 완료될 때까지 대기하는 동기화 메커니즘 생성
         AtomicInteger countCall = new AtomicInteger(0); // 메서드 호출 횟수를 추적하는 AtomicInteger 생성
 
@@ -85,8 +85,8 @@ public class LikeRedissonTest {
          * 락 대기 시간 1초
          * 락 유지 시간 3초
          *
-         * 총 좋아요 요청 수 10번
-         * 요청 된 메서드 카운트 10번  -> 일치
+         * 총 좋아요 요청 수 50번
+         * 요청 된 메서드 카운트 50번  -> 일치
          *
          */
 
@@ -147,7 +147,7 @@ public class LikeRedissonTest {
          * 락 보유 시간: 3초
          *
          * 총 10번의 좋아요 취소 요청
-         * 요청된 메서드 호출 횟수: 10번 -> 일치
+         * 요청된 메서드 호출 횟수: 50번 -> 일치
          *
          */
         verify(likeServiceImpl, times(threads)).removeLikesCount(eq(1L), anyString());
