@@ -20,4 +20,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 //    Optional<Product> findProductByProductName(String productName);
     @Query("SELECT p FROM Product p where p.productName LIKE CONCAT('%', :query, '%')")
     Page<Product> findByProductName(@Param("query")String query, Pageable pageable);
+
 }

@@ -29,8 +29,9 @@ spring:
       password: test1234
       database: silcarMongoDB
 
-
-
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
   security:
     jwt:
