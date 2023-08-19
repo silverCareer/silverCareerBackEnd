@@ -3,6 +3,7 @@ package com.example.demo.global.exception;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
 import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.error.member.*;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,5 +58,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodNotAllowedException.class)
     protected ResponseEntity<CommonResponse> handleMethodNotAllowedException(MethodNotAllowedException ex) {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
+    }
+    @ExceptionHandler(DuplicateMemberException.class)
+    protected ResponseEntity<CommonResponse> handleDuplicateMemberException(DuplicateMemberException ex){
+        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
+    }
+    @ExceptionHandler(DuplicateMemberPasswordException.class)
+    protected ResponseEntity<CommonResponse> handleDuplicateMemberPasswordException(DuplicateMemberPasswordException ex){
+        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_PASSWORD);
+    }
+    @ExceptionHandler(DuplicateMemberPhoneNumException.class)
+    protected ResponseEntity<CommonResponse> handleDuplicateMemberPhoneNumException(DuplicateMemberPhoneNumException ex){
+        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_PHONE_NUM);
+    }
+
+    @ExceptionHandler(WrongEmailInputException.class)
+    protected ResponseEntity<CommonResponse> handleWrongEmailInputException(WrongEmailInputException ex){
+        return createErrorResponse(ErrorCode.WRONG_EMAIL_INPUT);
+    }
+
+    @ExceptionHandler(WrongPasswordInputException.class)
+    protected ResponseEntity<CommonResponse> handleWrongPasswordInputException(WrongPasswordInputException ex){
+        return createErrorResponse(ErrorCode.WRONG_PASSWORD_INPUT);
+    }
+
+    @ExceptionHandler(WrongPhoneNumInputException.class)
+    protected ResponseEntity<CommonResponse> handleWrongPhoneNumInputException(WrongPhoneNumInputException ex){
+        return createErrorResponse(ErrorCode.WRONG_PHONE_NUM_INPUT);
     }
 }
