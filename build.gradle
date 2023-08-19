@@ -84,6 +84,9 @@ dependencies {
     // mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+    // 웹소켓
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 test {
