@@ -51,8 +51,6 @@ public class SuggestionServiceImpl implements SuggestionService {
             throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
         }
 
-//        Page<Suggestion> sug = suggestionRepository.findAll(pageable);
-//        return sug.map(ResponseBoard.BoardListDto::of);
         return suggestions.stream()
                 .map(ResponseSuggestion::of)
                 .collect(Collectors.toList());
