@@ -5,5 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ChatRepository extends MongoRepository<Chat, String> {
-    List<Chat> findByMessagesSender(String senderId);
+
+    List<Chat> findByUser1OrUser2(String username1, String username2);
+    List<Chat> findBy_id(String chatId);
 }

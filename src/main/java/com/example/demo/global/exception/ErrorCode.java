@@ -17,6 +17,7 @@ public enum ErrorCode {
     WRONG_PASSWORD_INPUT(HttpStatus.CONFLICT, "AUTH_005", "잘못된 비밀번호 형식입니다."),
     WRONG_PHONE_NUM_INPUT(HttpStatus.CONFLICT, "AUTH_006", "잘못된 전화번호 형식입니다."),
     WRONG_EMAIL_INPUT(HttpStatus.CONFLICT, "AUTH_007", "잘못된 이메일 형식입니다."),
+    DELETED_MEMBER(HttpStatus.CONFLICT, "Auth_008", "탈퇴한 회원입니다."),
 
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
     //likes

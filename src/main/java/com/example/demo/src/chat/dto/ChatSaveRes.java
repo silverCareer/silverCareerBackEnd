@@ -23,5 +23,4 @@ public class ChatSaveRes {
         private Date timestamp;
     }
 
-    // getter, setter ...
 }

@@ -8,11 +8,15 @@ import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.src.S3Service;
 import com.example.demo.src.account.domain.Account;
+import com.example.demo.src.bid.domain.BidStatus;
+import com.example.demo.src.bid.repository.BidRepository;
 import com.example.demo.src.member.domain.AuthAdapter;
 import com.example.demo.src.member.domain.Authority;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.repository.MemberRepository;
+import com.example.demo.src.suggestion.domain.Suggestion;
+import com.example.demo.src.suggestion.repository.SuggestionRepository;
 import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
@@ -28,12 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -43,6 +46,8 @@ public class MemberAuthService {
     private final RefreshTokenProvider refreshTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
+    private final SuggestionRepository suggestionRepository;
+    private final BidRepository bidRepository;
     private final SecurityUtil securityUtil;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -56,16 +61,51 @@ public class MemberAuthService {
     @Value("${sns.service.api-secret-key}")
     private String apiSecretKey;
 
+    public Object getNotification(final String username, final String authority) {
+        Member member = memberRepository.findMemberByUsername(username);
+        String category = member.getCategory();
+        Object res;
+
+        if (authority.equals("ROLE_MENTOR")) {
+            List<Suggestion> getFromSuggestions = suggestionRepository.findByCategory(category);
+            List<Suggestion> terminatedSuggestions = suggestionRepository.findSuggestionsWithCompleteBidsAndMember(member);
+
+            List<Suggestion> notifications = getFromSuggestions.stream()
+                    .filter(suggestion -> !terminatedSuggestions.contains(suggestion))
+                    .collect(Collectors.toList());
+
+            Map<Suggestion, Boolean> notificationMap = new HashMap<>();
+            notifications.forEach(suggestion -> notificationMap.put(suggestion, false));
+
+            suggestionRepository.findSuggestionsWithInCompleteBidsAndMember(member)
+                    .forEach(suggestion -> notificationMap.put(suggestion, true));
+
+            res = notificationMap.entrySet().stream()
+                    .sorted(Comparator.comparingLong(entry-> -entry.getKey().getSuggestionIdx()))
+                    .map(entry -> MentorNotificationRes.of(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+        } else {
+            res = bidRepository.findBidBySuggestionMemberAndStatus(member, BidStatus.진행중)
+                    .stream()
+                    .map(MenteeNotificationRes::of)
+                    .collect(Collectors.toList());
+        }
+        member.updateAlarmStatus(false);
+        return res;
+    }
+
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+        Member member = memberRepository.findMemberByUsername(username);
+        if(!member.isActivated()){
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
         String accessToken = tokenProvider.createJwt(authentication);
         Long tokenWeight = ((AuthAdapter) authentication.getPrincipal()).getAuth().getTokenWeight();
         String refreshToken = refreshTokenProvider.createRefreshToken(authentication, tokenWeight);
-        Member member = memberRepository.findMemberByUsername(username);
 
         return ResponseLogin.builder()
                 .accessToken(accessToken)
@@ -75,7 +115,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void mentorSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void mentorSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -109,7 +149,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void menteeSignUp(final RequestSingUp registerDto) throws IllegalAccessException {
+    public void menteeSignUp(final RequestSingUp registerDto) {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
         }
@@ -148,7 +188,7 @@ public class MemberAuthService {
 
     // 캐시 충전
     @Transactional
-    public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) throws IllegalAccessException {
+    public void cashCharge(RequestCashCharge requestCashCharge, String memberEmail) {
         Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
                 -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         long amount = requestCashCharge.getBalance();
@@ -224,6 +264,14 @@ public class MemberAuthService {
             uploadedImgUrl = s3Service.upload(img, "profile", username);
         }
         member.updateProfileImg(uploadedImgUrl);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void deleteMember(String memberEmail){
+        Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
+                -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        member.memberActivationControl(false);
         memberRepository.save(member);
     }
 

@@ -24,7 +24,7 @@ public class Member {
     @Column(name = "password", length = 100, nullable = false)
     private String password;
 
-    @Column(name = "name", length = 50, nullable = false)
+    @Column(name = "name", length = 50, unique = true, nullable = false)
     private String name;
 
     @Column(name = "phone_num", nullable = false)
@@ -51,6 +51,9 @@ public class Member {
     @Column(name = "activated", nullable = false) //계정 활성 여부?
     private boolean activated;
 
+    @Column(name = "checkedAlarm", columnDefinition = "BOOL DEFAULT false")
+    private boolean checkedAlarm;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "member")
     private Account account;
 
@@ -67,7 +70,7 @@ public class Member {
     @Builder
     public Member(String email, String password, String name, String phoneNumber, Long age,
                   String userImage, String career, String category, Long balance, Long tokenWeight,
-                  boolean activated, Account account, Authority authority){
+                  boolean activated, boolean checkedAlarm, Account account, Authority authority){
         this.username = email;
         this.password = password;
         this.name = name;
@@ -81,6 +84,7 @@ public class Member {
         this.activated = activated;
         this.account = account;
         this.authority = authority;
+        this.checkedAlarm = checkedAlarm;
     }
 
     public void increaseTokenWeight(){
@@ -100,6 +104,10 @@ public class Member {
         this.password = password;
     }
 
+    public void memberActivationControl(Boolean activated){
+        this.activated = activated;
+    }
+
     public void updatePhoneNum(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -111,7 +119,12 @@ public class Member {
     public void addSuggestion(Suggestion suggestion){
         this.suggestionList.add(suggestion);
     }
+
     public void addBid(Bid bid) {
         this.bidList.add(bid);
+    }
+
+    public void updateAlarmStatus(boolean status){
+        this.checkedAlarm = status;
     }
 }
