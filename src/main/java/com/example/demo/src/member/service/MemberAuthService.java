@@ -64,13 +64,15 @@ public class MemberAuthService {
     @Value("${sns.service.api-secret-key}")
     private String apiSecretKey;
 
+    @Transactional
     public Object getNotification(final String username, final String authority) {
         Member member = memberRepository.findMemberByUsername(username);
         String category = member.getCategory();
         Object res;
 
         if (authority.equals("ROLE_MENTOR")) {
-            List<Suggestion> getFromSuggestions = suggestionRepository.findByCategory(category);
+            List<Suggestion> getFromSuggestions = suggestionRepository.findUnterminatedSuggestionsByCategory(category);
+
             List<Suggestion> terminatedSuggestions = suggestionRepository.findSuggestionsWithCompleteBidsAndMember(member);
 
             List<Suggestion> notifications = getFromSuggestions.stream()
@@ -96,7 +98,21 @@ public class MemberAuthService {
         member.updateAlarmStatus(false);
         return res;
     }
+  
+    @Transactional
+    public AlarmStatus getAlarmStatus(final String username){
+        Member member = memberRepository.findMemberByUsername(username);
+        String content = member.getAuthority().getAuthorityName().equals("ROLE_MENTOR")
+                ? "새로운 의뢰가"
+                : "새로운 입찰이";
+        String msg = member.isCheckedAlarm() ? String.format("%s 도착했습니다.", content) : "";
 
+        return AlarmStatus.builder()
+                .status(member.isCheckedAlarm())
+                .message(msg)
+                .build();
+    }
+  
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
@@ -114,6 +130,7 @@ public class MemberAuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .name(member.getName())
+                .authority(member.getAuthority().getAuthorityName())
                 .build();
     }
 
