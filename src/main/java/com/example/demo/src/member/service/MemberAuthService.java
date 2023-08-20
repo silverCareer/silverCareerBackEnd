@@ -68,7 +68,7 @@ public class MemberAuthService {
         Object res;
 
         if (authority.equals("ROLE_MENTOR")) {
-            List<Suggestion> getFromSuggestions = suggestionRepository.findByCategory(category);
+            List<Suggestion> getFromSuggestions = suggestionRepository.findUnterminatedSuggestionsByCategory(category);
             List<Suggestion> terminatedSuggestions = suggestionRepository.findSuggestionsWithCompleteBidsAndMember(member);
 
             List<Suggestion> notifications = getFromSuggestions.stream()
@@ -98,7 +98,10 @@ public class MemberAuthService {
     @Transactional
     public AlarmStatus getAlarmStatus(final String username){
         Member member = memberRepository.findMemberByUsername(username);
-        String msg = member.isCheckedAlarm() ? "새로운 알림이 도착했습니다." : "";
+        String content = member.getAuthority().getAuthorityName().equals("ROLE_MENTOR")
+                ? "새로운 의뢰가"
+                : "새로운 입찰이";
+        String msg = member.isCheckedAlarm() ? String.format("%s 도착했습니다.", content) : "";
 
         return AlarmStatus.builder()
                 .status(member.isCheckedAlarm())
@@ -123,6 +126,7 @@ public class MemberAuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .name(member.getName())
+                .authority(member.getAuthority().getAuthorityName())
                 .build();
     }
 
