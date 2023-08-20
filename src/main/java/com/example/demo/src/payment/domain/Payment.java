@@ -33,19 +33,23 @@ public class Payment {
     @Column(name = "payment_name", nullable = false)
     private String paymentName;
 
+    @Column(name = "product_idx", nullable = false)
+    private Long productIdx;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "email", nullable = false)
     private Member member;
 
     @Builder
     public Payment(Long paymentIdx, LocalDate paymentDate, Long paymentAmount,
-                   boolean paymentSuccess, String paymentType, String paymentName, Member member) {
+                   boolean paymentSuccess, String paymentType, String paymentName, Long productIdx, Member member) {
         this.paymentIdx = paymentIdx;
         this.paymentDate = paymentDate;
         this.paymentAmount = paymentAmount;
         this.paymentSuccess = paymentSuccess;
         this.paymentType = paymentType;
         this.paymentName = paymentName;
+        this.productIdx = productIdx;
         this.member = member;
     }
 }

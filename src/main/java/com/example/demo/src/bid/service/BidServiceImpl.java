@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +29,10 @@ public class BidServiceImpl implements BidService {
     @Transactional
     public void registerBid(final String username, final Long suggestionIdx, final RequestBid bidDto) {
         Member mentor = memberRepository.findMemberByUsername(username);
-        Optional<Suggestion> optionalSuggestion = suggestionRepository.findById(suggestionIdx);
-        Suggestion suggestion = optionalSuggestion.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+
+        Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+      
         Member mentee = memberRepository.findMemberByUsername(suggestion.getMember().getUsername());
 
         Bid bid = Bid.builder()
@@ -53,16 +54,18 @@ public class BidServiceImpl implements BidService {
             throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
         }
         List<Bid> bids = bidRepository.findAll();
-
         return bids.stream().map(ResponseBid::of).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public ResponseBid getRegisterBidsDetail(final Long bidIdx) {
-        Optional<Bid> optionalBid = bidRepository.findById(bidIdx);
-        Bid bid = optionalBid.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        return ResponseBid.builder().memberName(bid.getMember().getName()).price(bid.getPrice()).build();
+        Bid bid = bidRepository.findById(bidIdx)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        return ResponseBid.builder()
+                .memberName(bid.getMember().getName())
+                .price(bid.getPrice())
+                .build();
     }
 
     @Override
@@ -75,15 +78,17 @@ public class BidServiceImpl implements BidService {
         Suggestion suggestion = bid.getSuggestion();
         bid.updateStatus(BidStatus.완료);
         suggestion.terminateSuggestion(true);
+        
         List<Bid> otherBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx()).
                 orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        
         List<Long> bidIdxToDelete = otherBids.stream()
                 .filter(Bid -> !Bid.getBidIdx().equals(bid.getBidIdx()))
                 .map(Bid::getBidIdx)
                 .collect(Collectors.toList());
-
-       if(!bidIdxToDelete.isEmpty()){
-           bidRepository.deleteBidsByIdIn(bidIdxToDelete);
-       }
+      
+        if (!bidIdxToDelete.isEmpty()) {
+            bidRepository.deleteBidsByIdIn(bidIdxToDelete);
+        }
     }
 }

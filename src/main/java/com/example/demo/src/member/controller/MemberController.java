@@ -143,7 +143,7 @@ public class MemberController {
                         .build()
         );
     }
-
+  
     @GetMapping("/alarmStatus")
     public ResponseEntity getAlarmStatus(@AuthenticationPrincipal(expression = "username") String username){
         AlarmStatus res = memberAuthService.getAlarmStatus(username);

@@ -13,14 +13,5 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class RequestPayment {
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate localDate;
-    private String paymentName;
-
-    public static RequestPayment withCurrentTime(String paymentName) {
-        return RequestPayment.builder()
-                .localDate(LocalDate.now())
-                .paymentName(paymentName)
-                .build();
-    }
+    private Long productIdx;
 }

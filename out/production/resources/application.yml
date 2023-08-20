@@ -1,44 +1,64 @@
 server:
-  port: 9000
+  port: 8888
 
 spring:
-  application:
-    name: silvercareer
-
-  h2:
-    console:
-      enabled: true
-      path: /h2
-
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test
-    username: sa
-    password:
+    url: jdbc:mysql://silvercareerdb.coceqfygqpmk.ap-northeast-2.rds.amazonaws.com:3306/silcarDB?autoReconnect=true
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    jpa:
-      database-platform: org.hibernate.dialect.H2Dialect
-
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
       hibernate:
-        ddl-auto: create-drop
-
-      properties:
-        hibernate:
-          format_sql: true
-          show-sql: true
-          generate-ddl: false
-      defer-datasource-initialization: true
+        format_sql: true
 
 
-#    platform: mysql
-#    url:  ${DB.DB_URL}
-#    username: ${DB.DB_USER}
-#    password: ${DB.PWD}
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    mongodb:
+      host: 43.201.132.241
+#      host : localhost
+      port: 27017
+      authentication-database: admin
+      username: admin1
+      password: test1234
+      database: silcarMongoDB
 
+    redis:
+      host: 43.201.132.241
+      port: 6379
 
-  google_OAuth:
-    clientId: ${google.CLIENT_ID}
-    clientSecret: ${google.CLIENT_SECRET}
+  security:
+    jwt:
+      secret: ${JWT_KEY}
+      refreshTokenSecret: ${REFRESH_KEY}
+cloud:
+  aws:
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+    s3:
+      bucket: silvercareer
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
 
+kakao-open-api:
+  auth:
+    rest-api-key: 3fc7941e2346eb6d089f1032ffe4c40b
 
+sns:
+  service:
+    api-key: ${SNS_SERVICE_API_KEY}
+    api-secret-key: ${SNS_SERVICE_API_SECRET_KEY}
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace

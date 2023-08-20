@@ -4,6 +4,9 @@ import com.example.demo.global.exception.BaseException;
 import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.error.member.DuplicateMemberException;
+import com.example.demo.global.exception.error.member.WrongEmailInputException;
+import com.example.demo.global.exception.error.member.WrongPasswordInputException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.src.S3Service;
@@ -69,6 +72,7 @@ public class MemberAuthService {
 
         if (authority.equals("ROLE_MENTOR")) {
             List<Suggestion> getFromSuggestions = suggestionRepository.findUnterminatedSuggestionsByCategory(category);
+
             List<Suggestion> terminatedSuggestions = suggestionRepository.findSuggestionsWithCompleteBidsAndMember(member);
 
             List<Suggestion> notifications = getFromSuggestions.stream()
@@ -94,7 +98,7 @@ public class MemberAuthService {
         member.updateAlarmStatus(false);
         return res;
     }
-
+  
     @Transactional
     public AlarmStatus getAlarmStatus(final String username){
         Member member = memberRepository.findMemberByUsername(username);
@@ -108,7 +112,7 @@ public class MemberAuthService {
                 .message(msg)
                 .build();
     }
-
+  
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
@@ -132,14 +136,14 @@ public class MemberAuthService {
 
     @Transactional
     public void mentorSignUp(final RequestSingUp registerDto) {
-        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
+        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElse(null) != null) {
+            throw new DuplicateMemberException();
         }
         if(!isRegexEmail(registerDto.getEmail())){
-            throw new CustomException(ErrorCode.WRONG_EMAIL_INPUT);
+            throw new WrongEmailInputException();
         }
         if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
-            throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
+            throw new WrongPasswordInputException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTOR")
@@ -166,14 +170,14 @@ public class MemberAuthService {
 
     @Transactional
     public void menteeSignUp(final RequestSingUp registerDto) {
-        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
+        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElse(null) != null) {
+            throw new DuplicateMemberException();
         }
         if(!isRegexEmail(registerDto.getEmail())){
-            throw new CustomException(ErrorCode.WRONG_EMAIL_INPUT);
+            throw new WrongEmailInputException();
         }
         if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
-            throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
+            throw new WrongPasswordInputException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTEE")
