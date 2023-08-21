@@ -131,6 +131,7 @@ public class MemberAuthService {
                 .refreshToken(refreshToken)
                 .name(member.getName())
                 .authority(member.getAuthority().getAuthorityName())
+                .balance(member.getBalance())
                 .build();
     }
 
