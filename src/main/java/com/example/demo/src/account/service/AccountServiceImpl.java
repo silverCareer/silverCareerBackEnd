@@ -2,8 +2,8 @@
 package com.example.demo.src.account.service;
 
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.global.exception.error.Account.NotEnoughBalanceException;
-import com.example.demo.global.exception.error.Account.NotFoundAccountException;
+import com.example.demo.global.exception.error.account.NotEnoughBalanceException;
+import com.example.demo.global.exception.error.account.NotFoundAccountException;
 import com.example.demo.global.exception.error.charge.InvalidAmountException;
 import com.example.demo.global.exception.error.member.NotFoundMemberException;
 import com.example.demo.src.account.domain.Account;

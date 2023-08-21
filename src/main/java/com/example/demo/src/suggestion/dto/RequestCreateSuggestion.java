@@ -1,6 +1,5 @@
 package com.example.demo.src.suggestion.dto;
 
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
