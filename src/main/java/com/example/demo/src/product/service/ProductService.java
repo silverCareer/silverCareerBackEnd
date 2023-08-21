@@ -10,9 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface ProductService {
-    ResponseEntity<CommonResponse> createProduct(String username, MultipartFile image, RequestCreateProduct requestCreateProduct) throws IOException;
-//    List<DisplayProductRes> displayProductByCategory(String category, Pageable pageable);
+    ResponseEntity<CommonResponse> createProduct(final String username, final MultipartFile image, final RequestCreateProduct requestCreateProduct) throws IOException;
 
-    ResponseEntity<CommonResponse> displayProductByCategory(String category, int page, int size);
-    ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, Long productId);
+    ResponseEntity<CommonResponse> displayProductByCategory(final String category, final int page, final int size);
+
+    ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, final Long productId);
 }

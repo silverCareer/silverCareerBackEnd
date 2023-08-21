@@ -8,7 +8,6 @@ import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.global.exception.error.product.NotFoundProductListException;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
-import com.example.demo.src.payment.domain.Payment;
 import com.example.demo.src.payment.repository.PaymentRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.dto.*;
@@ -23,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +40,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> createProduct(String username, MultipartFile image, RequestCreateProduct requestCreateProduct) throws IOException {
+    public ResponseEntity<CommonResponse> createProduct
+            (final String username, final MultipartFile image, final RequestCreateProduct requestCreateProduct) throws IOException {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(NotFoundMemberException::new);
 
@@ -71,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CommonResponse> displayProductByCategory(String category, int page, int size) {
+    public ResponseEntity<CommonResponse> displayProductByCategory(final String category, final int page, final int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "productIdx"));
         Page<Product> productPage;
         if(category.equals("all")){
@@ -94,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, Long productId) {
+    public ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, final Long productId) {
         Product product = productRepository.findProductByProductIdx(productId)
                 .orElseThrow(NotFoundProductException::new);
         Member member = product.getMember();
@@ -131,6 +130,7 @@ public class ProductServiceImpl implements ProductService {
                 .reviews(reviews)
                 .status(status)
                 .build();
+
         return ResponseEntity.ok().body(
                 CommonResponse.builder().success(true).response(response).build());
     }

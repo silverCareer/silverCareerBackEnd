@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CreateReviewReq {
+public class RequestCreateReview {
     private Long productIdx;
     private String context;
     private Long rating;

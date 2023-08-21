@@ -230,7 +230,7 @@ public class MemberAuthService {
         if (validateCash(amount)) {
             memberAccountDeductEvent(memberEmail, amount);
         } else {
-            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
+            throw new CustomException(ErrorCode.INVALID_AMOUNT_INPUT);
         }
         member.addCash(amount);
         memberRepository.save(member);
@@ -324,7 +324,7 @@ public class MemberAuthService {
     // 충전하려는 금액 양의 정수인지 확인
     public boolean validateCash(long amount) {
         if (amount <= 0) {
-            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
+            throw new CustomException(ErrorCode.INVALID_AMOUNT_INPUT);
         }
         return true;
     }

@@ -2,6 +2,9 @@ package com.example.demo.global.exception;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
+import com.example.demo.global.exception.error.Account.NotEnoughBalanceException;
+import com.example.demo.global.exception.error.Account.NotFoundAccountException;
+import com.example.demo.global.exception.error.charge.InvalidAmountException;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.exception.error.likes.ExistLikesException;
 import com.example.demo.global.exception.error.likes.NotFoundLikesException;
@@ -68,7 +71,10 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<CommonResponse> handleMethodNotAllowedException(MethodNotAllowedException ex) {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
     }
-
+    @ExceptionHandler(InvalidAmountException.class)
+    protected  ResponseEntity<CommonResponse> handleInvalidAmountInputException(InvalidAmountException ex){
+        return createErrorResponse(ErrorCode.INVALID_AMOUNT_INPUT);
+    }
 
     // Member
     @ExceptionHandler(DuplicateMemberException.class)
@@ -109,7 +115,6 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_NAME);
     }
 
-
     // Product
     @ExceptionHandler(NotFoundProductListException.class)
     protected ResponseEntity<CommonResponse> handleNotFoundProductListException(NotFoundProductListException ex){
@@ -117,20 +122,32 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundProductException.class)
-    protected  ResponseEntity<CommonResponse> handleNotFoundProductDetailException(NotFoundProductException ex){
+    protected ResponseEntity<CommonResponse> handleNotFoundProductDetailException(NotFoundProductException ex){
         return createErrorResponse(ErrorCode.NOT_FOUND_PRODUCT_DETAIL);
     }
 
     @ExceptionHandler(InvalidProductInfoException.class)
-    protected  ResponseEntity<CommonResponse> handleInvalidProductInfoException(InvalidProductInfoException ex){
+    protected ResponseEntity<CommonResponse> handleInvalidProductInfoException(InvalidProductInfoException ex){
         return createErrorResponse(ErrorCode.INVALID_PRODUCT_INFO);
     }
+
+
+    // Account
+    @ExceptionHandler(NotFoundAccountException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundAccountException(NotFoundAccountException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_ACCOUNT);
+    }
+
+    @ExceptionHandler(NotEnoughBalanceException.class)
+    protected ResponseEntity<CommonResponse> handleNotEnoughBalanceException(NotEnoughBalanceException ex){
+        return createErrorResponse(ErrorCode.NOT_ENOUGH_ACCOUNT_BALANCE);
 
     //likes
     @ExceptionHandler(ExistLikesException.class)
     protected ResponseEntity<CommonResponse> handleExistLikesException(ExistLikesException ex){
         return createErrorResponse(ErrorCode.EXIST_LIKES);
     }
+      
     @ExceptionHandler(NotFoundLikesException.class)
     protected ResponseEntity<CommonResponse> handleNotFoundLikesException(NotFoundLikesException ex){
         return createErrorResponse(ErrorCode.NOT_FOUND_LIKES);
