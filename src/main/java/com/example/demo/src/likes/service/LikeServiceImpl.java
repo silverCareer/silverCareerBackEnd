@@ -23,7 +23,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
-    public ResponseEntity<CommonResponse> addLikesCount(final Long productIdx, final String username) {
+    public void addLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         if (likeRepository.existsByProductIdxAndMemberEmail(productIdx, username)) {
@@ -36,15 +36,15 @@ public class LikeServiceImpl implements LikeService {
                 .memberEmail(username)
                 .build();
         likeRepository.save(like);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response("좋아요 등록 성공")
-                .build());
+//        return ResponseEntity.ok().body(CommonResponse.builder()
+//                .success(true)
+//                .response("좋아요 등록 성공")
+//                .build());
     }
 
     @Override
     @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
-    public ResponseEntity<CommonResponse> removeLikesCount(final Long productIdx, final String username) {
+    public void removeLikesCount(final Long productIdx, final String username) {
         Product product = productRepository.findById(productIdx)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         product.decreaseLikesCount();
@@ -52,9 +52,9 @@ public class LikeServiceImpl implements LikeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
         likeRepository.delete(like);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response("좋아요 취소 성공")
-                .build());
+//        return ResponseEntity.ok().body(CommonResponse.builder()
+//                .success(true)
+//                .response("좋아요 취소 성공")
+//                .build());
     }
 }
