@@ -91,6 +91,12 @@ public class MemberController {
         return ResponseEntity.ok(memberAuthService.getMyInfo(email));
     }
 
+    @PostMapping("/checkName")
+    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @RequestBody RequestNameCheck requestNameCheck){
+
+        return memberAuthService.checkDuplicatedName(requestNameCheck);
+    }
+
     // 멤버 캐쉬 충전
     @PostMapping("/cashCharge")
     public ResponseEntity<?> charge(

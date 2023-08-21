@@ -23,6 +23,7 @@ public enum ErrorCode {
     NOT_EXISTED_MEMBER_EXCEPTION(HttpStatus.NOT_FOUND, "AUTH_009", "존재하지 않는 회원입니다."),
 
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
+    DUPLICATE_MEMBER_NAME(HttpStatus.CONFLICT, "AUTH_010", "멤버 이름 중복"),
     //likes
     EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 있습니다"),
 
