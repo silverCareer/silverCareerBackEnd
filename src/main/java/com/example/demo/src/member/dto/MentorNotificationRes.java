@@ -8,14 +8,18 @@ import lombok.Data;
 @Builder
 public class MentorNotificationRes {
     private Long suggestionIdx;
-    private String suggestionTitle;
+    private String title;
+    private String category;
+    private Long price;
     private String suggester;
     private Boolean suggestionStatus;
 
     public static MentorNotificationRes of(Suggestion suggestion, Boolean suggestionStatus){
         return MentorNotificationRes.builder()
                 .suggestionIdx(suggestion.getSuggestionIdx())
-                .suggestionTitle(suggestion.getTitle())
+                .title(suggestion.getTitle())
+                .category(suggestion.getCategory())
+                .price(suggestion.getPrice())
                 .suggester(suggestion.getMember().getName())
                 .suggestionStatus(suggestionStatus)
                 .build();

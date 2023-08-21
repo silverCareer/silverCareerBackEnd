@@ -102,6 +102,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.NOT_EXISTED_MEMBER_EXCEPTION);
     }
 
+    @ExceptionHandler(DuplicateMemberNameException.class)
+    protected ResponseEntity<CommonResponse> handleDuplicatedMemberNameException(DuplicateMemberNameException ex){
+        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_NAME);
+    }
+
 
     // Product
     @ExceptionHandler(NotFoundProductListException.class)
