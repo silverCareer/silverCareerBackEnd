@@ -4,6 +4,9 @@ import com.example.demo.global.DistributeLock;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.error.likes.ExistLikesException;
+import com.example.demo.global.exception.error.likes.NotFoundLikesException;
+import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.src.likes.domain.Like;
 import com.example.demo.src.likes.repository.LikeRepository;
 import com.example.demo.src.product.domain.Product;
@@ -24,12 +27,8 @@ public class LikeServiceImpl implements LikeService {
     @Override
     @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
     public void addLikesCount(final Long productIdx, final String username) {
-        Product product = productRepository.findById(productIdx)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        if (likeRepository.existsByProductIdxAndMemberEmail(productIdx, username)) {
-            throw new CustomException(ErrorCode.EXIST_LIKES);
-        }
-
+        Product product = productRepository.findById(productIdx).orElseThrow(NotFoundProductException::new);
+        if (likeRepository.existsByProductIdxAndMemberEmail(productIdx, username)) throw new ExistLikesException();
         product.increaseLikesCount();
         Like like = Like.builder()
                 .productIdx(product.getProductIdx())
@@ -41,12 +40,9 @@ public class LikeServiceImpl implements LikeService {
     @Override
     @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
     public void removeLikesCount(final Long productIdx, final String username) {
-        Product product = productRepository.findById(productIdx)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Product product = productRepository.findById(productIdx).orElseThrow(NotFoundProductException::new);
+        Like like = likeRepository.findByProductIdxAndMemberEmail(productIdx, username).orElseThrow(NotFoundLikesException::new);
         product.decreaseLikesCount();
-        Like like = likeRepository.findByProductIdxAndMemberEmail(productIdx, username)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-
         likeRepository.delete(like);
     }
 }

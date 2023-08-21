@@ -19,10 +19,9 @@ public class LikeRedisson {
     private static final int WAIT_TIME = 1;
     private static final int LEASE_TIME = 3;
     private final RedissonClient redissonClient;
-    private final LikeServiceImpl likeServiceImpl;
     private final LikeService likeService;
 
-    private ResponseEntity<CommonResponse> performWithLocking(Long productIdx, String username, LikeOperation likeOperation,String responseMessage) {
+    private ResponseEntity<CommonResponse> performWithLocking(Long productIdx, String username, LikeOperation likeOperation, String responseMessage) {
         RLock rLock = redissonClient.getLock("상품 ID: " + productIdx.toString() + "멤버: " + username);
         try {
             boolean available = rLock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
@@ -30,10 +29,7 @@ public class LikeRedisson {
                 throw new IllegalAccessException("락 획득 실패!");
             }
             likeOperation.perform(productIdx, username);
-            return ResponseEntity.ok(CommonResponse.builder()
-                    .success(true)
-                    .response(responseMessage)
-                    .build());
+            return ResponseEntity.ok(CommonResponse.builder().success(true).response(responseMessage).build());
         } catch (InterruptedException | IllegalAccessException ex) {
             throw new RuntimeException(ex);
 
