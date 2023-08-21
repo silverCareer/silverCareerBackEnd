@@ -17,15 +17,17 @@ public class ResponsePaymentHistory {
     private String paymentName;
     private Long productIdx;
     private String paymentType;
+    private Boolean reviewed;
     private String mentorName;
 
-    public static ResponsePaymentHistory of(Payment payment, String mentorName){
+    public static ResponsePaymentHistory of(Payment payment, boolean reviewed, String mentorName){
         return ResponsePaymentHistory.builder()
                 .localDate(payment.getPaymentDate())
                 .amount(payment.getPaymentAmount())
                 .paymentName(payment.getPaymentName())
                 .productIdx(payment.getProductIdx())
                 .paymentType(payment.getPaymentType())
+                .reviewed(reviewed)
                 .mentorName(mentorName)
                 .build();
     }
