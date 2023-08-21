@@ -3,6 +3,7 @@ package com.example.demo.src.member.service;
 import com.example.demo.global.exception.BaseException;
 import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.exception.error.member.DuplicateMemberException;
 import com.example.demo.global.exception.error.member.WrongEmailInputException;
@@ -26,6 +27,7 @@ import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.json.simple.JSONObject;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -216,7 +218,7 @@ public class MemberAuthService {
         if (validateCash(amount)) {
             memberAccountDeductEvent(memberEmail, amount);
         } else {
-            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
+            throw new CustomException(ErrorCode.INVALID_AMOUNT_INPUT);
         }
         member.addCash(amount);
         memberRepository.save(member);
@@ -310,7 +312,7 @@ public class MemberAuthService {
     // 충전하려는 금액 양의 정수인지 확인
     public boolean validateCash(long amount) {
         if (amount <= 0) {
-            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
+            throw new CustomException(ErrorCode.INVALID_AMOUNT_INPUT);
         }
         return true;
     }
