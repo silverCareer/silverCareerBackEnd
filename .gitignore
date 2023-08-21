@@ -13,6 +13,10 @@ secrets.yml
 
 # Log file
 *.log
+logs
+
+# Out file
+out
 
 # BlueJ files
 *.ctxt
@@ -32,3 +36,21 @@ secrets.yml
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Gradle Wrapper JAR
+gradle/wrapper/gradle-wrapper.jar
+
+# Gradle Wrapper properties
+gradle/wrapper/gradle-wrapper.properties
+
+# Eclipse Core
+.project
+
+# Eclipse JDT-specific
+.classpath
+
+# Gradle task name cache
+.gradletasknamecache
+
+# Compiled Java heap dump
+*.hprof
