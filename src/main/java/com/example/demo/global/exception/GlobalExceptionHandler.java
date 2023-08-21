@@ -4,6 +4,9 @@ import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.exception.error.member.*;
+import com.example.demo.global.exception.error.product.InvalidProductInfoException;
+import com.example.demo.global.exception.error.product.NotFoundProductException;
+import com.example.demo.global.exception.error.product.NotFoundProductListException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +24,8 @@ import org.springframework.validation.BindException;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // Helper Function
     private ResponseEntity<CommonResponse> createErrorResponse(ErrorCode errorCode) {
 
         ErrorResponse error = ErrorResponse.builder()
@@ -37,6 +42,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }
 
+
+    // Common
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<CommonResponse> handleRequestParamBindFailedException(BindException ex) {
         return createErrorResponse(ErrorCode.REQUEST_PARAM_BIND_FAILED);
@@ -59,6 +66,9 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<CommonResponse> handleMethodNotAllowedException(MethodNotAllowedException ex) {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
     }
+
+
+    // Member
     @ExceptionHandler(DuplicateMemberException.class)
     protected ResponseEntity<CommonResponse> handleDuplicateMemberException(DuplicateMemberException ex){
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
@@ -85,5 +95,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WrongPhoneNumInputException.class)
     protected ResponseEntity<CommonResponse> handleWrongPhoneNumInputException(WrongPhoneNumInputException ex){
         return createErrorResponse(ErrorCode.WRONG_PHONE_NUM_INPUT);
+    }
+
+    @ExceptionHandler(NotFoundMemberException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundMemberException(NotFoundMemberException ex){
+        return createErrorResponse(ErrorCode.NOT_EXISTED_MEMBER_EXCEPTION);
+    }
+
+
+    // Product
+    @ExceptionHandler(NotFoundProductListException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundProductListException(NotFoundProductListException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_PRODUCT_LIST);
+    }
+
+    @ExceptionHandler(NotFoundProductException.class)
+    protected  ResponseEntity<CommonResponse> handleNotFoundProductDetailException(NotFoundProductException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_PRODUCT_DETAIL);
+    }
+
+    @ExceptionHandler(InvalidProductInfoException.class)
+    protected  ResponseEntity<CommonResponse> handleInvalidProductInfoException(InvalidProductInfoException ex){
+        return createErrorResponse(ErrorCode.INVALID_PRODUCT_INFO);
     }
 }
