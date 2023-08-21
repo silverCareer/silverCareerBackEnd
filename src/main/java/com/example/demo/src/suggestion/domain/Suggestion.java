@@ -32,6 +32,9 @@ public class Suggestion {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "isTerminated", columnDefinition = "BOOL DEFAULT false")
+    boolean isTerminated;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "email", nullable = false)
     private Member member; //멘티들
@@ -40,11 +43,16 @@ public class Suggestion {
     private List<Bid> bids = new ArrayList<>();
 
     @Builder
-    public Suggestion(String title, String description, String category, Long price, Member member, boolean isAccept) {
+    public Suggestion(String title, String description, String category, Long price, boolean isTerminated, Member member, boolean isAccept) {
         this.title = title;
         this.description = description;
         this.category = category;
         this.price = price;
+        this.isTerminated = isTerminated;
         this.member = member;
+    }
+
+    public void terminateSuggestion(boolean status){
+        this.isTerminated = status;
     }
 }

@@ -22,6 +22,7 @@ spring:
   data:
     mongodb:
       host: 43.201.132.241
+#      host : localhost
       port: 27017
       authentication-database: admin
       username: admin1
@@ -29,7 +30,7 @@ spring:
       database: silcarMongoDB
 
     redis:
-      host: 127.0.0.1
+      host: 43.201.132.241
       port: 6379
 
   security:

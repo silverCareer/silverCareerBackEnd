@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-08-17T17:23:23+0900",
+    date = "2023-08-19T17:35:01+0900",
     comments = "version: 1.5.1.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
 )
 @Component
@@ -38,6 +38,7 @@ public class SearchMapperImpl implements SearchMapper {
 
         displayProductRes.productIdx( product.getProductIdx() );
         displayProductRes.productName( product.getProductName() );
+        displayProductRes.category( product.getCategory() );
 
         return displayProductRes.build();
     }

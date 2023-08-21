@@ -4,9 +4,12 @@ import com.example.demo.global.exception.BaseException;
 import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.error.member.DuplicateMemberException;
+import com.example.demo.global.exception.error.member.WrongEmailInputException;
+import com.example.demo.global.exception.error.member.WrongPasswordInputException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
-import com.example.demo.src.S3Service;
+import com.example.demo.global.S3Service;
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.bid.domain.BidStatus;
 import com.example.demo.src.bid.repository.BidRepository;
@@ -61,13 +64,15 @@ public class MemberAuthService {
     @Value("${sns.service.api-secret-key}")
     private String apiSecretKey;
 
+    @Transactional
     public Object getNotification(final String username, final String authority) {
         Member member = memberRepository.findMemberByUsername(username);
         String category = member.getCategory();
         Object res;
 
         if (authority.equals("ROLE_MENTOR")) {
-            List<Suggestion> getFromSuggestions = suggestionRepository.findByCategory(category);
+            List<Suggestion> getFromSuggestions = suggestionRepository.findUnterminatedSuggestionsByCategory(category);
+
             List<Suggestion> terminatedSuggestions = suggestionRepository.findSuggestionsWithCompleteBidsAndMember(member);
 
             List<Suggestion> notifications = getFromSuggestions.stream()
@@ -93,7 +98,21 @@ public class MemberAuthService {
         member.updateAlarmStatus(false);
         return res;
     }
+  
+    @Transactional
+    public AlarmStatus getAlarmStatus(final String username){
+        Member member = memberRepository.findMemberByUsername(username);
+        String content = member.getAuthority().getAuthorityName().equals("ROLE_MENTOR")
+                ? "새로운 의뢰가"
+                : "새로운 입찰이";
+        String msg = member.isCheckedAlarm() ? String.format("%s 도착했습니다.", content) : "";
 
+        return AlarmStatus.builder()
+                .status(member.isCheckedAlarm())
+                .message(msg)
+                .build();
+    }
+  
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
@@ -111,19 +130,21 @@ public class MemberAuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .name(member.getName())
+                .authority(member.getAuthority().getAuthorityName())
+                .balance(member.getBalance())
                 .build();
     }
 
     @Transactional
     public void mentorSignUp(final RequestSingUp registerDto) {
-        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
+        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElse(null) != null) {
+            throw new DuplicateMemberException();
         }
         if(!isRegexEmail(registerDto.getEmail())){
-            throw new CustomException(ErrorCode.WRONG_EMAIL_INPUT);
+            throw new WrongEmailInputException();
         }
         if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
-            throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
+            throw new WrongPasswordInputException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTOR")
@@ -150,14 +171,14 @@ public class MemberAuthService {
 
     @Transactional
     public void menteeSignUp(final RequestSingUp registerDto) {
-        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElseGet(() -> null) != null) {
-            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_EXCEPTION);
+        if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElse(null) != null) {
+            throw new DuplicateMemberException();
         }
         if(!isRegexEmail(registerDto.getEmail())){
-            throw new CustomException(ErrorCode.WRONG_EMAIL_INPUT);
+            throw new WrongEmailInputException();
         }
         if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
-            throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
+            throw new WrongPasswordInputException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTEE")

@@ -12,6 +12,8 @@ import com.example.demo.src.payment.dto.*;
 import com.example.demo.src.payment.repository.PaymentRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.repository.ProductRepository;
+import com.example.demo.src.review.domain.Review;
+import com.example.demo.src.review.repository.ReviewRepository;
 import com.example.demo.src.suggestion.domain.Suggestion;
 import com.example.demo.src.suggestion.repository.SuggestionRepository;
 import jakarta.transaction.Transactional;
@@ -32,6 +34,7 @@ public class PaymentService {
     private final ProductRepository productRepository;
     private final SuggestionRepository suggestionRepository;
     private final BidRepository bidRepository;
+    private final ReviewRepository reviewRepository;
     @Transactional
     public ResponsePayment doProductPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
@@ -99,7 +102,12 @@ public class PaymentService {
                 Member member = memberRepository.findByUsername(email)
                         .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
                 mentorName = member.getName();
-                responsePaymentHistoryList.add(ResponsePaymentHistory.of(payment, mentorName));
+                Boolean reviewed = false;
+                Long cnt = reviewRepository.checkReviewer(paymentIdx, memberEmail);
+                if(cnt == 1){
+                    reviewed = true;
+                }
+                responsePaymentHistoryList.add(ResponsePaymentHistory.of(payment, reviewed, mentorName));
             } else {
                 Bid bid = bidRepository.findBidsByBidIdx(paymentIdx)
                         .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
@@ -107,7 +115,7 @@ public class PaymentService {
                 Member member = memberRepository.findByUsername(email)
                         .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
                 mentorName = member.getName();
-                responsePaymentHistoryList.add(ResponsePaymentHistory.of(payment, mentorName));
+                responsePaymentHistoryList.add(ResponsePaymentHistory.of(payment, true, mentorName));
             }
         }
 
