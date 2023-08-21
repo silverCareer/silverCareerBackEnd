@@ -14,4 +14,5 @@ public class ResponseLogin {
     private String refreshToken;
     private String name;
     private String authority;
+    private Long balance;
 }
