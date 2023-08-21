@@ -3,6 +3,8 @@ package com.example.demo.global.exception;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
 import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.error.likes.ExistLikesException;
+import com.example.demo.global.exception.error.likes.NotFoundLikesException;
 import com.example.demo.global.exception.error.member.*;
 import com.example.demo.global.exception.error.product.InvalidProductInfoException;
 import com.example.demo.global.exception.error.product.NotFoundProductException;
@@ -122,5 +124,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidProductInfoException.class)
     protected  ResponseEntity<CommonResponse> handleInvalidProductInfoException(InvalidProductInfoException ex){
         return createErrorResponse(ErrorCode.INVALID_PRODUCT_INFO);
+    }
+
+    //likes
+    @ExceptionHandler(ExistLikesException.class)
+    protected ResponseEntity<CommonResponse> handleExistLikesException(ExistLikesException ex){
+        return createErrorResponse(ErrorCode.EXIST_LIKES);
+    }
+    @ExceptionHandler(NotFoundLikesException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundLikesException(NotFoundLikesException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_LIKES);
     }
 }
