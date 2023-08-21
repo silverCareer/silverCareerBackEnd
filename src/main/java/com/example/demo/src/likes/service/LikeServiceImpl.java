@@ -36,10 +36,6 @@ public class LikeServiceImpl implements LikeService {
                 .memberEmail(username)
                 .build();
         likeRepository.save(like);
-//        return ResponseEntity.ok().body(CommonResponse.builder()
-//                .success(true)
-//                .response("좋아요 등록 성공")
-//                .build());
     }
 
     @Override
@@ -52,9 +48,5 @@ public class LikeServiceImpl implements LikeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
 
         likeRepository.delete(like);
-//        return ResponseEntity.ok().body(CommonResponse.builder()
-//                .success(true)
-//                .response("좋아요 취소 성공")
-//                .build());
     }
 }

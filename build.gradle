@@ -42,8 +42,8 @@ dependencies {
     // db(test) - h2 in-memory를 테스트용으로 사용합니다.
     //runtimeOnly 'com.h2database:h2'
 
-    implementation 'org.mapstruct:mapstruct:1.5.1.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'
+//    implementation 'org.mapstruct:mapstruct:1.5.1.Final'
+//    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'
     // db(dev) - MySql 사용
     runtimeOnly 'com.mysql:mysql-connector-j' //mysql8
 //    runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
