@@ -22,4 +22,8 @@ public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
     @Modifying
     @Query("SELECT DISTINCT s FROM Suggestion s JOIN s.bids b WHERE b.status = '진행중' AND b.member = :member")
     List<Suggestion> findSuggestionsWithInCompleteBidsAndMember(Member member);
+
+    @Modifying
+    @Query("SELECT DISTINCT s FROM Suggestion  s WHERE s.isTerminated = false AND s.category = :category")
+    List<Suggestion> findUnterminatedSuggestionsByCategory(String category);
 }

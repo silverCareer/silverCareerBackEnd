@@ -1,4 +1,4 @@
-package com.example.demo.src;
+package com.example.demo.global;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
