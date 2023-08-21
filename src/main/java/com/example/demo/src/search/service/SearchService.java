@@ -1,7 +1,7 @@
 package com.example.demo.src.search.service;
 
 import com.example.demo.src.product.domain.Product;
-import com.example.demo.src.product.dto.DisplayProductRes;
+import com.example.demo.src.product.dto.ResponseDisplayProducts;
 import com.example.demo.src.product.repository.ProductRepository;
 import com.example.demo.src.search.dto.ResponseMultiSearch;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +22,14 @@ public class SearchService {
         Page<Product> pageMedias = productRepository.findByProductName(query, PageRequest.of(page - 1, size, Sort.by("productIdx").descending()));
         List<Product> medias = pageMedias.getContent();
         long totalResults = pageMedias.getTotalElements();
-        List<DisplayProductRes> response = mapToDisplayProductRes(medias);
+        List<ResponseDisplayProducts> response = mapToDisplayProductRes(medias);
 
         return new ResponseMultiSearch(response, page, pageMedias.getTotalPages(), totalResults);
     }
 
-    private List<DisplayProductRes> mapToDisplayProductRes(List<Product> products) {
+    private List<ResponseDisplayProducts> mapToDisplayProductRes(List<Product> products) {
         return products.stream()
-                .map(DisplayProductRes::of)
+                .map(ResponseDisplayProducts::of)
                 .collect(Collectors.toList());
     }
 }
