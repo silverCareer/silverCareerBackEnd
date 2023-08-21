@@ -1,7 +1,6 @@
 package com.example.demo.src.search.controller;
 
 import com.example.demo.src.search.dto.ResponseMultiSearch;
-import com.example.demo.src.search.mapper.SearchMapper;
 import com.example.demo.src.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class SearchController {
     private final SearchService searchService;
-    private final SearchMapper searchMapper;
 
     @GetMapping("/search")
     public ResponseEntity search(@RequestParam String q,
