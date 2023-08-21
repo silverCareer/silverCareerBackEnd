@@ -28,7 +28,8 @@ public enum ErrorCode {
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
     DUPLICATE_MEMBER_NAME(HttpStatus.CONFLICT, "AUTH_010", "멤버 이름 중복"),
     //likes
-    EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 있습니다"),
+    EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 이미 있습니다!"),
+    NOT_FOUND_LIKES(HttpStatus.CONFLICT, "LIKES_002", "좋아요 내역을 찾을 수 없습니다!"),
 
     //account
     NOT_FOUND_ACCOUNT(HttpStatus.NOT_FOUND, "ACCOUNT_001", "등록된 계좌가 존재하지 않습니다."),

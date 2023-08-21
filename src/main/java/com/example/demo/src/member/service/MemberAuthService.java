@@ -6,6 +6,7 @@ import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.exception.error.member.DuplicateMemberException;
+import com.example.demo.global.exception.error.member.DuplicateMemberNameException;
 import com.example.demo.global.exception.error.member.WrongEmailInputException;
 import com.example.demo.global.exception.error.member.WrongPasswordInputException;
 import com.example.demo.global.security.RefreshTokenProvider;
@@ -113,6 +114,17 @@ public class MemberAuthService {
                 .status(member.isCheckedAlarm())
                 .message(msg)
                 .build();
+    }
+
+    @Transactional
+    public ResponseEntity<CommonResponse> checkDuplicatedName(RequestNameCheck requestNameCheck){
+        String name = requestNameCheck.getName();
+        Member member = memberRepository.findByName(name).orElse(null);
+        if(member != null){
+            throw new DuplicateMemberNameException();
+        }
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("닉네임 중복체크 성공").build());
     }
   
     public ResponseLogin login(final String username, final String password) {
