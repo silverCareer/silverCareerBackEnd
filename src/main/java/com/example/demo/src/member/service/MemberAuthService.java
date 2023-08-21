@@ -9,7 +9,7 @@ import com.example.demo.global.exception.error.member.WrongEmailInputException;
 import com.example.demo.global.exception.error.member.WrongPasswordInputException;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
-import com.example.demo.src.S3Service;
+import com.example.demo.global.S3Service;
 import com.example.demo.src.account.domain.Account;
 import com.example.demo.src.bid.domain.BidStatus;
 import com.example.demo.src.bid.repository.BidRepository;
