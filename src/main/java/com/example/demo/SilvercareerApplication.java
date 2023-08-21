@@ -11,7 +11,7 @@ public class SilvercareerApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(SilvercareerApplication.class, args);
-
+        System.out.println("Build Success");
 //        long heapSize = Runtime.getRuntime().totalMemory();
 //        System.out.println("HEAP Size(M) : "+ heapSize / (1024*1024) + " MB");
     }
