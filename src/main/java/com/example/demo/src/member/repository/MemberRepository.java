@@ -19,4 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m from Member m where m.username=:memberEmail and m.activated=false")
     Optional<Member> findDeletedUserByMemberEmail(String memberEmail);
     List<Member> findMembersByCategory(String category);
+
+    Optional<Member> findByName(String name);
 }
