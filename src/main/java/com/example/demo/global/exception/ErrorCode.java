@@ -27,6 +27,7 @@ public enum ErrorCode {
 
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
     DUPLICATE_MEMBER_NAME(HttpStatus.CONFLICT, "AUTH_010", "멤버 이름 중복"),
+
     //likes
     EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 이미 있습니다!"),
     NOT_FOUND_LIKES(HttpStatus.CONFLICT, "LIKES_002", "좋아요 내역을 찾을 수 없습니다!"),
@@ -42,10 +43,14 @@ public enum ErrorCode {
     //product
     NOT_FOUND_PRODUCT_LIST(HttpStatus.NOT_FOUND, "PRODUCT_001", "해당 카테고리의 상품이 없습니다."),
     NOT_FOUND_PRODUCT_DETAIL(HttpStatus.NOT_FOUND, "PRODUCT_002", "삭제 혹은 존재하지 않는 상품입니다."),
-    INVALID_PRODUCT_INFO(HttpStatus.NOT_ACCEPTABLE, "PRODUCT_003", "상품 등록에 필요한 정보가 누락되었습니다.");
+    INVALID_PRODUCT_INFO(HttpStatus.NOT_ACCEPTABLE, "PRODUCT_003", "상품 등록에 필요한 정보가 누락되었습니다."),
 
     //review
 
+
+    //suggestion
+    NOT_FOUND_SUGGESTIONS(HttpStatus.NOT_FOUND, "SUGGESTION_001", "회원님의 카테고리와 일치하는 의뢰가 없습니다."),
+    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -5,7 +5,6 @@ import com.example.demo.src.member.domain.Member;
 import lombok.*;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;

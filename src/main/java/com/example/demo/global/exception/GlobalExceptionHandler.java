@@ -2,16 +2,17 @@ package com.example.demo.global.exception;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
-import com.example.demo.global.exception.error.Account.NotEnoughBalanceException;
-import com.example.demo.global.exception.error.Account.NotFoundAccountException;
+import com.example.demo.global.exception.error.account.NotEnoughBalanceException;
+import com.example.demo.global.exception.error.account.NotFoundAccountException;
 import com.example.demo.global.exception.error.charge.InvalidAmountException;
-import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.exception.error.likes.ExistLikesException;
 import com.example.demo.global.exception.error.likes.NotFoundLikesException;
 import com.example.demo.global.exception.error.member.*;
 import com.example.demo.global.exception.error.product.InvalidProductInfoException;
 import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.global.exception.error.product.NotFoundProductListException;
+import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionException;
+import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionsException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,7 +47,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, errorCode.getHttpStatus());
     }
-
 
     // Common
     @ExceptionHandler(BindException.class)
@@ -139,8 +139,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotEnoughBalanceException.class)
-    protected ResponseEntity<CommonResponse> handleNotEnoughBalanceException(NotEnoughBalanceException ex){
+    protected ResponseEntity<CommonResponse> handleNotEnoughBalanceException(NotEnoughBalanceException ex) {
         return createErrorResponse(ErrorCode.NOT_ENOUGH_ACCOUNT_BALANCE);
+    }
 
     //likes
     @ExceptionHandler(ExistLikesException.class)
@@ -152,4 +153,15 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<CommonResponse> handleNotFoundLikesException(NotFoundLikesException ex){
         return createErrorResponse(ErrorCode.NOT_FOUND_LIKES);
     }
+
+    // suggestion
+     @ExceptionHandler(NotFoundSuggestionsException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundSuggestionsException(NotFoundSuggestionsException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_SUGGESTIONS);
+     }
+
+     @ExceptionHandler(NotFoundSuggestionException.class)
+    protected  ResponseEntity<CommonResponse> handleNotFoundSuggestionException(NotFoundSuggestionException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_SUGGESTION);
+     }
 }

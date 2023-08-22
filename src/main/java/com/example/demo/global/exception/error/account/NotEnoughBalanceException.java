@@ -1,4 +1,4 @@
-package com.example.demo.global.exception.error.Account;
+package com.example.demo.global.exception.error.account;
 
 import com.example.demo.global.exception.ErrorCode;
 

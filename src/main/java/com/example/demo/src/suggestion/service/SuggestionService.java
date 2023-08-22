@@ -1,13 +1,12 @@
 package com.example.demo.src.suggestion.service;
 
+import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.suggestion.dto.RequestCreateSuggestion;
-import com.example.demo.src.suggestion.dto.ResponseSuggestion;
-
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface SuggestionService {
-    void createSuggestion(final String username, final RequestCreateSuggestion requestCreateSuggestion);
-    List<ResponseSuggestion> getMatchCategorySuggestion(final String username);
-    ResponseSuggestion getSuggestionDetail(final Long suggestionIdx);
+    ResponseEntity<CommonResponse> createSuggestion(final String username, final RequestCreateSuggestion requestCreateSuggestion);
+    ResponseEntity<CommonResponse> getMatchCategorySuggestion(final String username);
+    ResponseEntity<CommonResponse> getSuggestionDetail(final Long suggestionIdx);
 
 }
