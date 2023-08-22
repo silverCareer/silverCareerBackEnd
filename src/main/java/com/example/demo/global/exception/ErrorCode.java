@@ -13,15 +13,15 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "ALLOW_001", "잘못된 http method 방식입니다."),
 
     //charge
-    INVALID_AMOUNT_INPUT(HttpStatus.FORBIDDEN, "COMMON_001", "0원 이하의 금액은 입금할 수 없습니다."), // account, member에서 각각 계좌 잔액 충전, 멤버 캐시 충전에서 사용
+    INVALID_AMOUNT_INPUT(HttpStatus.NOT_ACCEPTABLE, "COMMON_001", "0원 이하의 금액은 입금할 수 없습니다."), // account, member에서 각각 계좌 잔액 충전, 멤버 캐시 충전에서 사용
 
     //member
     DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복"),
     DUPLICATE_MEMBER_PASSWORD(HttpStatus.CONFLICT, "AUTH_003", "멤버 비밀번호 중복"),
     DUPLICATE_MEMBER_PHONE_NUM(HttpStatus.CONFLICT, "AUTH_004", "멤버 전화번호 중복"),
-    WRONG_PASSWORD_INPUT(HttpStatus.CONFLICT, "AUTH_005", "잘못된 비밀번호 형식입니다."),
-    WRONG_PHONE_NUM_INPUT(HttpStatus.CONFLICT, "AUTH_006", "잘못된 전화번호 형식입니다."),
-    WRONG_EMAIL_INPUT(HttpStatus.CONFLICT, "AUTH_007", "잘못된 이메일 형식입니다."),
+    WRONG_PASSWORD_INPUT(HttpStatus.NOT_ACCEPTABLE, "AUTH_005", "잘못된 비밀번호 형식입니다."),
+    WRONG_PHONE_NUM_INPUT(HttpStatus.NOT_ACCEPTABLE, "AUTH_006", "잘못된 전화번호 형식입니다."),
+    WRONG_EMAIL_INPUT(HttpStatus.NOT_ACCEPTABLE, "AUTH_007", "잘못된 이메일 형식입니다."),
     DELETED_MEMBER(HttpStatus.CONFLICT, "Auth_008", "탈퇴한 회원입니다."),
     NOT_EXISTED_MEMBER_EXCEPTION(HttpStatus.NOT_FOUND, "AUTH_009", "존재하지 않는 회원입니다."),
 
@@ -34,7 +34,7 @@ public enum ErrorCode {
 
     //account
     NOT_FOUND_ACCOUNT(HttpStatus.NOT_FOUND, "ACCOUNT_001", "등록된 계좌가 존재하지 않습니다."),
-    NOT_ENOUGH_ACCOUNT_BALANCE(HttpStatus.FORBIDDEN, "ACCOUNT_002", "계좌 잔액이 충분하지 않습니다."),
+    NOT_ENOUGH_ACCOUNT_BALANCE(HttpStatus.NOT_ACCEPTABLE, "ACCOUNT_002", "계좌 잔액이 충분하지 않습니다."),
 
     //payment
     NOT_FOUND_PAYMENT_HISTORY(HttpStatus.NOT_FOUND, "PAYMENT_001", "결제 기록이 존재하지 않습니다."),
@@ -45,14 +45,16 @@ public enum ErrorCode {
     NOT_FOUND_PRODUCT_DETAIL(HttpStatus.NOT_FOUND, "PRODUCT_002", "삭제 혹은 존재하지 않는 상품입니다."),
     INVALID_PRODUCT_INFO(HttpStatus.NOT_ACCEPTABLE, "PRODUCT_003", "상품 등록에 필요한 정보가 누락되었습니다."),
 
-    // bid
+    //bid
     NOT_FOUND_BID(HttpStatus.NOT_FOUND, "BID_001", "존재하지 않는 입찰입니다."),
     NOT_FOUND_BIDS(HttpStatus.NOT_FOUND, "BID_002", "해당 의뢰와 연관된 입찰을 조회 할수 없습니다."),
 
     //suggestion
     NOT_FOUND_SUGGESTIONS(HttpStatus.NOT_FOUND, "SUGGESTION_001", "회원님의 카테고리와 일치하는 의뢰가 없습니다."),
-    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다.");
+    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다."),
 
+    //s3
+    ILLEGAL_ARGUMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "IMG_001", "이미지 변환을 실패하였습니다");
 
     private final HttpStatus httpStatus;
     private final String code;

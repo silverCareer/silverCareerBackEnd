@@ -87,15 +87,12 @@ public class LikeRedissonTest {
 
         verify(likeServiceImpl, times(threads)).addLikesCount(eq(1L), anyString());
 
-        System.out.println("생성 스레드 수: " + threads + " " + "호출된 메서드 수: " + countCall.get());
-
         List<Long> capturedProductIdxValues = productIdxCaptor.getAllValues();
         List<String> capturedUsernameValues = usernameCaptor.getAllValues();
 
         for (int i = 0; i < capturedProductIdxValues.size(); i++) {
             Long productIdx = capturedProductIdxValues.get(i);
             String username = capturedUsernameValues.get(i);
-            System.out.println("ProductIdx: " + productIdx + ", Username: " + username);
         }
 
         Assertions.assertEquals(threads, countCall.get());
@@ -147,16 +144,12 @@ public class LikeRedissonTest {
          */
         verify(likeServiceImpl, times(threads)).removeLikesCount(eq(1L), anyString());
 
-        System.out.println();
-        System.out.println("생성된 스레드 수: " + threads + " " + "호출된 메서드 수: " + countCall.get());
-
         List<Long> capturedProductIdxValues = productIdxCaptor.getAllValues();
         List<String> capturedUsernameValues = usernameCaptor.getAllValues();
 
         for (int i = 0; i < capturedProductIdxValues.size(); i++) {
             Long productIdx = capturedProductIdxValues.get(i);
             String username = capturedUsernameValues.get(i);
-            System.out.println("ProductIdx: " + productIdx + ", Username: " + username);
         }
 
         Assertions.assertEquals(threads, countCall.get());
