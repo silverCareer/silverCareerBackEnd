@@ -11,29 +11,21 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/product/detail/{productId}/likes")
+@RequestMapping("/api/product/detail/{productIdx}/likes")
 public class LikeController {
     private final LikeRedisson likeRedisson;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> addLikesCount(@AuthenticationPrincipal(expression = "username") String username,
-                                                        @Valid @PathVariable Long productId) {
-        likeRedisson.addLike(productId, username);
-        return ResponseEntity.ok(CommonResponse.builder()
-                .success(true)
-                .response("좋아요 등록 성공")
-                .build());
+                                                        @Valid @PathVariable Long productIdx) {
+        return likeRedisson.addLike(productIdx, username);
     }
 
     @DeleteMapping
     @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> removeLikesCount(@AuthenticationPrincipal(expression = "username") String username,
-                                                           @Valid @PathVariable Long productId) {
-        likeRedisson.removeLike(productId,username);
-        return ResponseEntity.ok(CommonResponse.builder()
-                .success(true)
-                .response("좋아요 취소 성공")
-                .build());
+                                                           @Valid @PathVariable Long productIdx) {
+        return likeRedisson.removeLike(productIdx, username);
     }
 }

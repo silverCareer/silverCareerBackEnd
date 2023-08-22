@@ -1,7 +1,9 @@
 package com.example.demo.src.review.service;
 
-import com.example.demo.src.review.dto.CreateReviewReq;
+import com.example.demo.global.exception.dto.CommonResponse;
+import com.example.demo.src.review.dto.RequestCreateReview;
+import org.springframework.http.ResponseEntity;
 
 public interface ReviewService {
-    void createReview(String username, Long productIdx, CreateReviewReq createReviewReq);
+    ResponseEntity<CommonResponse> createReview(final String username, final Long productIdx, final RequestCreateReview requestCreateReview);
 }

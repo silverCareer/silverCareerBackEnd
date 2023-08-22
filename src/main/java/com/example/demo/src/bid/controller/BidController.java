@@ -2,7 +2,6 @@ package com.example.demo.src.bid.controller;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.bid.dto.RequestBid;
-import com.example.demo.src.bid.dto.ResponseBid;
 import com.example.demo.src.bid.service.BidServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,59 +10,40 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class BidController {
     private final BidServiceImpl bidServiceImpl;
 
+    // 입찰 등록
     @PostMapping("/suggestion/{suggestionIdx}/bid")
     @PreAuthorize("hasAnyRole('ROLE_MENTOR')")
     public ResponseEntity<CommonResponse> registerBid(@AuthenticationPrincipal(expression = "username") String memberEmail,
-                                                      @Valid @PathVariable Long suggestionIdx, @Valid @RequestBody RequestBid bidDto) {
-        System.out.println(memberEmail);
-        bidServiceImpl.registerBid(memberEmail, suggestionIdx, bidDto);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response("의뢰 입찰 가격 등록 성공입니다.")
-                .build());
+                                                      @Valid @PathVariable Long suggestionIdx,
+                                                      @Valid @RequestBody RequestBid bidDto) {
+        return bidServiceImpl.registerBid(memberEmail, suggestionIdx, bidDto);
     }
 
+    // 입찰 리스트 확인
     @GetMapping("/bid")
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> getRegisterBidList(@AuthenticationPrincipal(expression = "username") String memberEmail) {
-        List<ResponseBid> res = bidServiceImpl.getRegisterBidList(memberEmail);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response(res)
-                .build());
+        return bidServiceImpl.getRegisterBidList(memberEmail);
     }
 
+    // 입찰 상세정보
     @GetMapping("/bid/{bidIdx}")
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
-    public ResponseEntity<CommonResponse> getRegisterBidsDetail(@AuthenticationPrincipal(expression = "username") String memberEmail
-            , @Valid @PathVariable Long bidIdx) {
-        System.out.println(memberEmail);
-        ResponseBid res = bidServiceImpl.getRegisterBidsDetail(bidIdx);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response(res)
-                .build());
+    public ResponseEntity<CommonResponse> getRegisterBidsDetail(@Valid @PathVariable Long bidIdx) {
+        return bidServiceImpl.getRegisterBidsDetail(bidIdx);
     }
 
+    // 입찰 수락
     @PostMapping("/bid/{bidIdx}/confirm")
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
-    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(@AuthenticationPrincipal(expression = "username") String memberEmail, @AuthenticationPrincipal(expression = "authorities") String authority,
+    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(@AuthenticationPrincipal(expression = "username") String memberEmail,
                                                                 @Valid @PathVariable Long bidIdx) {
-        System.out.println(authority);
-        bidServiceImpl.acceptBidOfSuggestion(memberEmail, bidIdx);
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response("의뢰가 입찰 되었습니다.")
-                .build());
+        return bidServiceImpl.acceptBidOfSuggestion(memberEmail, bidIdx);
     }
-
-    // 결제 API -> Payment에서 진행
 }

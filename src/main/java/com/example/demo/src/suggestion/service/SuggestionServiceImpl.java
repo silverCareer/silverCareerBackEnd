@@ -1,7 +1,9 @@
 package com.example.demo.src.suggestion.service;
 
-import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.dto.CommonResponse;
+import com.example.demo.global.exception.error.member.NotFoundMemberException;
+import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionException;
+import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionsException;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.suggestion.domain.Suggestion;
@@ -9,8 +11,7 @@ import com.example.demo.src.suggestion.dto.RequestCreateSuggestion;
 import com.example.demo.src.suggestion.dto.ResponseSuggestion;
 import com.example.demo.src.suggestion.repository.SuggestionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +27,9 @@ public class SuggestionServiceImpl implements SuggestionService {
 
     @Override
     @Transactional
-    public void createSuggestion(final String username, final RequestCreateSuggestion suggestionDto) {
-        Member mentee = memberRepository.findMemberByUsername(username);
+    public ResponseEntity<CommonResponse> createSuggestion(final String username, final RequestCreateSuggestion suggestionDto) {
+        Member mentee = memberRepository.findByUsername(username)
+                .orElseThrow(NotFoundMemberException::new);
         Suggestion suggestion = Suggestion.builder()
                 .title((suggestionDto.getTitle()))
                 .description(suggestionDto.getDescription())
@@ -39,36 +41,42 @@ public class SuggestionServiceImpl implements SuggestionService {
         suggestionRepository.save(suggestion);
         mentee.addSuggestion(suggestion);
         mentors.forEach(member -> member.updateAlarmStatus(true));
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("의뢰 등록 성공").build());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ResponseSuggestion> getMatchCategorySuggestion(final String username) {
-        Member mentor = memberRepository.findMemberByUsername(username);
-        List<Suggestion> suggestions = suggestionRepository.findByCategory(mentor.getCategory());
+    public ResponseEntity<CommonResponse> getMatchCategorySuggestion(final String username) {
+        Member mentor = memberRepository.findByUsername(username)
+                .orElseThrow(NotFoundMemberException::new);
 
-        if (suggestions.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
-        }
+        List<Suggestion> suggestions = suggestionRepository.findByCategory(mentor.getCategory())
+                .orElseThrow(NotFoundSuggestionsException::new);
 
-        return suggestions.stream()
-                .map(ResponseSuggestion::of)
-                .collect(Collectors.toList());
+        List<ResponseSuggestion> response = suggestions.stream().map(ResponseSuggestion::of).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response(response).build());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseSuggestion getSuggestionDetail(final Long suggestionIdx) {
-        Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        return ResponseSuggestion.builder()
+    public ResponseEntity<CommonResponse> getSuggestionDetail(final Long suggestionIdx) {
+        Suggestion suggestion = suggestionRepository.findSuggestionBySuggestionIdx(suggestionIdx)
+                .orElseThrow(NotFoundSuggestionException::new);
+
+        ResponseSuggestion response = ResponseSuggestion.builder()
                 .suggestionIdx(suggestion.getSuggestionIdx())
                 .title(suggestion.getTitle())
                 .description(suggestion.getDescription())
                 .category(suggestion.getCategory())
                 .price(suggestion.getPrice())
-                .memberName(suggestion.getMember().getName())
+                .suggester(suggestion.getMember().getName())
                 .build();
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response(response).build());
     }
 
 }

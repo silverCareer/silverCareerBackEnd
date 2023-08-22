@@ -85,16 +85,15 @@ public class MemberController {
 
     // 개인 정보 조회
     @GetMapping("/members")
-    public ResponseEntity<ResponseMyInfo> getMyInfo(Authentication authentication) throws IllegalAccessException {
-        String email = authentication.getName();
+    public ResponseEntity<CommonResponse> getMyInfo(@AuthenticationPrincipal(expression = "username") String username) throws IllegalAccessException {
 
-        return ResponseEntity.ok(memberAuthService.getMyInfo(email));
+        return memberAuthService.getMyInfo(username);
     }
 
-    @PostMapping("/checkName")
-    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @RequestBody RequestNameCheck requestNameCheck){
+    @GetMapping("/checkName/{name}")
+    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @PathVariable String name){
 
-        return memberAuthService.checkDuplicatedName(requestNameCheck);
+        return memberAuthService.checkDuplicatedName(name);
     }
 
     // 멤버 캐쉬 충전
@@ -108,11 +107,10 @@ public class MemberController {
 
     // 멤버 정보 수정
     @PatchMapping("/modify")
-    public ResponseEntity updateMember(@RequestBody RequestMemberPatch requestMemberPatch,
+    public ResponseEntity<CommonResponse> updateMember(@RequestBody RequestMemberPatch requestMemberPatch,
                                        @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        memberAuthService.updateInfo(requestMemberPatch, memberEmail);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return memberAuthService.updateInfo(requestMemberPatch, memberEmail);
     }
 
     @PatchMapping("/deleteMember")

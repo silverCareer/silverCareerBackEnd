@@ -117,8 +117,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public ResponseEntity<CommonResponse> checkDuplicatedName(RequestNameCheck requestNameCheck){
-        String name = requestNameCheck.getName();
+    public ResponseEntity<CommonResponse> checkDuplicatedName(String name){
         Member member = memberRepository.findByName(name).orElse(null);
         if(member != null){
             throw new DuplicateMemberNameException();
@@ -230,7 +229,7 @@ public class MemberAuthService {
         if (validateCash(amount)) {
             memberAccountDeductEvent(memberEmail, amount);
         } else {
-            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
+            throw new CustomException(ErrorCode.INVALID_AMOUNT_INPUT);
         }
         member.addCash(amount);
         memberRepository.save(member);
@@ -250,10 +249,10 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void updateInfo(RequestMemberPatch requestMemberPatch, String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> updateInfo(RequestMemberPatch requestMemberPatch, String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findMemberByUsername(memberEmail);
-        String oldPassword = getMyInfo(memberEmail).getPassword();
-        String oldPhoneNum = getMyInfo(memberEmail).getPhoneNumber();
+        String oldPassword = member.getPassword();
+        String oldPhoneNum = member.getPhoneNumber();
         String newPassword = requestMemberPatch.getPassword();
         String newPhoneNum = requestMemberPatch.getPhoneNum();
 
@@ -281,14 +280,18 @@ public class MemberAuthService {
             }
         }
         memberRepository.save(member);
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("회원정보 변경 성공").build());
     }
 
 
-    public ResponseMyInfo getMyInfo(String memberName) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> getMyInfo(String memberName) throws IllegalAccessException {
         ResponseMyInfo responseMyInfo = ResponseMyInfo.of(memberRepository.findByUsername(memberName).orElseThrow(()
                 -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT)));
 
-        return responseMyInfo;
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response(responseMyInfo).build());
     }
 
     @Transactional
@@ -324,7 +327,7 @@ public class MemberAuthService {
     // 충전하려는 금액 양의 정수인지 확인
     public boolean validateCash(long amount) {
         if (amount <= 0) {
-            throw new CustomException(ErrorCode.UNDER_ZERO_AMOUNT);
+            throw new CustomException(ErrorCode.INVALID_AMOUNT_INPUT);
         }
         return true;
     }
