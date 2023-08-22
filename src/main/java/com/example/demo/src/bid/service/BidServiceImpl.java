@@ -2,7 +2,6 @@ package com.example.demo.src.bid.service;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.bid.NotFoundBidException;
-import com.example.demo.global.exception.error.bid.NotFoundBidsException;
 import com.example.demo.global.exception.error.member.NotFoundMemberException;
 import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionException;
 import com.example.demo.src.bid.domain.Bid;
