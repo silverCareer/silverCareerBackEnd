@@ -250,10 +250,10 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void updateInfo(RequestMemberPatch requestMemberPatch, String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> updateInfo(RequestMemberPatch requestMemberPatch, String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findMemberByUsername(memberEmail);
-        String oldPassword = getMyInfo(memberEmail).getPassword();
-        String oldPhoneNum = getMyInfo(memberEmail).getPhoneNumber();
+        String oldPassword = member.getPassword();
+        String oldPhoneNum = member.getPhoneNumber();
         String newPassword = requestMemberPatch.getPassword();
         String newPhoneNum = requestMemberPatch.getPhoneNum();
 
@@ -281,14 +281,18 @@ public class MemberAuthService {
             }
         }
         memberRepository.save(member);
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("회원정보 변경 성공").build());
     }
 
 
-    public ResponseMyInfo getMyInfo(String memberName) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> getMyInfo(String memberName) throws IllegalAccessException {
         ResponseMyInfo responseMyInfo = ResponseMyInfo.of(memberRepository.findByUsername(memberName).orElseThrow(()
                 -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT)));
 
-        return responseMyInfo;
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response(responseMyInfo).build());
     }
 
     @Transactional
