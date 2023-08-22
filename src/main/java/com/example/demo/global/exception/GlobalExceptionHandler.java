@@ -3,6 +3,7 @@ package com.example.demo.global.exception;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.dto.ErrorResponse;
 import com.example.demo.global.exception.error.bid.NotFoundBidException;
+import com.example.demo.global.exception.error.bid.NotFoundBidsException;
 import com.example.demo.global.exception.error.payment.NotFoundPaymentHistoryException;
 import com.example.demo.global.exception.error.payment.WrongPaymentInputException;
 import com.example.demo.global.exception.error.account.NotEnoughBalanceException;
@@ -121,7 +122,6 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_NAME);
     }
 
-
     // Payment
     @ExceptionHandler(NotFoundPaymentHistoryException.class)
     protected ResponseEntity<CommonResponse> handleWrongPaymentInputException(NotFoundPaymentHistoryException ex) {
@@ -132,8 +132,6 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<CommonResponse> handleNotFoundPaymentHistoryException(WrongPaymentInputException ex) {
         return createErrorResponse(ErrorCode.NOT_ENOUGH_MEMBER_BALANCE);
     }
-
-
 
     // Product
     @ExceptionHandler(NotFoundProductListException.class)
@@ -158,10 +156,9 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.NOT_FOUND_BID);
     }
 
-    // Suggestion
-    @ExceptionHandler(NotFoundSuggestionException.class)
-    protected ResponseEntity<CommonResponse> handleNotFoundSuggestionException(NotFoundSuggestionException ex) {
-        return createErrorResponse(ErrorCode.NOT_FOUND_SUGGESTION);
+    @ExceptionHandler(NotFoundBidsException.class)
+    protected  ResponseEntity<CommonResponse> handleNotFoundBidsException(NotFoundBidsException ex) {
+        return createErrorResponse(ErrorCode.NOT_FOUND_BIDS);
     }
 
     // Account

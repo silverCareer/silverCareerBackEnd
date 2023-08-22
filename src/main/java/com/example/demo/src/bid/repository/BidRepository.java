@@ -15,14 +15,13 @@ import java.util.Optional;
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Long> {
     Bid findByBidIdx(Long BidIdx);
+
     @Modifying
     @Query("DELETE FROM Bid b WHERE b.bidIdx IN :bidIds")
     void deleteBidsByIdIn(@Param("bidIds") List<Long> bidIds);
 
-    Optional<Bid> findBySuggestion_SuggestionIdx(Long suggestionIdx);
-    
-    Optional<List<Bid>> findBidsBySuggestion_SuggestionIdx(Long suggestionIdx);
-    
+    List<Bid> findBidsBySuggestion_SuggestionIdx(Long suggestionIdx);
+
     List<Bid> findBidBySuggestionMemberAndStatus(Member member, BidStatus status);
 
     Optional<Bid> findBidsByBidIdx(Long bidIdx);
