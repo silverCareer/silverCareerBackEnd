@@ -117,8 +117,7 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public ResponseEntity<CommonResponse> checkDuplicatedName(RequestNameCheck requestNameCheck){
-        String name = requestNameCheck.getName();
+    public ResponseEntity<CommonResponse> checkDuplicatedName(String name){
         Member member = memberRepository.findByName(name).orElse(null);
         if(member != null){
             throw new DuplicateMemberNameException();

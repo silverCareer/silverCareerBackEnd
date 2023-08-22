@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ResponseMyInfo {
     private String email; // 이메일
     private String password; // 비밀번호
-    // 이 부분에 이미지 url
+    private String userImage; // 유저 프로필 이미지
     private String name; // 이름
     private String career; // 멘토일 경우 커리어
     private Long balance; // 멘티일 경우 잔액
@@ -26,6 +26,7 @@ public class ResponseMyInfo {
         return ResponseMyInfo.builder()
                 .email(member.getUsername())
                 .password(member.getPassword())
+                .userImage(member.getUserImage())
                 .name(member.getName())
                 .career(member.getCareer())
                 .balance(member.getBalance())
