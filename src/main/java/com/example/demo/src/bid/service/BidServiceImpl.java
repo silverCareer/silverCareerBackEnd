@@ -66,7 +66,6 @@ public class BidServiceImpl implements BidService {
         mySuggestion.forEach(suggestion ->
                 bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx())
                         .forEach(bid -> bids.add(bid)));
-        if(bids.isEmpty()){throw new NotFoundBidsException();}
         List<ResponseBid> response = bids.stream().map(ResponseBid::of).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(

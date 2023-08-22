@@ -53,7 +53,6 @@ public class SuggestionServiceImpl implements SuggestionService {
 
         List<Suggestion> suggestions = suggestionRepository.findByCategory(mentor.getCategory())
                 .orElseThrow(NotFoundSuggestionsException::new);
-        if(suggestions.isEmpty()){throw new NotFoundSuggestionsException();}
 
         List<ResponseSuggestion> response = suggestions.stream().map(ResponseSuggestion::of).collect(Collectors.toList());
 
