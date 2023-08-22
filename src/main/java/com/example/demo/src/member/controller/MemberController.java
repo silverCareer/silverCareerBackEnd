@@ -90,10 +90,10 @@ public class MemberController {
         return memberAuthService.getMyInfo(username);
     }
 
-    @GetMapping("/checkName")
-    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @RequestBody RequestNameCheck requestNameCheck){
+    @GetMapping("/checkName/{name}")
+    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @PathVariable String name){
 
-        return memberAuthService.checkDuplicatedName(requestNameCheck);
+        return memberAuthService.checkDuplicatedName(name);
     }
 
     // 멤버 캐쉬 충전
