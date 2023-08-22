@@ -52,8 +52,10 @@ public enum ErrorCode {
 
     //suggestion
     NOT_FOUND_SUGGESTIONS(HttpStatus.NOT_FOUND, "SUGGESTION_001", "회원님의 카테고리와 일치하는 의뢰가 없습니다."),
-    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다.");
+    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다."),
 
+    // search
+    NOT_FOUND_SEARCH_LIST(HttpStatus.NOT_FOUND, "SEARCH_001", "검색 결과가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

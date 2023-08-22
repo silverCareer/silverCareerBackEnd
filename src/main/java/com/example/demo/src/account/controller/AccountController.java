@@ -3,6 +3,7 @@ package com.example.demo.src.account.controller;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.account.dto.RequestAccountCharge;
+import com.example.demo.src.account.service.AccountService;
 import com.example.demo.src.account.service.AccountServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import java.net.URI;
 @AllArgsConstructor
 public class AccountController {
 
-    private final AccountServiceImpl accountService;
+    private final AccountService accountService;
 
     // 계좌 잔액 충전
     @PostMapping("/accountCharge")
