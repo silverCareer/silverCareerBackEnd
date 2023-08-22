@@ -122,6 +122,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_NAME);
     }
 
+    @ExceptionHandler(DuplicateMemberEmailException.class)
+    protected ResponseEntity<CommonResponse> handleDuplicatedMemberEmailException(DuplicateMemberEmailException ex) {
+        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_EMAIL);
+    }
+
     // Payment
     @ExceptionHandler(NotFoundPaymentHistoryException.class)
     protected ResponseEntity<CommonResponse> handleWrongPaymentInputException(NotFoundPaymentHistoryException ex) {
