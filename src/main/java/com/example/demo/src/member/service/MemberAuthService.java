@@ -5,10 +5,7 @@ import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.CustomException;
-import com.example.demo.global.exception.error.member.DuplicateMemberException;
-import com.example.demo.global.exception.error.member.DuplicateMemberNameException;
-import com.example.demo.global.exception.error.member.WrongEmailInputException;
-import com.example.demo.global.exception.error.member.WrongPasswordInputException;
+import com.example.demo.global.exception.error.member.*;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.global.S3Service;
@@ -124,6 +121,16 @@ public class MemberAuthService {
         }
         return ResponseEntity.ok().body(
                 CommonResponse.builder().success(true).response("닉네임 중복체크 성공").build());
+    }
+
+    @Transactional
+    public ResponseEntity<CommonResponse> checkDuplicatedEmail(String email){
+        Member member = memberRepository.findByUsername(email).orElse(null);
+        if(member != null){
+            throw new DuplicateMemberEmailException();
+        }
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("이메일 중복체크 성공").build());
     }
   
     public ResponseLogin login(final String username, final String password) {
