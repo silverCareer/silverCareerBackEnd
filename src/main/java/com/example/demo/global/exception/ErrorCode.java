@@ -48,9 +48,17 @@ public enum ErrorCode {
     //review
 
 
+    //common
+    UNDER_ZERO_AMOUNT(HttpStatus.FORBIDDEN, "COMMON_001", "0원 이하의 금액은 입금할 수 없습니다."), // account, member에서 각각 계좌 잔액 충전, 멤버 캐시 충전에서 사용
+
+    // bid
+    NOT_FOUND_BID(HttpStatus.NOT_FOUND, "BID_001", "존재하지 않는 입찰입니다.");
+
+
     //suggestion
     NOT_FOUND_SUGGESTIONS(HttpStatus.NOT_FOUND, "SUGGESTION_001", "회원님의 카테고리와 일치하는 의뢰가 없습니다."),
     NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
