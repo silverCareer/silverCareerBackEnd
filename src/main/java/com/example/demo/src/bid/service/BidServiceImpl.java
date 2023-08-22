@@ -1,7 +1,10 @@
 package com.example.demo.src.bid.service;
 
-import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.global.exception.error.CustomException;
+import com.example.demo.global.exception.dto.CommonResponse;
+import com.example.demo.global.exception.error.bid.NotFoundBidException;
+import com.example.demo.global.exception.error.bid.NotFoundBidsException;
+import com.example.demo.global.exception.error.member.NotFoundMemberException;
+import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionException;
 import com.example.demo.src.bid.domain.Bid;
 import com.example.demo.src.bid.domain.BidStatus;
 import com.example.demo.src.bid.dto.RequestBid;
@@ -12,9 +15,11 @@ import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.suggestion.domain.Suggestion;
 import com.example.demo.src.suggestion.repository.SuggestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +32,15 @@ public class BidServiceImpl implements BidService {
 
     @Override
     @Transactional
-    public void registerBid(final String username, final Long suggestionIdx, final RequestBid bidDto) {
-        Member mentor = memberRepository.findMemberByUsername(username);
+    public ResponseEntity<CommonResponse> registerBid(final String username, final Long suggestionIdx, final RequestBid bidDto) {
+        Member mentor = memberRepository.findByUsername(username)
+                .orElseThrow(NotFoundMemberException::new);
 
-        Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        Suggestion suggestion = suggestionRepository.findSuggestionBySuggestionIdx(suggestionIdx)
+                .orElseThrow(NotFoundSuggestionException::new);
       
-        Member mentee = memberRepository.findMemberByUsername(suggestion.getMember().getUsername());
+        Member mentee = memberRepository.findByUsername(suggestion.getMember().getUsername())
+                .orElseThrow(NotFoundMemberException::new);
 
         Bid bid = Bid.builder()
                 .price(bidDto.getPrice())
@@ -44,43 +51,52 @@ public class BidServiceImpl implements BidService {
         bidRepository.save(bid);
         mentor.addBid(bid);
         mentee.updateAlarmStatus(true);
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("입찰 등록 성공").build());
+    }
+
+    //멘티가 확인하는 입찰 내역들
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CommonResponse> getRegisterBidList(final String username) {
+        List<Suggestion> mySuggestion = suggestionRepository.findSuggestionsByMemberUsername(username)
+                .orElseThrow(NotFoundSuggestionException::new);
+        List<Bid> bids = new ArrayList<>();
+        mySuggestion.forEach(suggestion ->
+                bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx())
+                        .forEach(bid -> bids.add(bid)));
+        if(bids.isEmpty()){throw new NotFoundBidsException();}
+        List<ResponseBid> response = bids.stream().map(ResponseBid::of).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response(response).build());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ResponseBid> getRegisterBidList(final String username) { //멘티가 확인하는 입찰 내역들
-        Suggestion suggestion = suggestionRepository.findByMemberName(username);
-        if (suggestion == null) {
-            throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
-        }
-        List<Bid> bids = bidRepository.findAll();
-        return bids.stream().map(ResponseBid::of).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ResponseBid getRegisterBidsDetail(final Long bidIdx) {
-        Bid bid = bidRepository.findById(bidIdx)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
-        return ResponseBid.builder()
-                .memberName(bid.getMember().getName())
+    public ResponseEntity<CommonResponse> getRegisterBidsDetail(final Long bidIdx) {
+        Bid bid = bidRepository.findById(bidIdx).orElseThrow(NotFoundBidException::new);
+        ResponseBid response = ResponseBid.builder()
+                .bidIdx(bid.getBidIdx())
+                .title(bid.getSuggestion().getTitle())
+                .category(bid.getSuggestion().getCategory())
                 .price(bid.getPrice())
+                .mentorName(bid.getMember().getName())
                 .build();
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response(response).build());
     }
 
     @Override
     @Transactional
-    public void acceptBidOfSuggestion(final String memberEmail, final Long bidIdx) { //멘티가 입찰한 멘토의 입찰건 중 하나를 채택하기
-        Bid bid = bidRepository.findByBidIdx(bidIdx);
-        if (bid == null) {
-            throw new CustomException(ErrorCode.NOT_FOUND_ELEMENT);
-        }
+    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(final String memberEmail, final Long bidIdx) { //멘티가 입찰한 멘토의 입찰건 중 하나를 채택하기
+        Bid bid = bidRepository.findById(bidIdx).orElseThrow(NotFoundBidException::new);
         Suggestion suggestion = bid.getSuggestion();
         bid.updateStatus(BidStatus.완료);
         suggestion.terminateSuggestion(true);
         
-        List<Bid> otherBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx()).
-                orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
+        List<Bid> otherBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx());
         
         List<Long> bidIdxToDelete = otherBids.stream()
                 .filter(Bid -> !Bid.getBidIdx().equals(bid.getBidIdx()))
@@ -90,5 +106,8 @@ public class BidServiceImpl implements BidService {
         if (!bidIdxToDelete.isEmpty()) {
             bidRepository.deleteBidsByIdIn(bidIdxToDelete);
         }
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).
+                        response(String.format("%s님의 '%s' 의뢰에 관한 입찰 수락완료", bid.getMember().getName(), suggestion.getTitle())).build());
     }
 }

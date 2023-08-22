@@ -64,7 +64,7 @@ public class SuggestionServiceImpl implements SuggestionService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<CommonResponse> getSuggestionDetail(final Long suggestionIdx) {
-        Suggestion suggestion = suggestionRepository.findById(suggestionIdx)
+        Suggestion suggestion = suggestionRepository.findSuggestionBySuggestionIdx(suggestionIdx)
                 .orElseThrow(NotFoundSuggestionException::new);
 
         ResponseSuggestion response = ResponseSuggestion.builder()

@@ -7,13 +7,19 @@ import lombok.Data;
 @Data
 @Builder
 public class ResponseBid {
+    private Long bidIdx;
+    private String title;
+    private String category;
     private Long price;
-    private String memberName;
+    private String mentorName;
 
     public static ResponseBid of(Bid bid) {
         return ResponseBid.builder()
+                .bidIdx(bid.getBidIdx())
+                .title(bid.getSuggestion().getTitle())
+                .category(bid.getSuggestion().getCategory())
                 .price(bid.getPrice())
-                .memberName(bid.getMember().getName())
+                .mentorName(bid.getMember().getName())
                 .build();
     }
 }
