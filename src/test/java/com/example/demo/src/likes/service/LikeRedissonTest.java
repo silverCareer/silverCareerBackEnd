@@ -38,11 +38,6 @@ public class LikeRedissonTest {
     @Mock
     private LikeRepository likeRepository;
 
-//    @BeforeEach
-//    void before(){
-//        MockitoAnnotations.openMocks(this);
-//    }
-
     @Test
     @DisplayName("좋아요 동시성 테스트(성공 케이스)")
     void addLikeRedisson() throws InterruptedException {

@@ -12,13 +12,16 @@ public class ResponseSuggestion {
     private String description;
     private String category;
     private Long price;
-    private String memberName;
+    private String suggester;
 
     public static ResponseSuggestion of(Suggestion suggestion) {
         return ResponseSuggestion.builder()
                 .suggestionIdx(suggestion.getSuggestionIdx())
+                .title(suggestion.getTitle())
+                .description(suggestion.getDescription())
                 .category(suggestion.getCategory())
-                .memberName(suggestion.getMember().getName())
+                .price(suggestion.getPrice())
+                .suggester(suggestion.getMember().getName())
                 .build();
     }
 }

@@ -12,6 +12,9 @@ public enum ErrorCode {
     NOT_FOUND_ELEMENT(HttpStatus.NOT_FOUND, "NOT_FOUND_001", "일치하는 요소가 잘못됐거나 없습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "ALLOW_001", "잘못된 http method 방식입니다."),
 
+    //charge
+    INVALID_AMOUNT_INPUT(HttpStatus.FORBIDDEN, "COMMON_001", "0원 이하의 금액은 입금할 수 없습니다."), // account, member에서 각각 계좌 잔액 충전, 멤버 캐시 충전에서 사용
+
     //member
     DUPLICATE_MEMBER_EXCEPTION(HttpStatus.CONFLICT, "AUTH_002", "멤버 이메일 중복"),
     DUPLICATE_MEMBER_PASSWORD(HttpStatus.CONFLICT, "AUTH_003", "멤버 비밀번호 중복"),
@@ -24,11 +27,14 @@ public enum ErrorCode {
 
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
     DUPLICATE_MEMBER_NAME(HttpStatus.CONFLICT, "AUTH_010", "멤버 이름 중복"),
+
     //likes
-    EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 있습니다"),
+    EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 이미 있습니다!"),
+    NOT_FOUND_LIKES(HttpStatus.CONFLICT, "LIKES_002", "좋아요 내역을 찾을 수 없습니다!"),
 
     //account
-    NOT_ENOUGH_ACCOUNT_BALANCE(HttpStatus.FORBIDDEN, "ACCOUNT_001", "계좌 잔액이 충분하지 않습니다."),
+    NOT_FOUND_ACCOUNT(HttpStatus.NOT_FOUND, "ACCOUNT_001", "등록된 계좌가 존재하지 않습니다."),
+    NOT_ENOUGH_ACCOUNT_BALANCE(HttpStatus.FORBIDDEN, "ACCOUNT_002", "계좌 잔액이 충분하지 않습니다."),
 
     //payment
     NOT_FOUND_PAYMENT_HISTORY(HttpStatus.NOT_FOUND, "PAYMENT_001", "결제 기록이 존재하지 않습니다."),
@@ -38,17 +44,21 @@ public enum ErrorCode {
     NOT_FOUND_PRODUCT_LIST(HttpStatus.NOT_FOUND, "PRODUCT_001", "해당 카테고리의 상품이 없습니다."),
     NOT_FOUND_PRODUCT_DETAIL(HttpStatus.NOT_FOUND, "PRODUCT_002", "삭제 혹은 존재하지 않는 상품입니다."),
     INVALID_PRODUCT_INFO(HttpStatus.NOT_ACCEPTABLE, "PRODUCT_003", "상품 등록에 필요한 정보가 누락되었습니다."),
+
     //review
 
 
     //common
     UNDER_ZERO_AMOUNT(HttpStatus.FORBIDDEN, "COMMON_001", "0원 이하의 금액은 입금할 수 없습니다."), // account, member에서 각각 계좌 잔액 충전, 멤버 캐시 충전에서 사용
 
-    // suggestion
-    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_001", "존재하지 않는 제안입니다."),
-
     // bid
     NOT_FOUND_BID(HttpStatus.NOT_FOUND, "BID_001", "존재하지 않는 입찰입니다.");
+
+
+    //suggestion
+    NOT_FOUND_SUGGESTIONS(HttpStatus.NOT_FOUND, "SUGGESTION_001", "회원님의 카테고리와 일치하는 의뢰가 없습니다."),
+    NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
