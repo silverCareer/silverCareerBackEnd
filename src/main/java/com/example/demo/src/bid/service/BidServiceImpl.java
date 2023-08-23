@@ -87,26 +87,26 @@ public class BidServiceImpl implements BidService {
                 CommonResponse.builder().success(true).response(response).build());
     }
 
-    @Override
-    @Transactional
-    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(final String memberEmail, final Long bidIdx) { //멘티가 입찰한 멘토의 입찰건 중 하나를 채택하기
-        Bid bid = bidRepository.findById(bidIdx).orElseThrow(NotFoundBidException::new);
-        Suggestion suggestion = bid.getSuggestion();
-        bid.updateStatus(BidStatus.완료);
-        suggestion.terminateSuggestion(true);
-        
-        List<Bid> otherBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx());
-        
-        List<Long> bidIdxToDelete = otherBids.stream()
-                .filter(Bid -> !Bid.getBidIdx().equals(bid.getBidIdx()))
-                .map(Bid::getBidIdx)
-                .collect(Collectors.toList());
-      
-        if (!bidIdxToDelete.isEmpty()) {
-            bidRepository.deleteBidsByIdIn(bidIdxToDelete);
-        }
-        return ResponseEntity.ok().body(
-                CommonResponse.builder().success(true).
-                        response(String.format("%s님의 '%s' 의뢰에 관한 입찰 수락완료", bid.getMember().getName(), suggestion.getTitle())).build());
-    }
+//    @Override
+//    @Transactional
+//    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(final String memberEmail, final Long bidIdx) { //멘티가 입찰한 멘토의 입찰건 중 하나를 채택하기
+//        Bid bid = bidRepository.findById(bidIdx).orElseThrow(NotFoundBidException::new);
+//        Suggestion suggestion = bid.getSuggestion();
+//        bid.updateStatus(BidStatus.완료);
+//        suggestion.terminateSuggestion(true);
+//
+//        List<Bid> otherBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx());
+//
+//        List<Long> bidIdxToDelete = otherBids.stream()
+//                .filter(Bid -> !Bid.getBidIdx().equals(bid.getBidIdx()))
+//                .map(Bid::getBidIdx)
+//                .collect(Collectors.toList());
+//
+//        if (!bidIdxToDelete.isEmpty()) {
+//            bidRepository.deleteBidsByIdIn(bidIdxToDelete);
+//        }
+//        return ResponseEntity.ok().body(
+//                CommonResponse.builder().success(true).
+//                        response(String.format("%s님의 '%s' 의뢰에 관한 입찰 수락완료", bid.getMember().getName(), suggestion.getTitle())).build());
+//    }
 }
