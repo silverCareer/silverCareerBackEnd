@@ -188,6 +188,17 @@ public class MemberAuthServiceImpl implements MemberAuthService{
                 CommonResponse.builder().success(true).response("닉네임 중복체크 성공").build());
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<CommonResponse> checkDuplicatedEmail(final String memberEmail){
+        Member member = memberRepository.findByUsername(memberEmail).orElse(null);
+        if(member != null){
+            throw new DuplicateMemberEmailException();
+        }
+        return ResponseEntity.ok().body(
+                CommonResponse.builder().success(true).response("이메일 중복체크 성공").build());
+    }
+
     // 캐시 충전
     @Override
     @Transactional
