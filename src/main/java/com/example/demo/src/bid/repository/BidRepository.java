@@ -14,8 +14,6 @@ import java.util.Optional;
 
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Long> {
-    Bid findByBidIdx(Long BidIdx);
-
     @Modifying
     @Query("DELETE FROM Bid b WHERE b.bidIdx IN :bidIds")
     void deleteBidsByIdIn(@Param("bidIds") List<Long> bidIds);

@@ -4,15 +4,11 @@ import com.example.demo.global.exception.BaseException;
 import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.service.MemberAuthService;
 import com.example.demo.src.member.service.MemberAuthServiceImpl;
-import com.example.demo.utils.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +26,6 @@ import java.io.IOException;
 public class MemberController {
     private final MemberAuthService memberAuthService;
     private final MemberAuthServiceImpl memberAuthServiceImpl;
-    private final SecurityUtil securityUtil;
 
     //회원가입
     @PostMapping("/signup")
@@ -60,8 +55,8 @@ public class MemberController {
     }
 
     @GetMapping("/checkEmail/{email}")
-    public ResponseEntity<CommonResponse> checkDuplicatedEmail(@Valid @PathVariable String memberEmail){
-        return memberAuthService.checkDuplicatedEmail(memberEmail);
+    public ResponseEntity<CommonResponse> checkDuplicatedEmail(@Valid @PathVariable String email){
+        return memberAuthService.checkDuplicatedEmail(email);
     }
 
     // 멤버 캐쉬 충전

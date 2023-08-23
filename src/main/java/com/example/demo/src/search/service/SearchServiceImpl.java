@@ -4,7 +4,6 @@ import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.search.NotFoundSearchException;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.dto.ResponseDisplayProducts;
-import com.example.demo.src.product.dto.ResponseMultiProduct;
 import com.example.demo.src.product.repository.ProductRepository;
 import com.example.demo.src.search.dto.ResponseMultiSearch;
 import lombok.RequiredArgsConstructor;

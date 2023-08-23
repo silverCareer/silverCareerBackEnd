@@ -31,8 +31,8 @@ public class BidServiceImpl implements BidService {
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> registerBid(final String username, final Long suggestionIdx, final RequestBid bidDto) {
-        Member mentor = memberRepository.findByUsername(username)
+    public ResponseEntity<CommonResponse> registerBid(final String memberEmail, final Long suggestionIdx, final RequestBid bidDto) {
+        Member mentor = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
 
         Suggestion suggestion = suggestionRepository.findSuggestionBySuggestionIdx(suggestionIdx)
@@ -58,8 +58,8 @@ public class BidServiceImpl implements BidService {
     //멘티가 확인하는 입찰 내역들
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CommonResponse> getRegisterBidList(final String username) {
-        List<Suggestion> mySuggestion = suggestionRepository.findSuggestionsByMemberUsername(username)
+    public ResponseEntity<CommonResponse> getRegisterBidList(final String memberEmail) {
+        List<Suggestion> mySuggestion = suggestionRepository.findSuggestionsByMemberUsername(memberEmail)
                 .orElseThrow(NotFoundSuggestionException::new);
         List<Bid> bids = new ArrayList<>();
         mySuggestion.forEach(suggestion ->
@@ -86,27 +86,4 @@ public class BidServiceImpl implements BidService {
         return ResponseEntity.ok().body(
                 CommonResponse.builder().success(true).response(response).build());
     }
-
-//    @Override
-//    @Transactional
-//    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(final String memberEmail, final Long bidIdx) { //멘티가 입찰한 멘토의 입찰건 중 하나를 채택하기
-//        Bid bid = bidRepository.findById(bidIdx).orElseThrow(NotFoundBidException::new);
-//        Suggestion suggestion = bid.getSuggestion();
-//        bid.updateStatus(BidStatus.완료);
-//        suggestion.terminateSuggestion(true);
-//
-//        List<Bid> otherBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx());
-//
-//        List<Long> bidIdxToDelete = otherBids.stream()
-//                .filter(Bid -> !Bid.getBidIdx().equals(bid.getBidIdx()))
-//                .map(Bid::getBidIdx)
-//                .collect(Collectors.toList());
-//
-//        if (!bidIdxToDelete.isEmpty()) {
-//            bidRepository.deleteBidsByIdIn(bidIdxToDelete);
-//        }
-//        return ResponseEntity.ok().body(
-//                CommonResponse.builder().success(true).
-//                        response(String.format("%s님의 '%s' 의뢰에 관한 입찰 수락완료", bid.getMember().getName(), suggestion.getTitle())).build());
-//    }
 }

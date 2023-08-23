@@ -1,8 +1,6 @@
 package com.example.demo.src.review.service;
 
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.global.exception.error.CustomException;
 import com.example.demo.global.exception.error.member.NotFoundMemberException;
 import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.src.member.domain.Member;
