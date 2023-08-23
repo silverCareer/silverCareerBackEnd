@@ -1,13 +1,17 @@
 package com.example.demo.global.security;
 
+import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.stream.Collectors;
+
 
 public class RefreshTokenProvider extends TokenProvider {
     private static final String WEIGHT = "token-weight";
@@ -29,6 +33,7 @@ public class RefreshTokenProvider extends TokenProvider {
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim(WEIGHT, tokenWeight)
                 .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .compact();
     }
@@ -39,6 +44,6 @@ public class RefreshTokenProvider extends TokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.valueOf(String.valueOf(claims.get(WEIGHT)));
+        return Long.parseLong(String.valueOf(claims.get(WEIGHT)));
     }
 }

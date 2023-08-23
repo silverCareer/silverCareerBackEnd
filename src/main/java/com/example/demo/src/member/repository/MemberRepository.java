@@ -21,4 +21,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findMembersByCategory(String category);
 
     Optional<Member> findByName(String name);
+    Member findByUsernameAndRefreshToken(String username, String token);
 }

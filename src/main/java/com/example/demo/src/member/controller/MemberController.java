@@ -9,8 +9,10 @@ import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.service.MemberAuthService;
 import com.example.demo.utils.SecurityUtil;
 import com.example.demo.utils.ValidationRegex;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.struts.chain.commands.UnauthorizedActionException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,20 +69,24 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<CommonResponse> login(@Valid @RequestBody RequestLogin loginDto) {
         ResponseLogin responseDto = memberAuthService.login(loginDto.getEmail(), loginDto.getPassword());
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(CustomJwtFilter.AUTHORIZATION_HEADER, "Bearer " + responseDto.getAccessToken());
-
         return ResponseEntity.ok().body(CommonResponse.builder()
                 .success(true)
                 .response(responseDto)
                 .build());
     }
+    @PostMapping("/reissue")
+    @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
+    public ResponseEntity<CommonResponse> reissue(@Valid @RequestBody RequestReissueToken token) {
+        return memberAuthService.reissue(token);
+    }
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('ROLE_MENTOR')") //인가 테스트
-    public ResponseEntity<ResponseSignUp> getTokenTests(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(memberAuthService.getTokenTests());
+    @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')") //인가 테스트
+    public ResponseEntity<CommonResponse> getTokenTests(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(CommonResponse.builder()
+                .success(true)
+                .response(user.getUsername() + " " + user.getAuthorities())
+                .build());
     }
 
     // 개인 정보 조회
@@ -92,7 +98,7 @@ public class MemberController {
     }
 
     @PostMapping("/checkName")
-    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @RequestBody RequestNameCheck requestNameCheck){
+    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @RequestBody RequestNameCheck requestNameCheck) {
 
         return memberAuthService.checkDuplicatedName(requestNameCheck);
     }
@@ -139,7 +145,7 @@ public class MemberController {
 
     @GetMapping("/notification")
     public ResponseEntity getNotification(@AuthenticationPrincipal(expression = "username") String username,
-                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority){
+                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority) {
         Object notificationRes = memberAuthService.getNotification(username, authority);
 
         return ResponseEntity.ok().body(
@@ -149,9 +155,9 @@ public class MemberController {
                         .build()
         );
     }
-  
+
     @GetMapping("/alarmStatus")
-    public ResponseEntity getAlarmStatus(@AuthenticationPrincipal(expression = "username") String username){
+    public ResponseEntity getAlarmStatus(@AuthenticationPrincipal(expression = "username") String username) {
         AlarmStatus res = memberAuthService.getAlarmStatus(username);
 
         return ResponseEntity.ok().body(

@@ -5,10 +5,9 @@ import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.CustomException;
-import com.example.demo.global.exception.error.member.DuplicateMemberException;
-import com.example.demo.global.exception.error.member.DuplicateMemberNameException;
-import com.example.demo.global.exception.error.member.WrongEmailInputException;
-import com.example.demo.global.exception.error.member.WrongPasswordInputException;
+import com.example.demo.global.exception.error.member.*;
+import com.example.demo.global.security.CustomJwtFilter;
+import com.example.demo.global.security.JwtCode;
 import com.example.demo.global.security.RefreshTokenProvider;
 import com.example.demo.global.security.TokenProvider;
 import com.example.demo.global.S3Service;
@@ -26,12 +25,16 @@ import com.example.demo.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.apache.struts.chain.commands.UnauthorizedActionException;
 import org.json.simple.JSONObject;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,7 +92,7 @@ public class MemberAuthService {
                     .forEach(suggestion -> notificationMap.put(suggestion, true));
 
             res = notificationMap.entrySet().stream()
-                    .sorted(Comparator.comparingLong(entry-> -entry.getKey().getSuggestionIdx()))
+                    .sorted(Comparator.comparingLong(entry -> -entry.getKey().getSuggestionIdx()))
                     .map(entry -> MentorNotificationRes.of(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
         } else {
@@ -101,9 +104,9 @@ public class MemberAuthService {
         member.updateAlarmStatus(false);
         return res;
     }
-  
+
     @Transactional
-    public AlarmStatus getAlarmStatus(final String username){
+    public AlarmStatus getAlarmStatus(final String username) {
         Member member = memberRepository.findMemberByUsername(username);
         String content = member.getAuthority().getAuthorityName().equals("ROLE_MENTOR")
                 ? "새로운 의뢰가"
@@ -117,28 +120,31 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public ResponseEntity<CommonResponse> checkDuplicatedName(RequestNameCheck requestNameCheck){
+    public ResponseEntity<CommonResponse> checkDuplicatedName(RequestNameCheck requestNameCheck) {
         String name = requestNameCheck.getName();
         Member member = memberRepository.findByName(name).orElse(null);
-        if(member != null){
+        if (member != null) {
             throw new DuplicateMemberNameException();
         }
         return ResponseEntity.ok().body(
                 CommonResponse.builder().success(true).response("닉네임 중복체크 성공").build());
     }
-  
+
     public ResponseLogin login(final String username, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         Member member = memberRepository.findMemberByUsername(username);
-        if(!member.isActivated()){
+        if (!member.isActivated()) {
             throw new CustomException(ErrorCode.DELETED_MEMBER);
         }
+
         String accessToken = tokenProvider.createJwt(authentication);
         Long tokenWeight = ((AuthAdapter) authentication.getPrincipal()).getAuth().getTokenWeight();
         String refreshToken = refreshTokenProvider.createRefreshToken(authentication, tokenWeight);
+        member.registerRefresh(refreshToken);
+        memberRepository.save(member);
 
         return ResponseLogin.builder()
                 .accessToken(accessToken)
@@ -154,10 +160,10 @@ public class MemberAuthService {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException();
         }
-        if(!isRegexEmail(registerDto.getEmail())){
+        if (!isRegexEmail(registerDto.getEmail())) {
             throw new WrongEmailInputException();
         }
-        if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
+        if (!isRegexPassword(registerDto.getPassword())) { // 비밀번호 정규식
             throw new WrongPasswordInputException();
         }
         Authority authority = Authority.builder()
@@ -188,15 +194,16 @@ public class MemberAuthService {
         if (memberRepository.findOneWithAuthorityByUsername(registerDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException();
         }
-        if(!isRegexEmail(registerDto.getEmail())){
+        if (!isRegexEmail(registerDto.getEmail())) {
             throw new WrongEmailInputException();
         }
-        if(!isRegexPassword(registerDto.getPassword())){ // 비밀번호 정규식
+        if (!isRegexPassword(registerDto.getPassword())) { // 비밀번호 정규식
             throw new WrongPasswordInputException();
         }
         Authority authority = Authority.builder()
                 .authorityName("ROLE_MENTEE")
                 .build();
+
         Member member = Member.builder()
                 .email(registerDto.getEmail())
                 .password(passwordEncoder.encode(registerDto.getPassword()))
@@ -216,10 +223,25 @@ public class MemberAuthService {
         createAccountEvent(account, member);
     }
 
-//    @Transactional(readOnly = true)
-//    public void refreshToken(String refreshToken){
-//
-//    }
+    @Transactional(readOnly = true)
+    public ResponseEntity<CommonResponse> reissue(final RequestReissueToken token) {
+        if (refreshTokenProvider.validateToken(token.getToken()) == JwtCode.DENIED) throw new InvalidateRefreshTokenException();
+        Authentication authentication = refreshTokenProvider.getAuthentication(token.getToken());
+        memberRepository.findOneWithAuthorityByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException(authentication.getName() + "를 찾을 수 없습니다."));
+        String accessToken = tokenProvider.createJwt(authentication);
+        ResponseReissueToken response =ResponseReissueToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(token.getToken())
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(CustomJwtFilter.AUTHORIZATION_HEADER, "Bearer " + response.getAccessToken());
+        return new ResponseEntity<>(CommonResponse.builder().success(true).response(response).build(), httpHeaders, HttpStatus.OK);
+    }
+
+    private void invalidateRefreshToken(final String username) {
+        Member member = memberRepository.findOneWithAuthorityByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username + "-> 찾을 수 없습니다"));
+        member.increaseTokenWeight();
+    }
 
     // 캐시 충전
     @Transactional
@@ -257,7 +279,7 @@ public class MemberAuthService {
         String newPassword = requestMemberPatch.getPassword();
         String newPhoneNum = requestMemberPatch.getPhoneNum();
 
-        if(newPassword != null && !newPassword.isEmpty()){
+        if (newPassword != null && !newPassword.isEmpty()) {
             if (isRegexPassword(newPassword)) { // 비밀번호 정규식
                 if (checkSamePassword(newPassword, oldPassword)) {
                     member.updatePassword(passwordEncoder.encode(newPassword));
@@ -268,10 +290,10 @@ public class MemberAuthService {
                 throw new CustomException(ErrorCode.WRONG_PASSWORD_INPUT);
             }
         }
-        if(newPhoneNum != null && !newPhoneNum.isEmpty()){
+        if (newPhoneNum != null && !newPhoneNum.isEmpty()) {
             if (isRegexPhoneNum(newPhoneNum)) {// 전화번호 정규식
                 newPhoneNum = makePhoneNum(newPhoneNum); // '-' 제거
-                if(checkSamePhoneNum(newPhoneNum, oldPhoneNum)){
+                if (checkSamePhoneNum(newPhoneNum, oldPhoneNum)) {
                     member.updatePhoneNum(newPhoneNum);
                 } else {
                     throw new CustomException(ErrorCode.DUPLICATE_MEMBER_PHONE_NUM);
@@ -295,7 +317,7 @@ public class MemberAuthService {
     public void updateProfileImg(String username, MultipartFile img) throws IOException {
         Member member = memberRepository.findMemberByUsername(username);
         String uploadedImgUrl = "";
-        if(!img.isEmpty()){
+        if (!img.isEmpty()) {
             uploadedImgUrl = s3Service.upload(img, "profile", username);
         }
         member.updateProfileImg(uploadedImgUrl);
@@ -303,14 +325,14 @@ public class MemberAuthService {
     }
 
     @Transactional
-    public void deleteMember(String memberEmail){
+    public void deleteMember(String memberEmail) {
         Member member = memberRepository.findByUsername(memberEmail).orElseThrow(()
                 -> new CustomException(ErrorCode.NOT_FOUND_ELEMENT));
         member.memberActivationControl(false);
         memberRepository.save(member);
     }
 
-    public void createAccountEvent(Account account, Member member){
+    public void createAccountEvent(Account account, Member member) {
         MemberCreateEvent memberCreateEvent = new MemberCreateEvent(member.getUsername(), account.getBankName(), account.getAccountNum(), account.getBalance());
         applicationEventPublisher.publishEvent(memberCreateEvent);
     }
@@ -366,7 +388,7 @@ public class MemberAuthService {
         return false;
     }
 
-    public static boolean isRegexEmail(String email){
+    public static boolean isRegexEmail(String email) {
         String regex = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z]+$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
@@ -396,18 +418,18 @@ public class MemberAuthService {
         }
     }
 
-    public PostAuthCodeRes certifiedPhoneNumber(PostAuthCodeReq postAuthCodeReq) throws BaseException{
+    public PostAuthCodeRes certifiedPhoneNumber(PostAuthCodeReq postAuthCodeReq) throws BaseException {
 
         String api_key = apiKey;
         String api_secret = apiSecretKey;
         Message coolsms = new Message(api_key, api_secret);
 
 
-        Random rand  = new Random();
+        Random rand = new Random();
         String numStr = "";
-        for(int i=0; i<6; i++) {
+        for (int i = 0; i < 6; i++) {
             String ran = Integer.toString(rand.nextInt(10));
-            numStr+=ran;
+            numStr += ran;
         }
 
         String phoneNumber = postAuthCodeReq.getPhone();
@@ -416,7 +438,7 @@ public class MemberAuthService {
         params.put("to", phoneNumber);
         params.put("from", "01039319312");
         params.put("type", "SMS");
-        params.put("text", "SilverCareer_회원가입 : 인증번호는" + "["+numStr+"]" + "입니다.");
+        params.put("text", "SilverCareer_회원가입 : 인증번호는" + "[" + numStr + "]" + "입니다.");
         params.put("app_version", "test app 1.2");
 
         try {
@@ -427,6 +449,7 @@ public class MemberAuthService {
         } catch (CoolsmsException e) {
             System.out.println(e.getMessage());
             System.out.println(e.getCode());
-        } throw new BaseException(BaseResponseStatus.FAILED_TO_SEND_SNS_AUTH_CODE);
+        }
+        throw new BaseException(BaseResponseStatus.FAILED_TO_SEND_SNS_AUTH_CODE);
     }
 }
