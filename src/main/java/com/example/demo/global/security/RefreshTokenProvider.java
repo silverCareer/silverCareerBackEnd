@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -20,17 +21,13 @@ public class RefreshTokenProvider extends TokenProvider {
         super(secret, tokenValidityInSeconds);
     }
 
-    public String createRefreshToken(Authentication authentication, Long tokenWeight) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+    public String createRefreshToken(Long tokenWeight) {
+        String id = UUID.randomUUID().toString();
         long now = (new Date()).getTime();
         Date validity = new Date(now + super.tokenValidityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+                .setSubject(id)
                 .claim(WEIGHT, tokenWeight)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setIssuedAt(new Date())
@@ -44,6 +41,11 @@ public class RefreshTokenProvider extends TokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.parseLong(String.valueOf(claims.get(WEIGHT)));
+        Object weight = claims.get(WEIGHT);
+        if (weight != null) {
+            return Long.parseLong(String.valueOf(weight));
+        } else {
+            throw new RuntimeException("토큰 가중치를 찾을 수 없습니다.");
+        }
     }
 }

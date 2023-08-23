@@ -1,6 +1,7 @@
 package com.example.demo.global.security;
 
 
+import com.example.demo.src.member.domain.Authority;
 import io.jsonwebtoken.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+
 
 public class TokenProvider {
     protected final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
@@ -54,6 +56,18 @@ public class TokenProvider {
                 .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String reissueJwt(final String memberEmail, final String authority){
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + tokenValidityInMilliseconds);
+        return Jwts.builder()
+                .setSubject(memberEmail)
+                .claim(AUTHORITIES_KEY, authority)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
                 .compact();
     }
 
@@ -95,6 +109,16 @@ public class TokenProvider {
             logger.info("JWT 토큰이 잘못되었습니다.");
             return JwtCode.DENIED;
         }
+    }
+
+    public Date extractExpiration(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key) // 토큰 서명 검증을 위한 키
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getExpiration();
     }
 
 }

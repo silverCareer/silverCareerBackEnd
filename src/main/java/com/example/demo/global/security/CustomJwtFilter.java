@@ -1,5 +1,6 @@
 package com.example.demo.global.security;
 
+import com.example.demo.global.exception.error.member.ExpiredAccessTokenException;
 import com.example.demo.global.exception.error.member.InvalidateRefreshTokenException;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.dto.ResponseReissueToken;
@@ -21,6 +22,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 import java.net.http.HttpHeaders;
+import java.util.Date;
 
 
 @Component
@@ -31,6 +33,7 @@ public class CustomJwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(CustomJwtFilter.class);
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private final TokenProvider tokenProvider;
+
     public CustomJwtFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
@@ -47,17 +50,19 @@ public class CustomJwtFilter extends GenericFilterBean {
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) == JwtCode.ACCESS) {
+        if ((StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) == JwtCode.ACCESS) || (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) == JwtCode.EXPIRED)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
+            if (isTokenExpired(jwt)) {
+                throw new ExpiredAccessTokenException();
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
-            logger.info(authentication.getName());
-        }
-        else {
+        } else {
             logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
+
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
@@ -66,5 +71,10 @@ public class CustomJwtFilter extends GenericFilterBean {
         }
 
         return null;
+    }
+
+    private boolean isTokenExpired(String token) {
+        Date expirationDate = tokenProvider.extractExpiration(token);
+        return expirationDate != null && expirationDate.before(new Date());
     }
 }

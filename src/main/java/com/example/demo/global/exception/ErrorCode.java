@@ -24,12 +24,10 @@ public enum ErrorCode {
     WRONG_EMAIL_INPUT(HttpStatus.NOT_ACCEPTABLE, "AUTH_007", "잘못된 이메일 형식입니다."),
     DELETED_MEMBER(HttpStatus.CONFLICT, "Auth_008", "탈퇴한 회원입니다."),
     NOT_EXISTED_MEMBER_EXCEPTION(HttpStatus.NOT_FOUND, "AUTH_009", "존재하지 않는 회원입니다."),
-
-    DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
     DUPLICATE_MEMBER_NAME(HttpStatus.CONFLICT, "AUTH_010", "멤버 이름 중복"),
-
-    INVALIDATE_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_012", "유효하지 않은 리프레쉬 토큰입니다!"),
     DUPLICATE_MEMBER_EMAIL(HttpStatus.CONFLICT, "AUTH_011", "멤버 이메일 중복"),
+    INVALIDATE_REFRESH_TOKEN(HttpStatus.CONFLICT, "AUTH_012", "유효하지 않은 리프레쉬 토큰입니다!"),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_013", "액세스 토큰 만료!"),
 
     //likes
     EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 이미 있습니다!"),
@@ -51,6 +49,7 @@ public enum ErrorCode {
     //bid
     NOT_FOUND_BID(HttpStatus.NOT_FOUND, "BID_001", "존재하지 않는 입찰입니다."),
     NOT_FOUND_BIDS(HttpStatus.NOT_FOUND, "BID_002", "해당 의뢰와 연관된 입찰을 조회 할수 없습니다."),
+    DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_003", "입찰 가격을 이미 등록하셨습니다."),
 
     //suggestion
     NOT_FOUND_SUGGESTIONS(HttpStatus.NOT_FOUND, "SUGGESTION_001", "회원님의 카테고리와 일치하는 의뢰가 없습니다."),

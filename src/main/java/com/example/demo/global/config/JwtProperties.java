@@ -12,6 +12,6 @@ public class JwtProperties {
     private String secret;
     @Value("${spring.security.jwt.refreshTokenSecret}")
     private String refreshTokenSecret;
-    private long accessTokenValidityInSeconds = (60 * 1000) * 30; // 액세스토큰 유효기간 필드
-    private long refreshTokenValidityInSeconds = (60 * 1000) * 60 * 24 * 7;// 리프레시토큰 유효기간 필드
+    private long accessTokenValidityInSeconds = 1800; // 액세스토큰 유효기간 필드
+    private long refreshTokenValidityInSeconds = 604800;// 리프레시토큰 유효기간 필드
 }

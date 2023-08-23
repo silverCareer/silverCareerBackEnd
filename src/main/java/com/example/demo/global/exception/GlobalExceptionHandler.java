@@ -131,6 +131,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidateRefreshTokenException.class)
     protected ResponseEntity<CommonResponse> handleInvalidateRefreshTokenException(InvalidateRefreshTokenException ex) {
         return createErrorResponse(ErrorCode.INVALIDATE_REFRESH_TOKEN);
+    }
+
+    @ExceptionHandler(ExpiredAccessTokenException.class)
+    protected ResponseEntity<CommonResponse> handleExpiredAccessTokenException(ExpiredAccessTokenException ex){
+        return createErrorResponse(ErrorCode.EXPIRED_ACCESS_TOKEN);
+    }
 
     @ExceptionHandler(DuplicateMemberEmailException.class)
     protected ResponseEntity<CommonResponse> handleDuplicatedMemberEmailException(DuplicateMemberEmailException ex) {

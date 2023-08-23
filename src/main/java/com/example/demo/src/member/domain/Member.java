@@ -47,9 +47,6 @@ public class Member {
     @Column(name = "token_weight", nullable = false)
     private Long tokenWeight;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
     @Column(name = "activated", nullable = false) //계정 활성 여부?
     private boolean activated;
 
@@ -72,7 +69,7 @@ public class Member {
     @Builder
     public Member(String email, String password, String name, String phoneNumber, Long age,
                   String userImage, String career, String category, Long balance, Long tokenWeight,
-                  boolean activated, boolean checkedAlarm, Account account, Authority authority, String refreshToken){
+                  boolean activated, boolean checkedAlarm, Account account, Authority authority){
         this.username = email;
         this.password = password;
         this.name = name;
@@ -83,7 +80,6 @@ public class Member {
         this.category = category;
         this.balance = balance;
         this.tokenWeight = 1L;
-        this.refreshToken = refreshToken;
         this.activated = activated;
         this.account = account;
         this.authority = authority;
@@ -94,9 +90,6 @@ public class Member {
         this.tokenWeight++;
     }
 
-    public void registerRefresh(String refreshToken){
-        this.refreshToken = refreshToken;
-    }
     // 캐쉬 충전
     public void addCash(long amount) throws IllegalArgumentException {
         this.balance += amount;
