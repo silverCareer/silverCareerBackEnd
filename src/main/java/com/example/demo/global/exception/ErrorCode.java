@@ -55,7 +55,7 @@ public enum ErrorCode {
     NOT_FOUND_SUGGESTION(HttpStatus.NOT_FOUND, "SUGGESTION_002", "해당 의뢰 정보를 조회 할수 없습니다."),
 
     //s3
-    ILLEGAL_ARGUMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "IMG_001", "이미지 변환을 실패하였습니다");
+    ILLEGAL_ARGUMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "IMG_001", "이미지 변환을 실패하였습니다"),
 
     // search
     NOT_FOUND_SEARCH_LIST(HttpStatus.NOT_FOUND, "SEARCH_001", "검색 결과가 없습니다.");
