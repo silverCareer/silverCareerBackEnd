@@ -5,7 +5,6 @@ import com.example.demo.src.suggestion.domain.Suggestion;
 import lombok.*;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "bid")

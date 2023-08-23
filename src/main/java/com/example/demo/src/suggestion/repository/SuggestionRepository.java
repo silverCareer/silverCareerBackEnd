@@ -11,8 +11,10 @@ import java.util.Optional;
 
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
-    List<Suggestion> findByCategory(String category);
-    Suggestion findByMemberName(String email);
+    Optional<Suggestion> findSuggestionBySuggestionIdx(Long suggestionIdx);
+    Optional<List<Suggestion>> findByCategory(String category);
+    Optional<Suggestion> findByMemberName(String email);
+    Optional<List<Suggestion>> findSuggestionsByMemberUsername(String memberEmail);
     Optional<Suggestion> findByTitle(String title);
 
     @Modifying

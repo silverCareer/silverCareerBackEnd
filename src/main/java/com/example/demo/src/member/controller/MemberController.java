@@ -4,20 +4,14 @@ import com.example.demo.global.exception.BaseException;
 import com.example.demo.global.exception.BaseResponse;
 import com.example.demo.global.exception.BaseResponseStatus;
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.global.security.CustomJwtFilter;
 import com.example.demo.src.member.dto.*;
 import com.example.demo.src.member.service.MemberAuthService;
-import com.example.demo.utils.SecurityUtil;
-import com.example.demo.utils.ValidationRegex;
-import jakarta.servlet.http.HttpServletResponse;
+import com.example.demo.src.member.service.MemberAuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.struts.chain.commands.UnauthorizedActionException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -26,28 +20,82 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class MemberController {
-
     private final MemberAuthService memberAuthService;
-    private final SecurityUtil securityUtil;
+    private final MemberAuthServiceImpl memberAuthServiceImpl;
 
-    @PostMapping("/members")
-    public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto) throws IllegalAccessException {
-
+    //회원가입
+    @PostMapping("/signup")
+    public ResponseEntity<CommonResponse> signUp(@Valid @RequestBody RequestSingUp registerDto) {
         if (registerDto.getAuthority().equals("멘토")) {
-            memberAuthService.mentorSignUp(registerDto);
-        } else if (registerDto.getAuthority().equals("멘티")) {
-            memberAuthService.menteeSignUp(registerDto);
+            return memberAuthService.mentorSignUp(registerDto);
+        } else {
+            return memberAuthService.menteeSignUp(registerDto);
         }
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .build());
+    }
+
+    //로그인
+    @PostMapping("/login")
+    public ResponseEntity<CommonResponse> login(@Valid @RequestBody RequestLogin loginDto) {
+        return memberAuthService.login(loginDto);
+    }
+
+    // 개인 정보 조회
+    @GetMapping("/members")
+    public ResponseEntity<CommonResponse> getMyInfo(@AuthenticationPrincipal(expression = "username") String memberEmail) {
+        return memberAuthService.getMyInfo(memberEmail);
+    }
+
+    @GetMapping("/checkName/{name}")
+    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @PathVariable String name){
+        return memberAuthService.checkDuplicatedName(name);
+    }
+  
+    @GetMapping("/checkEmail/{email}")
+    public ResponseEntity<CommonResponse> checkDuplicatedEmail(@Valid @PathVariable String email){
+        return memberAuthService.checkDuplicatedEmail(email);
+    }
+
+    // 멤버 캐쉬 충전
+    @PostMapping("/cashCharge")
+    @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
+    public ResponseEntity<CommonResponse> charge(@AuthenticationPrincipal(expression = "username") String memberEmail,
+                                                 @Valid @RequestBody RequestCashCharge chargeDto) {
+        return memberAuthService.cashCharge(memberEmail, chargeDto);
+    }
+
+    // 멤버 정보 수정
+    @PatchMapping("/modify")
+    public ResponseEntity<CommonResponse> updateMember(@AuthenticationPrincipal(expression = "username") String memberEmail,
+                                                       @RequestBody RequestMemberPatch requestMemberPatch) {
+        return memberAuthService.updateInfo(memberEmail, requestMemberPatch);
+    }
+
+    @PatchMapping("/deleteMember")
+    public ResponseEntity<CommonResponse> deleteMember(@AuthenticationPrincipal(expression = "username") String memberEmail) {
+        return memberAuthService.deleteMember(memberEmail);
+    }
+
+
+    @PatchMapping("/updateProfileImg")
+    public ResponseEntity<CommonResponse> updateProfileImg(@AuthenticationPrincipal(expression = "username") String memberEmail,
+                                           @Valid @RequestParam(value = "img") MultipartFile img) throws IOException{
+        return memberAuthService.updateProfileImg(memberEmail, img);
+    }
+
+    @GetMapping("/notification")
+    public ResponseEntity<CommonResponse> getNotification(@AuthenticationPrincipal(expression = "username") String memberEmail,
+                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority){
+        return memberAuthService.getNotification(memberEmail, authority);
+    }
+
+    @GetMapping("/alarmStatus")
+    public ResponseEntity<CommonResponse> getAlarmStatus(@AuthenticationPrincipal(expression = "username") String memberEmail){
+        return memberAuthService.getAlarmStatus(memberEmail);
     }
 
     @GetMapping("/sendSMS/{phone}")
@@ -56,9 +104,7 @@ public class MemberController {
             if (phone.length() != 11) {
                 return new BaseResponse<>(BaseResponseStatus.POST_USERS_UNREGEX_PHONE);
             }
-
-            System.out.println("수신자 번호 : " + phone);
-            PostAuthCodeRes postAuthCodeRes = memberAuthService.certifiedPhoneNumber(new PostAuthCodeReq(phone));
+            PostAuthCodeRes postAuthCodeRes = memberAuthServiceImpl.certifiedPhoneNumber(new PostAuthCodeReq(phone));
 
             return new BaseResponse<>(postAuthCodeRes);
         } catch (BaseException exception) {
@@ -66,105 +112,10 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<CommonResponse> login(@Valid @RequestBody RequestLogin loginDto) {
-        ResponseLogin responseDto = memberAuthService.login(loginDto.getEmail(), loginDto.getPassword());
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response(responseDto)
-                .build());
-    }
-    @PostMapping("/reissue")
-    @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
-    public ResponseEntity<CommonResponse> reissue(@Valid @RequestBody RequestReissueToken token) {
-        return memberAuthService.reissue(token);
-    }
-
+    // Dummies for Test
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')") //인가 테스트
-    public ResponseEntity<CommonResponse> getTokenTests(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok().body(CommonResponse.builder()
-                .success(true)
-                .response(user.getUsername() + " " + user.getAuthorities())
-                .build());
-    }
-
-    // 개인 정보 조회
-    @GetMapping("/members")
-    public ResponseEntity<ResponseMyInfo> getMyInfo(Authentication authentication) throws IllegalAccessException {
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(memberAuthService.getMyInfo(email));
-    }
-
-    @PostMapping("/checkName")
-    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @RequestBody RequestNameCheck requestNameCheck) {
-
-        return memberAuthService.checkDuplicatedName(requestNameCheck);
-    }
-
-    // 멤버 캐쉬 충전
-    @PostMapping("/cashCharge")
-    public ResponseEntity<?> charge(
-            @Valid @RequestBody RequestCashCharge chargeDto, @AuthenticationPrincipal(expression = "username") String memberEmail
-    ) throws IllegalAccessException {
-        memberAuthService.cashCharge(chargeDto, memberEmail);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    // 멤버 정보 수정
-    @PatchMapping("/modify")
-    public ResponseEntity updateMember(@RequestBody RequestMemberPatch requestMemberPatch,
-                                       @AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        memberAuthService.updateInfo(requestMemberPatch, memberEmail);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PatchMapping("/deleteMember")
-    public ResponseEntity deleteMember(@AuthenticationPrincipal(expression = "username") String memberEmail) throws IllegalAccessException {
-        memberAuthService.deleteMember(memberEmail);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-
-    @PatchMapping("/updateProfileImg")
-    public ResponseEntity updateProfileImg(@RequestParam(value = "img") MultipartFile img) {
-        return securityUtil.getCurrentUsername()
-                .map(username -> {
-                    try {
-                        memberAuthService.updateProfileImg(username, img);
-                        return new ResponseEntity<>(HttpStatus.OK);
-                    } catch (IOException e) {
-                        return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-                    }
-                })
-                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
-    }
-
-    @GetMapping("/notification")
-    public ResponseEntity getNotification(@AuthenticationPrincipal(expression = "username") String username,
-                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority) {
-        Object notificationRes = memberAuthService.getNotification(username, authority);
-
-        return ResponseEntity.ok().body(
-                CommonResponse.builder()
-                        .success(true)
-                        .response(notificationRes)
-                        .build()
-        );
-    }
-
-    @GetMapping("/alarmStatus")
-    public ResponseEntity getAlarmStatus(@AuthenticationPrincipal(expression = "username") String username) {
-        AlarmStatus res = memberAuthService.getAlarmStatus(username);
-
-        return ResponseEntity.ok().body(
-                CommonResponse.builder()
-                        .success(true)
-                        .response(res)
-                        .build()
-        );
+    @PreAuthorize("hasAnyRole('ROLE_MENTOR')") //인가 테스트
+    public ResponseEntity<ResponseSignUp> getTokenTests(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(memberAuthServiceImpl.getTokenTests());
     }
 }

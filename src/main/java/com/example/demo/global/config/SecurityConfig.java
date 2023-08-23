@@ -3,7 +3,6 @@ package com.example.demo.global.config;
 import com.example.demo.global.handler.JwtAccessDeniedHandler;
 import com.example.demo.global.handler.JwtAuthenticationEntryPoint;
 import com.example.demo.global.security.CustomJwtFilter;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -62,7 +61,12 @@ public class SecurityConfig {
 
                 // api 경로
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("api/members", "api/login", "/api/kakao", "/api/product/category/**", "api/product/detail/**", "api/sendSMS/{phone}", "api/chat", "api/latestChat", "api/chat/update", "api/chat/create", "/ws/**", "/app/sendMessage", "/topic/**", "/api/search", "/api/checkName").permitAll()
+                        .requestMatchers("/api/hello", "api/signup", "api/authenticate",
+                                "api/login", "/api/kakao", "/api/product/category/**",
+                                "api/product/detail/**", "api/sendSMS/{phone}", "api/chat",
+                                "api/latestChat", "api/chat/update", "api/chat/create",
+                                "/ws/**", "/app/sendMessage", "/topic/**", "/api/search",
+                                "/api/checkName/**", "/api/checkEmail/**").permitAll()
 
                         .anyRequest().authenticated() // 나머지 경로는 jwt 인증
                 )
