@@ -2,7 +2,6 @@ package com.example.demo.src.likes.core;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.likes.service.LikeService;
-import com.example.demo.src.likes.service.LikeServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.Aspect;
 import org.redisson.api.RLock;
