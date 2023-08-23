@@ -1,6 +1,5 @@
 package com.example.demo.global.exception;
 
-import com.example.demo.global.exception.BaseResponseStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

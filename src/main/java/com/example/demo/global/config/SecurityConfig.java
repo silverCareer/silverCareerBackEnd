@@ -3,7 +3,6 @@ package com.example.demo.global.config;
 import com.example.demo.global.handler.JwtAccessDeniedHandler;
 import com.example.demo.global.handler.JwtAuthenticationEntryPoint;
 import com.example.demo.global.security.CustomJwtFilter;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;

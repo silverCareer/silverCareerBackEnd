@@ -2,7 +2,6 @@ package com.example.demo.src.product.service;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.product.dto.*;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
