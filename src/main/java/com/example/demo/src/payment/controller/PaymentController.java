@@ -2,6 +2,7 @@ package com.example.demo.src.payment.controller;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.payment.dto.*;
+import com.example.demo.src.payment.service.PaymentService;
 import com.example.demo.src.payment.service.PaymentServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class PaymentController {
 
-    private final PaymentServiceImpl paymentService;
+    private final PaymentService paymentService;
 
     // 상품 결제
     @PostMapping("/productPayment")

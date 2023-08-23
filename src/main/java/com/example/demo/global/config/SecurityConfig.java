@@ -67,7 +67,7 @@ public class SecurityConfig {
                                 "api/product/detail/**", "api/sendSMS/{phone}", "api/chat",
                                 "api/latestChat", "api/chat/update", "api/chat/create",
                                 "/ws/**", "/app/sendMessage", "/topic/**", "/api/search",
-                                "/api/checkName/**").permitAll()
+                                "/api/checkName/**", "/api/checkEmail/**").permitAll()
 
                         .anyRequest().authenticated() // 나머지 경로는 jwt 인증
                 )

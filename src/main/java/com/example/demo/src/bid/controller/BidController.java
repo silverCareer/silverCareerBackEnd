@@ -2,7 +2,7 @@ package com.example.demo.src.bid.controller;
 
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.src.bid.dto.RequestBid;
-import com.example.demo.src.bid.service.BidServiceImpl;
+import com.example.demo.src.bid.service.BidService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class BidController {
-    private final BidServiceImpl bidServiceImpl;
+    private final BidService bidService;
 
     // 입찰 등록
     @PostMapping("/suggestion/{suggestionIdx}/bid")
@@ -22,21 +22,21 @@ public class BidController {
     public ResponseEntity<CommonResponse> registerBid(@AuthenticationPrincipal(expression = "username") String memberEmail,
                                                       @Valid @PathVariable Long suggestionIdx,
                                                       @Valid @RequestBody RequestBid bidDto) {
-        return bidServiceImpl.registerBid(memberEmail, suggestionIdx, bidDto);
+        return bidService.registerBid(memberEmail, suggestionIdx, bidDto);
     }
 
     // 입찰 리스트 확인
     @GetMapping("/bid")
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> getRegisterBidList(@AuthenticationPrincipal(expression = "username") String memberEmail) {
-        return bidServiceImpl.getRegisterBidList(memberEmail);
+        return bidService.getRegisterBidList(memberEmail);
     }
 
     // 입찰 상세정보
     @GetMapping("/bid/{bidIdx}")
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
     public ResponseEntity<CommonResponse> getRegisterBidsDetail(@Valid @PathVariable Long bidIdx) {
-        return bidServiceImpl.getRegisterBidsDetail(bidIdx);
+        return bidService.getRegisterBidsDetail(bidIdx);
     }
 
 //    // 입찰 수락
@@ -46,4 +46,5 @@ public class BidController {
 //                                                                @Valid @PathVariable Long bidIdx) {
 //        return bidServiceImpl.acceptBidOfSuggestion(memberEmail, bidIdx);
 //    }
+
 }

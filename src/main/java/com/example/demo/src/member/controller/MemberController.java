@@ -59,6 +59,12 @@ public class MemberController {
         return memberAuthService.checkDuplicatedName(name);
     }
 
+    @GetMapping("/checkEmail/{email}")
+    public ResponseEntity<CommonResponse> checkDuplicatedEmail(@Valid @PathVariable String email){
+
+        return memberAuthService.checkDuplicatedEmail(email);
+    }
+
     // 멤버 캐쉬 충전
     @PostMapping("/cashCharge")
     @PreAuthorize("hasAnyRole('ROLE_MENTEE')")

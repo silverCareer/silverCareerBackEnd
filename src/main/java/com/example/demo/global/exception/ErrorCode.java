@@ -27,6 +27,7 @@ public enum ErrorCode {
 
     DUPLICATE_BID_REGISTER_EXCEPTION(HttpStatus.CONFLICT, "BID_001", "입찰 가격을 이미 등록하셨습니다."),
     DUPLICATE_MEMBER_NAME(HttpStatus.CONFLICT, "AUTH_010", "멤버 이름 중복"),
+    DUPLICATE_MEMBER_EMAIL(HttpStatus.CONFLICT, "AUTH_011", "멤버 이메일 중복"),
 
     //likes
     EXIST_LIKES(HttpStatus.CONFLICT, "LIKES_001", "좋아요 내역이 이미 있습니다!"),
@@ -55,6 +56,9 @@ public enum ErrorCode {
 
     //s3
     ILLEGAL_ARGUMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "IMG_001", "이미지 변환을 실패하였습니다");
+
+    // search
+    NOT_FOUND_SEARCH_LIST(HttpStatus.NOT_FOUND, "SEARCH_001", "검색 결과가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
