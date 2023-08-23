@@ -44,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> doProductPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> doProductPayment(final RequestPayment requestPayment, final String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
         Long memberBalance = member.getBalance();
@@ -67,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> doBidPayment(RequestBidPayment requestBidPayment, String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> doBidPayment(final RequestBidPayment requestBidPayment, final String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
         Long memberBalance = member.getBalance();
@@ -95,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> getPaymentHistory(String memberEmail) {
+    public ResponseEntity<CommonResponse> getPaymentHistory(final String memberEmail) {
         List<Payment> paymentList = paymentRepository.findPaymentsByMember_Username(memberEmail)
                 .orElseThrow(NotFoundPaymentHistoryException::new);
         if(paymentList.isEmpty()) throw new NotFoundPaymentHistoryException();

@@ -6,9 +6,9 @@ import com.example.demo.src.payment.dto.RequestPayment;
 import org.springframework.http.ResponseEntity;
 
 public interface PaymentService {
-    ResponseEntity<CommonResponse> doProductPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException;
+    ResponseEntity<CommonResponse> doProductPayment(final RequestPayment requestPayment, final String memberEmail) throws IllegalAccessException;
 
-    ResponseEntity<CommonResponse> doBidPayment(RequestBidPayment requestBidPayment, String memberEmail) throws IllegalAccessException;
+    ResponseEntity<CommonResponse> doBidPayment(final RequestBidPayment requestBidPayment, final String memberEmail) throws IllegalAccessException;
 
-    ResponseEntity<CommonResponse> getPaymentHistory(String memberEmail);
+    ResponseEntity<CommonResponse> getPaymentHistory(final String memberEmail);
 }
