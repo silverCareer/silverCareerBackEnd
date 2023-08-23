@@ -22,4 +22,5 @@ public interface MemberAuthService {
     ResponseEntity<CommonResponse> updateProfileImg(final String memberEmail, final MultipartFile img) throws IOException;
     ResponseEntity<CommonResponse> getNotification(final String memberEmail, final String authority);
     ResponseEntity<CommonResponse> getAlarmStatus(final String memberEmail);
+    ResponseEntity<CommonResponse> checkDuplicatedEmail(final String memberEmail);
 }
