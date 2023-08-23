@@ -15,6 +15,7 @@ import com.example.demo.global.exception.error.member.*;
 import com.example.demo.global.exception.error.product.InvalidProductInfoException;
 import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.global.exception.error.product.NotFoundProductListException;
+import com.example.demo.global.exception.error.search.NotFoundSearchException;
 import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionException;
 import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionsException;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -77,8 +78,13 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
     }
     @ExceptionHandler(InvalidAmountException.class)
-    protected  ResponseEntity<CommonResponse> handleInvalidAmountInputException(InvalidAmountException ex){
+    protected ResponseEntity<CommonResponse> handleInvalidAmountInputException(InvalidAmountException ex){
         return createErrorResponse(ErrorCode.INVALID_AMOUNT_INPUT);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<CommonResponse> handleIllegalArgumentException(IllegalArgumentException ex){
+        return createErrorResponse(ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION);
     }
 
     // Member
@@ -120,6 +126,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateMemberNameException.class)
     protected ResponseEntity<CommonResponse> handleDuplicatedMemberNameException(DuplicateMemberNameException ex) {
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_NAME);
+    }
+
+    @ExceptionHandler(DuplicateMemberEmailException.class)
+    protected ResponseEntity<CommonResponse> handleDuplicatedMemberEmailException(DuplicateMemberEmailException ex) {
+        return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_EMAIL);
     }
 
     // Payment
@@ -193,4 +204,10 @@ public class GlobalExceptionHandler {
     protected  ResponseEntity<CommonResponse> handleNotFoundSuggestionException(NotFoundSuggestionException ex){
         return createErrorResponse(ErrorCode.NOT_FOUND_SUGGESTION);
      }
+
+     // search
+    @ExceptionHandler(NotFoundSearchException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundSearchException(NotFoundSearchException ex){
+        return createErrorResponse(ErrorCode.NOT_FOUND_SEARCH_LIST);
+    }
 }
