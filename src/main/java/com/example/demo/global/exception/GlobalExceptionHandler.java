@@ -78,8 +78,13 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
     }
     @ExceptionHandler(InvalidAmountException.class)
-    protected  ResponseEntity<CommonResponse> handleInvalidAmountInputException(InvalidAmountException ex){
+    protected ResponseEntity<CommonResponse> handleInvalidAmountInputException(InvalidAmountException ex){
         return createErrorResponse(ErrorCode.INVALID_AMOUNT_INPUT);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<CommonResponse> handleIllegalArgumentException(IllegalArgumentException ex){
+        return createErrorResponse(ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION);
     }
 
     // Member

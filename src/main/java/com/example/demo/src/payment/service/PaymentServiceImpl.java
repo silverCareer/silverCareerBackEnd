@@ -9,6 +9,7 @@ import com.example.demo.global.exception.error.member.NotFoundMemberException;
 import com.example.demo.global.exception.error.product.NotFoundProductListException;
 import com.example.demo.global.exception.error.suggestion.NotFoundSuggestionException;
 import com.example.demo.src.bid.domain.Bid;
+import com.example.demo.src.bid.domain.BidStatus;
 import com.example.demo.src.bid.repository.BidRepository;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> doProductPayment(RequestPayment requestPayment, String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> doProductPayment(final RequestPayment requestPayment, final String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
         Long memberBalance = member.getBalance();
@@ -57,7 +59,7 @@ public class PaymentServiceImpl implements PaymentService{
             // payment 테이블에 기록
             updateExchangeRecordProduct(paymentRepository, member, productPrice, productName, productIdx);
             // member balance 차감
-            deductMemberBalance(memberRepository, memberEmail, productPrice);
+            member.deductCash(productPrice);
         }
         return ResponseEntity.ok().body(
                 CommonResponse.builder().success(true).response("상품 결제 성공").build());
@@ -65,12 +67,13 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> doBidPayment(RequestBidPayment requestBidPayment, String memberEmail) throws IllegalAccessException {
+    public ResponseEntity<CommonResponse> doBidPayment(final RequestBidPayment requestBidPayment, final String memberEmail) throws IllegalAccessException {
         Member member = memberRepository.findByUsername(memberEmail)
                 .orElseThrow(NotFoundMemberException::new);
         Long memberBalance = member.getBalance();
         Long bidIdx = requestBidPayment.getBidIdx();
-        Bid bid = bidRepository.findByBidIdx(bidIdx);
+        Bid bid = bidRepository.findById(bidIdx)
+                .orElseThrow(NotFoundBidException::new);
         Long bidPrice = bid.getPrice();
         Long suggestionIdx = bid.getSuggestion().getSuggestionIdx();
 
@@ -82,7 +85,9 @@ public class PaymentServiceImpl implements PaymentService{
             // payment 테이블에 기록
             updateExchangeRecordBid(paymentRepository, member, bidName, bidPrice, bidIdx);
             // member balance 차감
-            deductMemberBalance(memberRepository, memberEmail, bidPrice);
+            member.deductCash(bidPrice);
+            // 결제한 입찰 건 종료 및 같은 의뢰에 대한 입찰 건 삭제
+            terminateBid(suggestion, bid);
         }
         return ResponseEntity.ok().body(
                 CommonResponse.builder().success(true).response("입찰 결제 성공").build());
@@ -90,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> getPaymentHistory(String memberEmail) {
+    public ResponseEntity<CommonResponse> getPaymentHistory(final String memberEmail) {
         List<Payment> paymentList = paymentRepository.findPaymentsByMember_Username(memberEmail)
                 .orElseThrow(NotFoundPaymentHistoryException::new);
         if(paymentList.isEmpty()) throw new NotFoundPaymentHistoryException();
@@ -129,7 +134,7 @@ public class PaymentServiceImpl implements PaymentService{
                 CommonResponse.builder().success(true).response(responsePaymentHistoryList).build());
     }
 
-    private static void updateExchangeRecordProduct(PaymentRepository paymentRepository, Member member, Long productPrice, String productName, Long productIdx){
+    private void updateExchangeRecordProduct(PaymentRepository paymentRepository, Member member, Long productPrice, String productName, Long productIdx){
         Payment payment = Payment.builder()
                 .paymentDate(LocalDate.now())
                 .paymentAmount(productPrice)
@@ -142,7 +147,7 @@ public class PaymentServiceImpl implements PaymentService{
         paymentRepository.save(payment);
     }
 
-    private static void updateExchangeRecordBid(PaymentRepository paymentRepository, Member member, String bidName, Long bidPrice, Long bidIdx){
+    private void updateExchangeRecordBid(PaymentRepository paymentRepository, Member member, String bidName, Long bidPrice, Long bidIdx){
         Payment payment = Payment.builder()
                 .paymentDate(LocalDate.now())
                 .paymentAmount(bidPrice)
@@ -155,18 +160,27 @@ public class PaymentServiceImpl implements PaymentService{
         paymentRepository.save(payment);
     }
 
-    private static void deductMemberBalance(MemberRepository memberRepository, String memberEmail, Long productPrice) throws IllegalAccessException {
-        Member member = memberRepository.findByUsername(memberEmail)
-                .orElseThrow(NotFoundMemberException::new);
-        member.deductCash(productPrice);
-
-        memberRepository.save(member);
-    }
-
-    public boolean validateMemberBalance(Long memberBalance, Long productPrice){
+    private boolean validateMemberBalance(Long memberBalance, Long productPrice){
         if(memberBalance < productPrice){
             throw new WrongPaymentInputException();
         }
         return true;
     }
+
+    private void terminateBid(Suggestion suggestion, Bid bid){
+        bid.updateStatus(BidStatus.완료);
+        suggestion.terminateSuggestion(true);
+
+        List<Bid> notAcceptedBids = bidRepository.findBidsBySuggestion_SuggestionIdx(suggestion.getSuggestionIdx());
+        List<Long> bidIdxToDelete = notAcceptedBids.stream()
+                .filter(Bid -> !Bid.getBidIdx().equals(bid.getBidIdx()))
+                .map(Bid::getBidIdx)
+                .collect(Collectors.toList());
+
+        if(!bidIdxToDelete.isEmpty()){
+            bidRepository.deleteBidsByIdIn(bidIdxToDelete);
+        }
+    }
+
+
 }

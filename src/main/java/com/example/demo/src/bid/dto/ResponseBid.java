@@ -12,6 +12,7 @@ public class ResponseBid {
     private String category;
     private Long price;
     private String mentorName;
+    private String status;
 
     public static ResponseBid of(Bid bid) {
         return ResponseBid.builder()
@@ -20,6 +21,7 @@ public class ResponseBid {
                 .category(bid.getSuggestion().getCategory())
                 .price(bid.getPrice())
                 .mentorName(bid.getMember().getName())
+                .status(bid.getStatus().toString())
                 .build();
     }
 }

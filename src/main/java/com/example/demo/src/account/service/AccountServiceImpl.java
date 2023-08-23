@@ -29,7 +29,7 @@ public class AccountServiceImpl implements AccountService{
     // 계좌 생성
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> createAccount(MemberCreateEvent memberCreateEvent){
+    public ResponseEntity<CommonResponse> createAccount(final MemberCreateEvent memberCreateEvent){
 
         Member member = memberRepository.findByUsername(memberCreateEvent.getUsername())
                 .orElseThrow(NotFoundMemberException::new);
@@ -66,7 +66,7 @@ public class AccountServiceImpl implements AccountService{
     // 계좌 잔액 차감
     @Override
     @Transactional
-    public ResponseEntity<CommonResponse> accountDeduct(MemberCashChargeEvent memberCashChargeEvent){
+    public ResponseEntity<CommonResponse> accountDeduct(final MemberCashChargeEvent memberCashChargeEvent){
         Account account = accountRepository.findAccountByMember_Username(memberCashChargeEvent.getEmail())
                 .orElseThrow(NotFoundAccountException::new);
 

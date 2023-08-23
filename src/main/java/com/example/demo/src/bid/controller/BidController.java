@@ -39,11 +39,12 @@ public class BidController {
         return bidService.getRegisterBidsDetail(bidIdx);
     }
 
-    // 입찰 수락
-    @PostMapping("/bid/{bidIdx}/confirm")
-    @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
-    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(@AuthenticationPrincipal(expression = "username") String memberEmail,
-                                                                @Valid @PathVariable Long bidIdx) {
-        return bidService.acceptBidOfSuggestion(memberEmail, bidIdx);
-    }
+//    // 입찰 수락
+//    @PostMapping("/bid/{bidIdx}/confirm")
+//    @PreAuthorize("hasAnyRole('ROLE_MENTEE')")
+//    public ResponseEntity<CommonResponse> acceptBidOfSuggestion(@AuthenticationPrincipal(expression = "username") String memberEmail,
+//                                                                @Valid @PathVariable Long bidIdx) {
+//        return bidServiceImpl.acceptBidOfSuggestion(memberEmail, bidIdx);
+//    }
+
 }
