@@ -1,10 +1,7 @@
 package com.example.demo.src.member.service;
 
 import com.example.demo.global.exception.dto.CommonResponse;
-import com.example.demo.src.member.dto.RequestCashCharge;
-import com.example.demo.src.member.dto.RequestLogin;
-import com.example.demo.src.member.dto.RequestMemberPatch;
-import com.example.demo.src.member.dto.RequestSingUp;
+import com.example.demo.src.member.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,4 +20,6 @@ public interface MemberAuthService {
     ResponseEntity<CommonResponse> getNotification(final String memberEmail, final String authority);
     ResponseEntity<CommonResponse> getAlarmStatus(final String memberEmail);
     ResponseEntity<CommonResponse> checkDuplicatedEmail(final String memberEmail);
+    ResponseEntity<CommonResponse> reissue(final String memberEmail, final RequestReissueToken token);
+
 }

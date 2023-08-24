@@ -9,6 +9,7 @@ import com.example.demo.src.member.service.MemberAuthService;
 import com.example.demo.src.member.service.MemberAuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -50,13 +51,19 @@ public class MemberController {
     }
 
     @GetMapping("/checkName/{name}")
-    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @PathVariable String name){
+    public ResponseEntity<CommonResponse> checkDuplicatedName(@Valid @PathVariable String name) {
         return memberAuthService.checkDuplicatedName(name);
     }
 
     @GetMapping("/checkEmail/{email}")
-    public ResponseEntity<CommonResponse> checkDuplicatedEmail(@Valid @PathVariable String email){
+    public ResponseEntity<CommonResponse> checkDuplicatedEmail(@Valid @PathVariable String email) {
         return memberAuthService.checkDuplicatedEmail(email);
+    }
+
+    @PostMapping("/reissue")
+    @PreAuthorize("hasAnyRole('ROLE_MENTOR','ROLE_MENTEE')")
+    public ResponseEntity<CommonResponse> reissue(@AuthenticationPrincipal(expression = "username") String memberEmail, @Valid @RequestBody RequestReissueToken token) {
+        return memberAuthService.reissue(memberEmail, token);
     }
 
     // 멤버 캐쉬 충전
@@ -82,18 +89,18 @@ public class MemberController {
 
     @PatchMapping("/updateProfileImg")
     public ResponseEntity<CommonResponse> updateProfileImg(@AuthenticationPrincipal(expression = "username") String memberEmail,
-                                           @Valid @RequestParam(value = "img") MultipartFile img) throws IOException{
+                                                           @Valid @RequestParam(value = "img") MultipartFile img) throws IOException {
         return memberAuthService.updateProfileImg(memberEmail, img);
     }
 
     @GetMapping("/notification")
     public ResponseEntity<CommonResponse> getNotification(@AuthenticationPrincipal(expression = "username") String memberEmail,
-                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority){
+                                                          @AuthenticationPrincipal(expression = "authorities[0].authority") String authority) {
         return memberAuthService.getNotification(memberEmail, authority);
     }
-  
+
     @GetMapping("/alarmStatus")
-    public ResponseEntity<CommonResponse> getAlarmStatus(@AuthenticationPrincipal(expression = "username") String memberEmail){
+    public ResponseEntity<CommonResponse> getAlarmStatus(@AuthenticationPrincipal(expression = "username") String memberEmail) {
         return memberAuthService.getAlarmStatus(memberEmail);
     }
 
@@ -109,12 +116,5 @@ public class MemberController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
-    }
-
-    // Dummies for Test
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('ROLE_MENTOR')") //인가 테스트
-    public ResponseEntity<ResponseSignUp> getTokenTests(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(memberAuthServiceImpl.getTokenTests());
     }
 }

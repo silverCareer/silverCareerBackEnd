@@ -1,6 +1,7 @@
 package com.example.demo.global.security;
 
 
+import com.example.demo.src.member.domain.Authority;
 import io.jsonwebtoken.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+
 
 public class TokenProvider {
     protected final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
@@ -51,8 +53,21 @@ public class TokenProvider {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String reissueJwt(final String memberEmail, final String authority){
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + tokenValidityInMilliseconds);
+        return Jwts.builder()
+                .setSubject(memberEmail)
+                .claim(AUTHORITIES_KEY, authority)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
                 .compact();
     }
 
@@ -77,20 +92,33 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validateToken(String token) {
+    public JwtCode validateToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-            return true;
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            return JwtCode.ACCESS;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             logger.info("잘못된 JWT 서명입니다.");
+            return JwtCode.DENIED;
         } catch (ExpiredJwtException e) {
             logger.info("만료된 JWT 토큰입니다.");
+            return JwtCode.EXPIRED;
         } catch (UnsupportedJwtException e) {
             logger.info("지원되지 않는 JWT 토큰입니다.");
+            return JwtCode.DENIED;
         } catch (IllegalArgumentException e) {
             logger.info("JWT 토큰이 잘못되었습니다.");
+            return JwtCode.DENIED;
         }
-        return false;
+    }
+
+    public Date extractExpiration(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key) // 토큰 서명 검증을 위한 키
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getExpiration();
     }
 
 }
