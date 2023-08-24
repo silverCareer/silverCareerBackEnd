@@ -19,5 +19,6 @@ public class ResponseProductDetail {
     private String memberName;
     private String memberCareer;
     private int status;
+    private boolean isLiked;
     private List<ReviewDto> reviews;
 }

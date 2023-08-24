@@ -128,6 +128,16 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_NAME);
     }
 
+    @ExceptionHandler(InvalidateRefreshTokenException.class)
+    protected ResponseEntity<CommonResponse> handleInvalidateRefreshTokenException(InvalidateRefreshTokenException ex) {
+        return createErrorResponse(ErrorCode.INVALIDATE_REFRESH_TOKEN);
+    }
+
+    @ExceptionHandler(ExpiredAccessTokenException.class)
+    protected ResponseEntity<CommonResponse> handleExpiredAccessTokenException(ExpiredAccessTokenException ex){
+        return createErrorResponse(ErrorCode.EXPIRED_ACCESS_TOKEN);
+    }
+
     @ExceptionHandler(DuplicateMemberEmailException.class)
     protected ResponseEntity<CommonResponse> handleDuplicatedMemberEmailException(DuplicateMemberEmailException ex) {
         return createErrorResponse(ErrorCode.DUPLICATE_MEMBER_EMAIL);
@@ -151,7 +161,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundProductException.class)
-
     protected ResponseEntity<CommonResponse> handleNotFoundProductDetailException(NotFoundProductException ex){
         return createErrorResponse(ErrorCode.NOT_FOUND_PRODUCT_DETAIL);
     }
@@ -185,12 +194,12 @@ public class GlobalExceptionHandler {
 
     //likes
     @ExceptionHandler(ExistLikesException.class)
-    protected ResponseEntity<CommonResponse> handleExistLikesException(ExistLikesException ex){
+    protected ResponseEntity<CommonResponse> handleExistLikesException(ExistLikesException ex) {
         return createErrorResponse(ErrorCode.EXIST_LIKES);
     }
       
     @ExceptionHandler(NotFoundLikesException.class)
-    protected ResponseEntity<CommonResponse> handleNotFoundLikesException(NotFoundLikesException ex){
+    protected ResponseEntity<CommonResponse> handleNotFoundLikesException(NotFoundLikesException ex) {
         return createErrorResponse(ErrorCode.NOT_FOUND_LIKES);
     }
 

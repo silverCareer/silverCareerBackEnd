@@ -6,6 +6,7 @@ import com.example.demo.global.exception.error.member.NotFoundMemberException;
 import com.example.demo.global.exception.error.product.InvalidProductInfoException;
 import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.global.exception.error.product.NotFoundProductListException;
+import com.example.demo.src.likes.repository.LikeRepository;
 import com.example.demo.src.member.domain.Member;
 import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.payment.repository.PaymentRepository;
@@ -36,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
+    private final LikeRepository likeRepository;
     private final S3Service s3Service;
 
     @Override
@@ -70,20 +72,31 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CommonResponse> displayProductByCategory(final String category, final int page, final int size) {
+    public ResponseEntity<CommonResponse> displayProductByCategory(Authentication authentication, final String category, final int page, final int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "productIdx"));
-        Page<Product> productPage;
-        if(category.equals("all")){
-            productPage = productRepository.findAll(pageable);
-        } else {
-            productPage = productRepository.findByCategory(category, pageable);
-        }
+        Page<Product> productPage = category.equals("all")
+                ? productRepository.findAll(pageable)
+                : productRepository.findByCategory(category, pageable);
 
-        if(productPage.isEmpty() || productPage == null) {
+        if (productPage.isEmpty()) {
             throw new NotFoundProductListException();
         }
 
-        List<ResponseDisplayProducts> productListDto = productPage.stream().map(ResponseDisplayProducts::of).collect(Collectors.toList());
+        List<ResponseDisplayProducts> productListDto = productPage.stream()
+                .map(product -> {
+                    boolean isLiked = false;
+                    if (authentication != null && authentication.isAuthenticated()) {
+                        String authority = authentication.getAuthorities().stream()
+                                .findFirst().map(GrantedAuthority::getAuthority).orElse("");
+                        if ("ROLE_MENTEE".equals(authority)) {
+                            String memberEmail = authentication.getName();
+                            isLiked = likeRepository.existsByProductIdxAndMemberEmail(product.getProductIdx(), memberEmail);
+                        }
+                    }
+                    return ResponseDisplayProducts.of(product, isLiked);
+                })
+                .collect(Collectors.toList());
+
         ResponseMultiProduct<ResponseDisplayProducts> response =
                 new ResponseMultiProduct<>(productListDto, productPage.getNumber() + 1, productPage.getTotalPages());
 
@@ -91,27 +104,29 @@ public class ProductServiceImpl implements ProductService {
                 CommonResponse.builder().success(true).response(response).build());
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, final Long productId) {
         Product product = productRepository.findProductByProductIdx(productId)
                 .orElseThrow(NotFoundProductException::new);
-        Member member = product.getMember();
+
         int status = 1;
+        boolean isLiked = false;
+        String memberEmail;
+
         if(authentication != null && authentication.isAuthenticated()){
-            String username = authentication.getName();
-            String authority = "";
-            for(GrantedAuthority auth : authentication.getAuthorities()){
-                authority = auth.getAuthority();
-                break;
-            }
+            memberEmail = authentication.getName();
+            String authority = authentication.getAuthorities().stream()
+                    .findFirst().map(GrantedAuthority::getAuthority).orElse("");
+
             if(authority.equals("ROLE_MENTOR")){
                 status = 2;
             }
             else{
-                status = paymentRepository.findPaymentByMember_UsernameAndProductIdx(username, productId) == null
-                        ? 3
-                        : 4;
+                status = paymentRepository.findPaymentByMember_UsernameAndProductIdx(memberEmail, productId)
+                        == null ? 3 : 4;
+                isLiked = likeRepository.existsByProductIdxAndMemberEmail(productId, memberEmail);
             }
         }
         List<ReviewDto> reviews = product.getReviews().stream().map(ReviewDto::of).collect(Collectors.toList());
@@ -125,10 +140,11 @@ public class ProductServiceImpl implements ProductService {
                 .price(product.getPrice())
                 .image(product.getImage())
                 .likes(product.getLikes())
-                .memberName(member.getName())
-                .memberCareer(member.getCareer())
-                .reviews(reviews)
+                .memberName(product.getMember().getName())
+                .memberCareer(product.getMember().getCareer())
+                .isLiked(isLiked)
                 .status(status)
+                .reviews(reviews)
                 .build();
 
         return ResponseEntity.ok().body(

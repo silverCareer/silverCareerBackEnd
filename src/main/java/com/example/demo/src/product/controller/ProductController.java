@@ -24,11 +24,11 @@ public class ProductController {
     // 카테고리별 상품리스트 조회
     @GetMapping("/category/{category}")
     public ResponseEntity<CommonResponse> displayProductByCategory(
+            Authentication authentication,
             @Valid @PathVariable String category,
             @Valid @RequestParam(required = false, defaultValue = "1") int page,
             @Valid @RequestParam(required = false, defaultValue = "1000") int size) {
-
-        return productService.displayProductByCategory(category, page, size);
+        return productService.displayProductByCategory(authentication, category, page, size);
     }
 
     // 특정 상품의 상세정보 조회

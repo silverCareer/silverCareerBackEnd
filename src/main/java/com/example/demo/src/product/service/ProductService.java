@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface ProductService {
     ResponseEntity<CommonResponse> createProduct(final String username, final MultipartFile image, final RequestCreateProduct requestCreateProduct) throws IOException;
 
-    ResponseEntity<CommonResponse> displayProductByCategory(final String category, final int page, final int size);
+    ResponseEntity<CommonResponse> displayProductByCategory(Authentication authentication, final String category, final int page, final int size);
 
     ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, final Long productId);
 }
