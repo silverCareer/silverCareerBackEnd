@@ -62,7 +62,7 @@ public class SecurityConfig {
                 // api 경로
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/hello", "api/signup", "api/authenticate",
-                                "api/login", "/api/kakao", "/api/product/category/**", "api/product?recommend",
+                                "api/login", "/api/kakao", "/api/product/category/**", "api/product/recommend",
                                 "api/product/detail/**", "api/sendSMS/{phone}", "api/chat",
                                 "api/latestChat", "api/chat/update", "api/chat/create",
                                 "/ws/**", "/app/sendMessage", "/topic/**", "/api/search",
