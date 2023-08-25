@@ -46,4 +46,9 @@ public class ProductController {
                                                         @RequestPart("productImage") MultipartFile productImage) throws IOException {
         return productService.createProduct(username, productImage, requestCreateProduct);
     }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<CommonResponse> getRecommendProduct(){
+        return productService.getRecommendProduct();
+    }
 }
