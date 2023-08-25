@@ -14,4 +14,6 @@ public interface ProductService {
     ResponseEntity<CommonResponse> displayProductByCategory(Authentication authentication, final String category, final int page, final int size);
 
     ResponseEntity<CommonResponse> getProductDetail(Authentication authentication, final Long productId);
+
+    ResponseEntity<CommonResponse> getRecommendProduct();
 }
