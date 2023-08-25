@@ -151,6 +151,17 @@ public class ProductServiceImpl implements ProductService {
                 CommonResponse.builder().success(true).response(response).build());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CommonResponse> getRecommendProduct(){
+        List<Product> recommendProduct = productRepository.findTop10ByOrderBySalesCountDesc()
+                .orElseThrow(NotFoundProductListException::new);
+
+        List<ResponseTop10Products> response = recommendProduct.stream()
+                .map(ResponseTop10Products::of).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(CommonResponse.builder().success(true).response(response).build());
+    }
 
     // Helper Function
     private void validateProductInfo(MultipartFile image, RequestCreateProduct requestCreateProduct) {
