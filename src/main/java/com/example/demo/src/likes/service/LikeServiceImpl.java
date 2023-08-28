@@ -9,6 +9,8 @@ import com.example.demo.global.exception.error.likes.NotFoundLikesException;
 import com.example.demo.global.exception.error.product.NotFoundProductException;
 import com.example.demo.src.likes.domain.Like;
 import com.example.demo.src.likes.repository.LikeRepository;
+import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +25,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeServiceImpl implements LikeService {
     private final LikeRepository likeRepository;
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
     public void addLikesCount(final Long productIdx, final String username) {
+        Member member = memberRepository.findMemberByUsername(username);
         Product product = productRepository.findById(productIdx).orElseThrow(NotFoundProductException::new);
-        if (likeRepository.existsByProductIdxAndMemberEmail(productIdx, username)) throw new ExistLikesException();
+        if (likeRepository.existsByProductAndMember(product, member)) throw new ExistLikesException();
         product.increaseLikesCount();
         Like like = Like.builder()
-                .productIdx(product.getProductIdx())
-                .memberEmail(username)
+                .product(product)
+                .member(member)
                 .build();
         likeRepository.save(like);
     }
@@ -40,8 +44,9 @@ public class LikeServiceImpl implements LikeService {
     @Override
     @DistributeLock(key = "product: lock:{#productIdx}:{#username}")
     public void removeLikesCount(final Long productIdx, final String username) {
+        Member member = memberRepository.findMemberByUsername(username);
         Product product = productRepository.findById(productIdx).orElseThrow(NotFoundProductException::new);
-        Like like = likeRepository.findByProductIdxAndMemberEmail(productIdx, username).orElseThrow(NotFoundLikesException::new);
+        Like like = likeRepository.findByProductAndMember(product, member).orElseThrow(NotFoundLikesException::new);
         product.decreaseLikesCount();
         likeRepository.delete(like);
     }
