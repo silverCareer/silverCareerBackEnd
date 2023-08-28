@@ -18,19 +18,31 @@ spring:
       hibernate:
         format_sql: true
 
-
   data:
     mongodb:
-      host: ${MONGODB_HOST}
-      port: ${MONGODB_PORT}
-      authentication-database: ${MONGODB_AUTH}
-      username: ${MONGODB_USERNAME}
-      password: ${MONGODB_PASSWORD}
-      database: ${MONGODB_DBNAME}
+      host: 43.201.132.241
+      #      host : localhost
+      port: 27017
+      authentication-database: admin
+      username: admin1
+      password: test1234
+      database: silcarMongoDB
 
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: 43.201.132.241
+      port: 6379
+#  data:
+#    mongodb:
+#      host: ${MONGODB_HOST}
+#      port: ${MONGODB_PORT}
+#      authentication-database: ${MONGODB_AUTH}
+#      username: ${MONGODB_USERNAME}
+#      password: ${MONGODB_PASSWORD}
+#      database: ${MONGODB_DBNAME}
+#
+#    redis:
+#      host: ${REDIS_HOST}
+#      port: ${REDIS_PORT}
 
   security:
     jwt:

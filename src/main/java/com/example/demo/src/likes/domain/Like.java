@@ -1,5 +1,7 @@
 package com.example.demo.src.likes.domain;
 
+import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,15 +17,17 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likesIdx;
 
-    @Column(name = "product_idx")
-    private Long productIdx;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "product_idx", nullable = false)
+    private Product product;
 
-    @Column(name = "email")
-    private String memberEmail;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "email", nullable = false)
+    private Member member;
 
     @Builder
-    public Like(Long productIdx, String memberEmail) {
-        this.productIdx = productIdx;
-        this.memberEmail = memberEmail;
+    public Like(Product product, Member member) {
+        this.product = product;
+        this.member = member;
     }
 }
