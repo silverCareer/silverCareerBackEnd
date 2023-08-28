@@ -13,19 +13,14 @@ public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
     Optional<Suggestion> findSuggestionBySuggestionIdx(Long suggestionIdx);
     Optional<List<Suggestion>> findByCategory(String category);
-    Optional<Suggestion> findByMemberName(String email);
     Optional<List<Suggestion>> findSuggestionsByMemberUsername(String memberEmail);
-    Optional<Suggestion> findByTitle(String title);
 
-    @Modifying
     @Query("SELECT DISTINCT s FROM Suggestion s JOIN s.bids b WHERE b.status = '완료' AND b.member = :member")
     List<Suggestion> findSuggestionsWithCompleteBidsAndMember(Member member);
 
-    @Modifying
     @Query("SELECT DISTINCT s FROM Suggestion s JOIN s.bids b WHERE b.status = '진행중' AND b.member = :member")
     List<Suggestion> findSuggestionsWithInCompleteBidsAndMember(Member member);
 
-    @Modifying
     @Query("SELECT DISTINCT s FROM Suggestion  s WHERE s.isTerminated = false AND s.category = :category")
     List<Suggestion> findUnterminatedSuggestionsByCategory(String category);
 }
