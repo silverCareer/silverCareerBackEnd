@@ -3,6 +3,8 @@ package com.example.demo.src.search.service;
 import com.example.demo.global.exception.dto.CommonResponse;
 import com.example.demo.global.exception.error.search.NotFoundSearchException;
 import com.example.demo.src.likes.repository.LikeRepository;
+import com.example.demo.src.member.domain.Member;
+import com.example.demo.src.member.repository.MemberRepository;
 import com.example.demo.src.product.domain.Product;
 import com.example.demo.src.product.dto.ResponseDisplayProducts;
 import com.example.demo.src.product.repository.ProductRepository;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService{
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
     private final LikeRepository likeRepository;
 
     @Override
@@ -41,7 +44,8 @@ public class SearchServiceImpl implements SearchService{
                                 .findFirst().map(GrantedAuthority::getAuthority).orElse("");
                         if("ROLE_MENTEE".equals(authority)){
                             String memberEmail = authentication.getName();
-                            isLiked = likeRepository.existsByProductIdxAndMemberEmail(product.getProductIdx(), memberEmail);
+                            Member member = memberRepository.findMemberByUsername(memberEmail);
+                            isLiked = likeRepository.existsByProductAndMember(product, member);
                         }
                     }
                     return ResponseDisplayProducts.of(product, isLiked);

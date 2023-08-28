@@ -90,7 +90,8 @@ public class ProductServiceImpl implements ProductService {
                                 .findFirst().map(GrantedAuthority::getAuthority).orElse("");
                         if ("ROLE_MENTEE".equals(authority)) {
                             String memberEmail = authentication.getName();
-                            isLiked = likeRepository.existsByProductIdxAndMemberEmail(product.getProductIdx(), memberEmail);
+                            Member member = memberRepository.findMemberByUsername(memberEmail);
+                            isLiked = likeRepository.existsByProductAndMember(product, member);
                         }
                     }
                     return ResponseDisplayProducts.of(product, isLiked);
@@ -126,7 +127,8 @@ public class ProductServiceImpl implements ProductService {
             else{
                 status = paymentRepository.findPaymentByMember_UsernameAndProductIdx(memberEmail, productId)
                         == null ? 3 : 4;
-                isLiked = likeRepository.existsByProductIdxAndMemberEmail(productId, memberEmail);
+                Member member = memberRepository.findMemberByUsername(memberEmail);
+                isLiked = likeRepository.existsByProductAndMember(product, member);
             }
         }
         List<ReviewDto> reviews = product.getReviews().stream().map(ReviewDto::of).collect(Collectors.toList());
