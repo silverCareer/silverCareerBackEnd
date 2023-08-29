@@ -10,10 +10,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        System.out.println("여기까지1");
         try {
             registry.addEndpoint("/ws").setAllowedOrigins("https://www.silvercareer.shop").withSockJS();
-            System.out.println("여기까지2");
             //        https://43.201.132.241:3000
         } catch (Exception e) {
             e.printStackTrace();
