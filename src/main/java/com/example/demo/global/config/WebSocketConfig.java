@@ -14,7 +14,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         try {
             registry.addEndpoint("/ws").setAllowedOrigins("https://www.silvercareer.shop").withSockJS();
             System.out.println("여기까지2");
-            //        https://43.201.132.241:3000
+            //        https://43.201.132.241:3000 멘토 수정용
+            // http://localhost:3000 로컬 테스트용
         } catch (Exception e) {
             e.printStackTrace();
         }
