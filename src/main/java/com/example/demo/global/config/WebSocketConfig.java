@@ -13,8 +13,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         try {
             registry.addEndpoint("/ws").setAllowedOrigins("https://www.silvercareer.shop").withSockJS();
 
-            //        https://43.201.132.241:3000
-
         } catch (Exception e) {
             e.printStackTrace();
         }
