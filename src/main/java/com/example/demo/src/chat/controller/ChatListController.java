@@ -34,10 +34,6 @@ public class ChatListController {
     public BaseResponse<List<ChatSaveRes>> findById(@RequestParam String chatId) {
         try {
             List<ChatSaveRes> chatRes = chatRoomService.findById(chatId);
-//            for (ChatSaveRes chat : chatRes) {
-//                System.out.println(chat.getMessages());
-//            }
-
             return new BaseResponse<>(chatRes);
         } catch(BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

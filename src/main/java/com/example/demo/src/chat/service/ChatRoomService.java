@@ -9,14 +9,9 @@ import com.example.demo.src.chat.dto.ChatSaveReq;
 import com.example.demo.src.chat.dto.ChatSaveRes;
 import com.example.demo.src.chat.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.example.demo.src.chat.dto.ChatSaveReq;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
