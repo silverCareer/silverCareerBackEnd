@@ -5,7 +5,6 @@ import com.example.demo.src.suggestion.domain.Suggestion;
 import lombok.*;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "bid")
@@ -20,6 +19,10 @@ public class Bid {
     @Column(name = "price", nullable = false)
     private Long price;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private BidStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "email", nullable = false)
     private Member member; //멘토들
@@ -29,10 +32,15 @@ public class Bid {
     private Suggestion suggestion;
 
     @Builder
-    public Bid(Long price, Member member, Suggestion suggestion){
+    public Bid(Long price, BidStatus status, Member member, Suggestion suggestion){
         this.price = price;
+        this.status = status;
         this.member = member;
         this.suggestion = suggestion;
+    }
+
+    public void updateStatus(BidStatus status){
+        this.status = status;
     }
 }
 

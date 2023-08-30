@@ -1,8 +1,7 @@
-package com.example.demo.src;
+package com.example.demo.global;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,14 +28,14 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     public String upload(MultipartFile multipartFile, String dirName, String userName) throws IOException {
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("Failed to convert MultipartFile to file"));
+        File uploadFile = convert(multipartFile).orElseThrow(IllegalArgumentException::new);
         return uploadToS3(uploadFile, dirName, userName);
     }
 
     //AWS S3에 이미지 업로드 후 업로드된 이미지의 url 반환
     private String uploadToS3(File uploaFile, String dirName, String userName){
-        String fileName = dirName + "/" + userName;
+        String randomName = UUID.randomUUID().toString();
+        String fileName = dirName + "/" + userName + "_" + randomName;
         amazonS3Client.putObject(
                 new PutObjectRequest(bucket, fileName, uploaFile)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
@@ -64,7 +64,6 @@ public class S3Service {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
-        System.out.println("파일 이름 : " + file.getOriginalFilename());
         File converFile = new File(file.getOriginalFilename());
         if(converFile.createNewFile()){
             try(FileOutputStream fos = new FileOutputStream(converFile)){

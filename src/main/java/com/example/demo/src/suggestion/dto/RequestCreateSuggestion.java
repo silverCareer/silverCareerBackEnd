@@ -1,12 +1,15 @@
 package com.example.demo.src.suggestion.dto;
 
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RequestCreateSuggestion{
         @NotNull
         private String title;

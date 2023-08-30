@@ -1,2 +1,2 @@
 # silverCareerBackEnd
-# 실버커리어 프로젝트
+# Digital 하나로 1기 3차 프로젝트

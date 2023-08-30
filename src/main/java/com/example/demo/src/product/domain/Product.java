@@ -63,11 +63,19 @@ public class Product {
         this.price = price;
         this.image = image;
         this.saleCount = saleCount;
-        this.likes = likes;
+        this.likes = 0L;
         this.member = member;
     }
 
-    public void addReview(Review review){
+    public void addReview(Review review) {
         this.reviews.add(review);
+    }
+
+    public void increaseLikesCount() {
+        this.likes += 1;
+    }
+
+    public void decreaseLikesCount() {
+        this.likes -= 1;
     }
 }

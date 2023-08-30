@@ -39,25 +39,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // db(test) - h2 in-memory를 테스트용으로 사용합니다.
-    //runtimeOnly 'com.h2database:h2'
-
-    implementation 'org.mapstruct:mapstruct:1.5.1.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'
     // db(dev) - MySql 사용
     runtimeOnly 'com.mysql:mysql-connector-j' //mysql8
-//    runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-//    compile 'org.springframework.boot:spring-boot-starter-data-jpa' //mysql 5버전의 경우 삭제.
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-    /*implementation 'com.querydsl:querydsl-jpa:5.0.0'
-    implementation 'com.querydsl:querydsl-apt:5.0.0'
-    annotationProcessor (
-            "com.querydsl:querydsl-apt:5.0.0:jpa",
-            "jakarta.annotation:jakarta.annotation-api",
-            "jakarta.persistence:jakarta.persistence-api")
-    */
 
     //Jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -83,6 +68,15 @@ dependencies {
 
     // mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Redis - Redisson
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.19.0'
+    
+    //
+    testImplementation(
+            'org.assertj:assertj-core:3.21.0'
+    )
 
     // 웹소켓
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

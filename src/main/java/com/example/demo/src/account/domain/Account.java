@@ -42,9 +42,7 @@ public class Account {
 
     // 계좌 충전
     public void addBalance(long amount) throws IllegalArgumentException {
-        if (this.balance == null) {
-            this.balance = amount;
-        } else {
+        if (this.balance != null){
             this.balance += amount;
         }
     }
